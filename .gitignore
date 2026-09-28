@@ -1,0 +1,15 @@
+# KiCad
+*-backups/
+*.kicad_prl
+fp-info-cache
+*.lck
+
+# build output
+build/
+
+# Python
+__pycache__/
+*.pyc
+
+# PlatformIO / Arduino
+.pio/

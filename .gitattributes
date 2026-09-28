@@ -1,0 +1,3 @@
+# Hand-written PDFs are plain ASCII; CRLF conversion would break their xref offsets.
+*.pdf binary
+*.stl binary
