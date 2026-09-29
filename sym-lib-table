@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "FluxDrive")(type "KiCad")(uri "${KIPRJMOD}/FluxDrive.kicad_sym")(options "")(descr "FluxDrive project symbols"))
+)

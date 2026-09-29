@@ -25,8 +25,12 @@ PAGE_W, MARGIN, ROW_GAP = 560.0, 20.0, 12.7
 _libs = {}
 
 
-def uid():
-    return Q(str(uuid.uuid4()))
+_NS = uuid.UUID("6f1c2a4e-9d3b-4f0a-8c1e-5b7d2e9a4c10")
+
+
+def uid(key):
+    """Deterministic: the same design gives the same file, so diffs and board paths stay stable."""
+    return Q(str(uuid.uuid5(_NS, key)))
 
 
 def snap(v):
@@ -110,11 +114,11 @@ def prop(name, value, x, y, hide=False, angle=0):
     return p
 
 
-def label(net, x, y, pin_angle):
+def label(net, x, y, pin_angle, key):
     ang = {0: 180, 180: 0, 90: 270, 270: 90}[pin_angle % 360]
     just = "right" if ang in (180, 270) else "left"
     return ["label", Q(net), ["at", snap(x), snap(y), ang],
-            ["effects", ["font", ["size", 1.27, 1.27]], ["justify", just, "bottom"]], ["uuid", uid()]]
+            ["effects", ["font", ["size", 1.27, 1.27]], ["justify", just, "bottom"]], ["uuid", uid(key)]]
 
 
 def instance(p, unit, pins, at, root_uuid, project):
@@ -122,7 +126,7 @@ def instance(p, unit, pins, at, root_uuid, project):
     sym = ["symbol", ["lib_id", Q(p["lib"])], ["at", x, y, p.get("rot", 0)], ["unit", unit],
            ["body_style", 1], ["exclude_from_sim", "no"], ["in_bom", "yes" if p.get("in_bom", True) else "no"],
            ["on_board", "yes" if p.get("on_board", True) else "no"], ["in_pos_files", "yes"],
-           ["dnp", "yes" if p.get("dnp") else "no"], ["uuid", uid()],
+           ["dnp", "yes" if p.get("dnp") else "no"], ["uuid", uid(f"sym:{p['ref']}:{unit}")],
            prop("Reference", p["ref"], x, y - 5.08, angle=p.get("rot", 0)),
            prop("Value", p["value"], x, y + 5.08, angle=p.get("rot", 0)),
            prop("Footprint", p.get("footprint", ""), x, y, hide=True),
@@ -130,7 +134,7 @@ def instance(p, unit, pins, at, root_uuid, project):
     if p.get("lcsc"):
         sym.append(prop("LCSC", p["lcsc"], x, y, hide=True))
     for n in sorted({pin[0] for pin in pins}, key=lambda s: (len(s), s)):     # this unit's pins only
-        sym.append(["pin", Q(n), ["uuid", uid()]])
+        sym.append(["pin", Q(n), ["uuid", uid(f"pin:{p['ref']}:{n}")]])
     sym.append(["instances", ["project", Q(project), ["path", Q("/" + root_uuid),
                                                        ["reference", Q(p["ref"])], ["unit", unit]]]])
     return sym
@@ -149,7 +153,7 @@ def extent(pins, rot, nets):
 
 
 def generate(title, blocks, parts, pwr_flags, project="FluxDrive"):
-    root_uuid = str(uuid.uuid4())
+    root_uuid = str(uid(f"root:{project}"))
     lib_syms, items = {}, []
     parts = copy.deepcopy(parts)
     for i, net in enumerate(pwr_flags, 1):
@@ -166,7 +170,7 @@ def generate(title, blocks, parts, pwr_flags, project="FluxDrive"):
     y = MARGIN
     for block in blocks:
         items.append(["text", Q(block), ["exclude_from_sim", "no"], ["at", MARGIN, snap(y), 0],
-                      ["effects", ["font", ["size", 2.54, 2.54]], ["justify", "left", "bottom"]], ["uuid", uid()]])
+                      ["effects", ["font", ["size", 2.54, 2.54]], ["justify", "left", "bottom"]], ["uuid", uid(f"text:{block}")]])
         y += 7.62
         x, row_h = MARGIN, 0.0
         for p in (q for q in parts if q["block"] == block):
@@ -181,9 +185,9 @@ def generate(title, blocks, parts, pwr_flags, project="FluxDrive"):
                     px_, py_ = snap(ox + dx), snap(oy + dy)
                     net = p["_nets"][n]
                     if net is None:
-                        items.append(["no_connect", ["at", px_, py_], ["uuid", uid()]])
+                        items.append(["no_connect", ["at", px_, py_], ["uuid", uid(f"nc:{p['ref']}:{n}")]])
                     else:
-                        items.append(label(net, px_, py_, (a + p.get("rot", 0)) % 360))
+                        items.append(label(net, px_, py_, (a + p.get("rot", 0)) % 360, f"label:{p['ref']}:{n}"))
                 x += (x1 - x0) + 5.08
                 row_h = max(row_h, y1 - y0)
         y += row_h + 2 * ROW_GAP

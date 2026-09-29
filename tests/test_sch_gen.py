@@ -29,3 +29,17 @@ def test_missing_pin_is_an_error():
     del parts[1]["pins"]["12"]
     with pytest.raises(ValueError, match="U1.*12"):
         sch_gen.generate("t", ["A. test"], parts, [])
+def test_project_symbols_load():
+    for name in ("TPS259531", "TYPE-C16PIN", "171826-4"):
+        sym = sch_gen.lib_symbol(f"FluxDrive:{name}")
+        pins = [p for u in sch_gen.pins_of(sym).values() for p in u]
+        assert pins, name
+    pins = {n: name for n, name, *_ in sch_gen.pins_of(sch_gen.lib_symbol("FluxDrive:TPS259531"))[1]}
+    assert pins["3"] == pins["4"] == "IN" and pins["5"] == "OUT" and pins["7"] == "ILM"
+
+
+def test_generation_is_deterministic():
+    import tests.fixtures.tiny_design as d
+    a = sch_gen.generate(d.TITLE, d.BLOCKS, d.PARTS, d.PWR_FLAGS)
+    b = sch_gen.generate(d.TITLE, d.BLOCKS, d.PARTS, d.PWR_FLAGS)
+    assert a == b
