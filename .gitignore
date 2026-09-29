@@ -14,3 +14,7 @@ __pycache__/
 # PlatformIO / Arduino
 .pio/
 *.bak
+
+# Freerouting writes its log here when it runs from the repo root
+logs/
+freerouting.json

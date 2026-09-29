@@ -22,9 +22,11 @@ import pcbnew
 
 X0, Y0, X1, Y1 = 100.0, 100.0, 160.0, 148.0
 PLANE_MARGIN = 0.5
-J1_PIN1 = (113.68, 142.0)
-ROW_A, ROW_B, ROW_B_0603 = 134.3, 131.3, 131.7
-CONNECTOR_ZONE = (107.0, 135.73, 161.0, 145.73)     # the test's band: centre of the pin field +-27 x +-5 mm
+J1_PIN1 = (113.68, 141.55)           # 2.4 mm strip south of its body for test pads and a fiducial
+ROW_A, ROW_B, ROW_B_0603 = 134.3, 130.2, 130.6
+SOUTH_STRIP = 146.6                  # y of the test pads and FID3 between J1's body and the south edge
+BUF_Y = 125.2                        # the three buffers; row B is 5 mm below, row A 4.1 mm below that
+CONNECTOR_ZONE = (107.0, J1_PIN1[1] - 6.27, 161.0, J1_PIN1[1] + 3.73)   # the test's band: pin field centre +-27 x +-5 mm
 MODULE_BOX = (-9.75, -13.5, 9.75, 13.47)            # U1 body courtyard (its antenna keep-out lies off the board)
 OVERHANG = {"U1", "J3"}                             # may reach past the outline: antenna, USB-C shell
 
@@ -39,9 +41,9 @@ FIXED = {
     "U1": (130.0, 106.75, 0),
     "J2": (104.0, 136.5, 270),        # pin 1 (+5 V) north, pin 4 (+12 V, unused) south
     "J3": (104.945, 112.5, 270),      # USB-C, opening to the west edge
-    "U3": (125.0, 126.4, 90),         # 74LVC14A: MTR0_P4, PIN6, PIN14, DKWD, DKWE
-    "U2": (136.5, 126.4, 90),         # 74LVC14A: STEP, DIR, SIDE, SEL0, SEL1, MTR0
-    "U4": (150.0, 126.4, 90),         # 74LVC07A
+    "U3": (125.0, BUF_Y, 90),         # 74LVC14A: MTR0_P4, PIN6, PIN14, DKWD, DKWE
+    "U2": (136.5, BUF_Y, 90),         # 74LVC14A: STEP, DIR, SIDE, SEL0, SEL1, MTR0
+    "U4": (150.0, BUF_Y, 90),         # 74LVC07A
     "H1": (103.5, 103.5, 0),
     "H2": (156.5, 103.5, 0),
 }
@@ -70,33 +72,38 @@ SOFT = [
     ("C17", 117.6, 125.3, 0), ("R50", 111.4, 124.9, 0), ("R51", 111.4, 126.2, 0), ("C16", 114.2, 125.3, 90),
     ("R49", 113.5, 128.4, 0), ("C15", 116.6, 128.4, 0),
     # USB
-    ("U7", 110.3, 112.5, 0), ("R56", 110.0, 109.2, 0), ("R57", 110.0, 115.8, 0), ("R58", 109.2, 117.6, 0),
+    ("U7", 111.3, 112.5, 0), ("R56", 110.0, 109.2, 0), ("R57", 110.0, 115.8, 0), ("R58", 109.2, 117.6, 0),
     ("R60", 118.9, 116.7, 0), ("R59", 118.9, 118.0, 0), ("C22", 115.9, 116.6, 0), ("C21", 115.9, 118.3, 0),
     # module support, west of its top-left pins
     ("C18", 116.9, 101.5, 0), ("C19", 118.9, 103.2, 0), ("R54", 116.4, 104.6, 0), ("C20", 116.4, 105.9, 0),
     # east
-    ("J4", 146.5, 102.2, 0), ("J5", 158.2, 109.0, 0), ("SW1", 152.5, 111.2, 0), ("SW2", 152.5, 117.3, 0),
+    ("J4", 146.5, 102.2, 0), ("SW1", 155.9, 110.3, 0), ("SW2", 155.9, 116.0, 0),
+    ("J5", 157.4, 121.0, 0),              # spare GPIO east of U4: its pins meet the channel above the buffers
     ("D3", 150.8, 102.0, 0), ("R62", 150.8, 104.2, 0), ("R52", 141.2, 102.4, 90), ("R53", 142.4, 102.4, 90),
     ("R61", 142.4, 106.2, 90), ("R55", 141.2, 117.4, 90),
-    # decoupling at pin 14 of each buffer
-    ("C6", 121.9, 121.6, 0), ("C5", 133.4, 121.6, 0), ("C7", 146.9, 121.6, 0),
+    # decoupling at pin 14 (top-left) of each buffer, in the gap at its west end
+    ("C6", 119.8, BUF_Y - 1.4, 90), ("C5", 131.3, BUF_Y - 1.4, 90), ("C7", 144.8, BUF_Y - 1.4, 90),
 ]
 # row B, at the buffers: 100 kOhm (pad 1 = the _B net, north), the unfitted 220 pF and /MTR0 pull-up pads
-# (0603, a little lower), the output pull-ups 10 kOhm at U4
-for _ref, _x in (("R27", 120.6), ("R30", 121.8), ("R33", 123.0), ("R21", 124.2), ("R24", 125.4),
-                 ("R12", 131.0), ("R15", 132.2), ("R18", 133.4), ("R6", 134.6), ("R3", 135.8), ("R9", 137.0),
-                 ("R42", 145.4), ("R36", 146.6), ("R38", 147.8), ("R40", 149.0), ("R34", 150.2), ("R44", 151.4)):
+# (0603, a little lower), the output pull-ups 10 kOhm at U4. A 1.3 mm pitch leaves one track between two.
+for _ref, _x in (("R27", 121.2), ("R30", 122.5), ("R33", 123.8), ("R21", 125.1), ("R24", 126.4),
+                 ("R12", 131.9), ("R15", 133.2), ("R18", 134.5), ("R6", 135.8), ("R3", 137.1), ("R9", 138.4),
+                 ("R42", 145.6), ("R36", 146.9), ("R38", 148.2), ("R40", 149.5), ("R34", 150.8), ("R44", 152.1)):
     SOFT.append((_ref, _x, ROW_B, 90))
-for _ref, _x in (("R25", 115.4), ("R16", 127.2), ("C1", 128.9), ("C2", 138.6), ("C3", 140.2), ("C4", 141.8)):
+for _ref, _x in (("R25", 119.4), ("R16", 128.0), ("C1", 129.7), ("C2", 140.0), ("C3", 141.7), ("C4", 143.4)):
     SOFT.append((_ref, _x, ROW_B_0603, 90))
 SOFT += [
     # test pads: bus pairs near their parts, power ones in the west
-    ("TP3", 118.0, ROW_B, 0), ("TP5", 143.7, ROW_B, 0), ("TP1", 153.4, ROW_B, 0), ("TP16", 156.0, ROW_B, 0),
-    ("TP6", 126.0, 121.3, 0), ("TP10", 130.0, 121.3, 0), ("TP8", 140.8, 121.3, 0), ("TP4", 143.0, 121.3, 0),
-    ("TP2", 143.0, 124.4, 0), ("TP7", 156.0, 128.0, 0), ("TP9", 158.6, 128.0, 0),
+    # (none in the strip between the module and the buffers: that is the routing channel to the module)
+    ("TP10", 130.75, 127.2, 0), ("TP6", 142.6, 127.8, 0), ("TP8", 142.4, 119.6, 0), ("TP4", 142.4, 121.9, 0),
+    ("TP2", 142.6, 125.3, 0),
+    # connector side: in the strip south of J1, each between two odd (GND) pins, below its own pin
+    ("TP3", pin_x(8) + 1.27, SOUTH_STRIP, 0), ("TP5", pin_x(10) + 1.27, SOUTH_STRIP, 0),
+    ("TP9", pin_x(16) + 1.27, SOUTH_STRIP, 0), ("TP7", pin_x(20) + 1.27, SOUTH_STRIP, 0),
+    ("TP1", pin_x(30) + 1.27, SOUTH_STRIP, 0), ("TP16", pin_x(34) + 1.27, SOUTH_STRIP, 0),
     ("TP11", 107.8, 124.0, 0), ("TP12", 109.2, 118.0, 0), ("TP13", 112.6, 117.4, 0), ("TP14", 113.9, 101.6, 0),
     ("TP15", 113.9, 105.3, 0),
-    ("FID1", 108.3, 102.0, 0), ("FID2", 158.2, 124.8, 0), ("FID3", 158.6, 131.4, 0),
+    ("FID1", 108.3, 102.0, 0), ("FID2", 150.9, 106.4, 0), ("FID3", 158.3, SOUTH_STRIP, 0),
 ]
 
 
@@ -210,6 +217,32 @@ def set_planes(board):
         board.Add(z)
 
 
+# B.Cu under the 34-way pin field, up to just past the odd (GND) row: no tracks, so the plane stays whole
+# between the rows and every GND pin reaches it from the north (spec 8: unbroken ground plane under the
+# bus). The strip along the south edge stays free for the long east-west runs. Vias and the pour are allowed.
+J1_KEEPOUT = (107.5, 137.4, X1 - 0.2, J1_PIN1[1] + 1.2)
+
+
+def set_keepouts(board):
+    if any(z.GetIsRuleArea() and z.GetZoneName() == "J1 plane" for z in board.Zones()):
+        return
+    z = pcbnew.ZONE(board)
+    z.SetIsRuleArea(True)
+    z.SetZoneName("J1 plane")
+    z.SetLayer(pcbnew.B_Cu)
+    z.SetDoNotAllowTracks(True)
+    z.SetDoNotAllowVias(False)
+    z.SetDoNotAllowPads(False)
+    z.SetDoNotAllowFootprints(False)
+    z.SetDoNotAllowZoneFills(False)
+    x0, y0, x1, y1 = J1_KEEPOUT
+    poly = z.Outline()
+    poly.NewOutline()
+    for x, y in ((x0, y0), (x1, y0), (x1, y1), (x0, y1)):
+        poly.Append(pcbnew.FromMM(x), pcbnew.FromMM(y))
+    board.Add(z)
+
+
 def place(board):
     fps = {fp.GetReference(): fp for fp in board.GetFootprints()}
     where, moved = plan(fps)
@@ -227,6 +260,7 @@ if __name__ == "__main__":
     set_outline(b)
     moved = place(b)
     set_planes(b)
+    set_keepouts(b)
     pcbnew.SaveBoard(sys.argv[1], b)            # zones are filled by: kicad-cli pcb drc --refill-zones --save-board
     print(f"placed {len(b.GetFootprints())} footprints; moved to make room: "
           + (", ".join(f"{r} {d} mm" + (f" rot {rot}" if rot is not None else "") for r, d, rot in moved) or "none"))
