@@ -11,7 +11,8 @@ RES_LCSC = {"22": "C25092", "33": "C25105", "100": "C25076", "470": "C25117", "1
 CAPS = {"100nF": ("Capacitor_SMD:C_0402_1005Metric", "C1525"), "1uF": ("Capacitor_SMD:C_0402_1005Metric", "C52923"),
         "22nF": ("Capacitor_SMD:C_0402_1005Metric", "C1532"), "10uF": ("Capacitor_SMD:C_0603_1608Metric", "C19702"),
         "22uF": ("Capacitor_SMD:C_0805_2012Metric", "C45783"), "100uF": ("Capacitor_SMD:C_1206_3216Metric", "C15008"),
-        "220pF": ("Capacitor_SMD:C_0402_1005Metric", ""), "10pF": ("Capacitor_SMD:C_0402_1005Metric", "")}
+        "220pF": ("Capacitor_SMD:C_0402_1005Metric", ""), "10pF": ("Capacitor_SMD:C_0402_1005Metric", ""),
+        "6.8pF": ("Capacitor_SMD:C_0402_1005Metric", "")}
 PARTS = []
 _n = {k: itertools.count(1) for k in ("R", "C", "D", "TP")}
 SOIC14 = "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
@@ -84,4 +85,30 @@ for sig, conn, gpio, pin_in, pin_out in OUTPUTS:
 part("U4", "74xx:74LS07", "74LVC07A", SOIC14, u4, B, lcsc="C6049")
 C("100nF", "+3V3", "GND", B)
 
-PWR_FLAGS = ["GND", "+3V3"]
+# --- C: power ------------------------------------------------------------------------------------------------
+part("J2", "FluxDrive:171826-4", "Floppy power", "FluxDrive:171826-4",
+     {"1": "+5V_IN", "2": "GND", "3": "GND", "4": None}, P, lcsc="C590635")
+part("U5", "FluxDrive:TPS259531", "TPS259531", "Package_SON:Texas_DSG0008A_WSON-8-1EP_2x2mm_P0.5mm_EP0.9x1.6mm",
+     {"1": "EFUSE_DVDT", "2": "EFUSE_EN", "3": "+5V_IN", "4": "+5V_IN", "5": "+5V_A", "6": None,
+      "7": "EFUSE_ILM", "8": "GND", "9": "GND"}, P, lcsc="C2155674")
+C("1uF", "+5V_IN", "GND", P)
+C("22nF", "EFUSE_DVDT", "GND", P)
+R("10K", "+5V_IN", "EFUSE_EN", P)           # UVLO 1.2 V x 14.7/4.7 = 3.75 V; EN 3.8 V with 12 V on IN
+R("4K7", "EFUSE_EN", "GND", P)
+R("2K2", "EFUSE_ILM", "GND", P)             # current limit about 0.95 A
+C("100uF", "+5V_A", "GND", P)
+C("100nF", "+5V_A", "GND", P)
+part("D1", "Diode:SS34", "SS34", "Diode_SMD:D_SMA", {"1": "V5SYS", "2": "+5V_A"}, P, lcsc="C8678")
+part("D2", "Diode:SS34", "SS34", "Diode_SMD:D_SMA", {"1": "V5SYS", "2": "VBUS"}, P, lcsc="C8678")
+C("10uF", "V5SYS", "GND", P)
+C("100nF", "V5SYS", "GND", P)
+part("U6", "Regulator_Switching:TLV62569DBV", "TLV62569DBVR", "Package_TO_SOT_SMD:SOT-23-5",
+     {"EN": "V5SYS", "GND": "GND", "SW": "BUCK_SW", "VIN": "V5SYS", "FB": "BUCK_FB"}, P, lcsc="C141836")
+part("L1", "Device:L", "2.2uH", "Inductor_SMD:L_Sunlord_SWPA4020S", {"1": "BUCK_SW", "2": "+3V3"}, P, lcsc="C83423")
+R("100K", "+3V3", "BUCK_FB", P)             # 0.6 V x (1 + 100/22) = 3.33 V
+R("22K", "BUCK_FB", "GND", P)
+C("6.8pF", "+3V3", "BUCK_FB", P, dnp=True)   # feed-forward, optional (TLV62569 datasheet SLVSDG1C 8.2.2.2)
+C("22uF", "+3V3", "GND", P)
+R("10K", "+5V_A", "AMIGA_PWR", P)           # 3.0 V at 5 V, 3.5 V at the 5.7 V clamp
+R("15K", "AMIGA_PWR", "GND", P)
+PWR_FLAGS = ["GND", "+3V3", "+5V_IN", "+5V_A", "V5SYS", "VBUS"]
