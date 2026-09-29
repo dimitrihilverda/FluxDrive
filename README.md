@@ -5,7 +5,8 @@ A500's internal floppy connector, holds a disk image in PSRAM and generates the 
 images come from the [GTi](https://github.com/mesarim/Gotek-Touchscreen-interface) touchscreen over ESP-NOW, or
 from a phone over WiFi.
 
-Status: hardware design under review. Nothing has been built yet.
+Status: hardware spec v0.2, reviewed by four specialist agents and updated; waiting for approval before the
+implementation plan. Nothing has been built yet.
 
 | Where | What |
 |---|---|
