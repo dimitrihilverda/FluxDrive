@@ -112,3 +112,56 @@ C("22uF", "+3V3", "GND", P)
 R("10K", "+5V_A", "AMIGA_PWR", P)           # 3.0 V at 5 V, 3.5 V at the 5.7 V clamp
 R("15K", "AMIGA_PWR", "GND", P)
 PWR_FLAGS = ["GND", "+3V3", "+5V_IN", "+5V_A", "V5SYS", "VBUS"]
+
+# --- D: ESP32-S3 module --------------------------------------------------------------------------------------
+esp = {"1": "GND", "40": "GND", "41": "GND", "3V3": "+3V3", "EN": "ESP_EN", "IO0": "BOOT", "IO1": "AMIGA_PWR",
+       "IO2": "LED", "USB_D-": "USB_DN", "USB_D+": "USB_DP", "TXD0": "ESP_TXD0", "RXD0": "ESP_RXD0",
+       "IO13": "GPIO13", "IO14": "GPIO14", "IO47": "GPIO47", "IO48": "GPIO48"}
+for g in (3, 12, 18, 35, 36, 37, 45, 46):
+    esp[f"IO{g}"] = None
+for sig, _, _, gpio, *_ in INPUTS:
+    esp[f"IO{gpio}"] = sig
+for sig, _, gpio, *_ in OUTPUTS:
+    esp[f"IO{gpio}"] = f"{sig}_N"
+part("U1", "RF_Module:ESP32-S3-WROOM-1", "ESP32-S3-WROOM-1-N16R8", "RF_Module:ESP32-S3-WROOM-1", esp, E,
+     lcsc="C2913202")
+C("22uF", "+3V3", "GND", E)
+C("100nF", "+3V3", "GND", E)
+R("10K", "+3V3", "ESP_EN", E)
+C("1uF", "ESP_EN", "GND", E)
+R("10K", "+3V3", "BOOT", E)
+BTN = "Button_Switch_SMD:SW_Push_1P1T_XKB_TS-1187A"
+part("SW1", "Switch:SW_Push", "BOOT", BTN, {"1": "BOOT", "2": "GND"}, E, lcsc="C318884")
+part("SW2", "Switch:SW_Push", "RESET", BTN, {"1": "ESP_EN", "2": "GND"}, E, lcsc="C318884")
+
+# --- E: USB-C ------------------------------------------------------------------------------------------------
+part("J3", "FluxDrive:TYPE-C16PIN", "USB-C", "FluxDrive:USB-C-SMD_TYPE-C16PIN",
+     {"A1B12": "GND", "B1A12": "GND", "A4B9": "VBUS", "B4A9": "VBUS", "A5": "USB_CC1", "B5": "USB_CC2",
+      "A6": "USB_DP_C", "B6": "USB_DP_C", "A7": "USB_DN_C", "B7": "USB_DN_C", "A8": None, "B8": None,
+      "1": "GND", "2": "GND", "3": "GND", "4": "GND"}, U, lcsc="C393939")
+R("5K1", "USB_CC1", "GND", U)
+R("5K1", "USB_CC2", "GND", U)
+part("U7", "Power_Protection:USBLC6-2SC6", "USBLC6-2SC6", "Package_TO_SOT_SMD:SOT-23-6",
+     {"1": "USB_DN_C", "6": "USB_DN_C", "3": "USB_DP_C", "4": "USB_DP_C", "5": "VBUS", "2": "GND"}, U, lcsc="C2687116")
+R("22", "USB_DP_C", "USB_DP", U)
+R("22", "USB_DN_C", "USB_DN", U)
+C("10pF", "USB_DP", "GND", U, dnp=True)
+C("10pF", "USB_DN", "GND", U, dnp=True)
+
+# --- F: headers, LED, test pads, mechanics -------------------------------------------------------------------
+HDR6 = "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical"
+R("470", "ESP_TXD0", "UART_TX", F)
+part("J4", "Connector_Generic:Conn_01x06", "UART / recovery", HDR6,
+     {"1": "UART_TX", "2": "ESP_RXD0", "3": "ESP_EN", "4": "BOOT", "5": "+3V3", "6": "GND"}, F, in_bom=False)
+part("J5", "Connector_Generic:Conn_01x06", "Spare GPIO", HDR6,
+     {"1": "GPIO13", "2": "GPIO14", "3": "GPIO47", "4": "GPIO48", "5": "+3V3", "6": "GND"}, F, in_bom=False)
+R("1K", "LED", "LED_A", F)
+part("D3", "Device:LED", "LED red", "LED_SMD:LED_0603_1608Metric", {"1": "GND", "2": "LED_A"}, F, lcsc="C2286")
+for net in ("_DKRD", "DKRD_N", "_INDEX", "INDEX_N", "_SEL0", "SEL0", "_STEP", "STEP", "_MTR0", "MTR0",
+            "+5V_A", "V5SYS", "VBUS", "+3V3", "ESP_EN", "GND"):
+    part(f"TP{next(_n['TP'])}", "Connector:TestPoint", net, "TestPoint:TestPoint_Pad_D1.0mm", {"1": net}, F,
+         in_bom=False)
+for i in (1, 2):
+    part(f"H{i}", "Mechanical:MountingHole", "3.2mm", "MountingHole:MountingHole_3.2mm_M3", {}, F, in_bom=False)
+for i in (1, 2, 3):
+    part(f"FID{i}", "Mechanical:Fiducial", "Fiducial", "Fiducial:Fiducial_1mm_Mask2mm", {}, F, in_bom=False)
