@@ -128,7 +128,7 @@ for sig, _, _, gpio, *_ in INPUTS:
     esp[f"IO{gpio}"] = sig
 for sig, _, gpio, *_ in OUTPUTS:
     esp[f"IO{gpio}"] = f"{sig}_N"
-part("U1", "RF_Module:ESP32-S3-WROOM-1", "ESP32-S3-WROOM-1-N16R8", "RF_Module:ESP32-S3-WROOM-1", esp, E,
+part("U1", "RF_Module:ESP32-S3-WROOM-1", "ESP32-S3-WROOM-1-N16R8", "FluxDrive:ESP32-S3-WROOM-1", esp, E,
      lcsc="C2913202")
 C("22uF", "+3V3", "GND", E)
 C("100nF", "+3V3", "GND", E)

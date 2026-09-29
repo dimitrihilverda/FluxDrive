@@ -15822,7 +15822,7 @@
 				)
 			)
 		)
-		(property "Footprint" "RF_Module:ESP32-S3-WROOM-1"
+		(property "Footprint" "FluxDrive:ESP32-S3-WROOM-1"
 			(at 48.26 367.03 0)
 			(hide yes)
 			(effects
