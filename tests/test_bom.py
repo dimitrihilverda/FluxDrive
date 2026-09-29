@@ -20,3 +20,11 @@ def test_test_pads(nl):
             "+5V_A", "V5SYS", "VBUS", "+3V3", "GND"}
     en = nl.net_of_function("U1", "EN")
     assert need | {en} <= nets
+
+
+def test_unfitted_pads_are_hand_solderable(nl):
+    """SPCB-3: the parts JLC does not fit are 0603, not 0402."""
+    unfitted = [r for r in nl.components if r.startswith(("R", "C")) and not nl.fitted(r)]
+    assert unfitted
+    for ref in unfitted:
+        assert "_0603_" in nl.components[ref]["footprint"], ref

@@ -65,3 +65,28 @@ def test_no_5v_on_the_esp(nl):
     for net, nodes in nl.nets.items():
         if any(r == "U1" for r, _, _ in nodes):
             assert net not in ("+5V_IN", "+5V_A", "V5SYS", "VBUS"), net
+
+
+GATE = {1: 2, 3: 4, 5: 6, 9: 8, 11: 10, 13: 12}           # input pin -> output pin, 74LVC14A and 74LVC07A
+
+
+def test_gate_pairs(nl):
+    """SBUS-2: each signal goes in and out of the same gate, the right way round."""
+    for sig, *_ in INPUTS:
+        pins = [(r, int(p)) for r, p, _ in nl.nets[f"{sig}_B"] if r in ("U2", "U3")]
+        assert len(pins) == 1, sig
+        u, pin_in = pins[0]
+        assert pin_in in GATE and nl.net_of(u, GATE[pin_in]) == sig, sig
+    for sig, _, _ in OUTPUTS:
+        pins = [int(p) for r, p, _ in nl.nets[f"{sig}_N"] if r == "U4"]
+        assert len(pins) == 1 and pins[0] in GATE and nl.net_of("U4", GATE[pins[0]]) == f"{sig}_D", sig
+    assert nl.net_of("U3", 13) == "GND"                     # the spare inverter's input
+
+
+def test_unfitted_pads_exist(nl):
+    """SCODE-5, spec 4.2: the optional parts exist, between the right nets, unfitted."""
+    from tests.fd import dnp_between
+    for conn in ("_MTR0", "_MTR0_P4"):
+        assert len(dnp_between(nl, conn, "+5V_A", "R")) == 1, conn
+    for sig in ("STEP", "SEL0", "SEL1", "MTR0"):
+        assert len(dnp_between(nl, f"{sig}_B", "GND", "C")) == 1, sig

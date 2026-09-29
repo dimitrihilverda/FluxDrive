@@ -6,13 +6,13 @@ TITLE = "FluxDrive v1 rev A"
 BLOCKS = ["A. Floppy connector and bus inputs", "B. Bus outputs", "C. Power", "D. ESP32-S3 module",
           "E. USB-C", "F. Headers, buttons, LED, test pads, mechanics"]
 R0402 = "Resistor_SMD:R_0402_1005Metric"
-RES_LCSC = {"22": "C25092", "33": "C25105", "100": "C25076", "470": "C25117", "1K": "C11702", "2K2": "C25879",
+R0603, C0603 = "Resistor_SMD:R_0603_1608Metric", "Capacitor_SMD:C_0603_1608Metric"   # unfitted: hand-solderable
+RES_LCSC = {"22": "C25092", "33": "C25105", "100": "C25076", "470": "C25117", "1K": "C11702", "1K5": "C25867",
+            "2K2": "C25879",
             "4K7": "C25900", "5K1": "C25905", "10K": "C25744", "15K": "C25756", "22K": "C25768", "100K": "C25741"}
 CAPS = {"100nF": ("Capacitor_SMD:C_0402_1005Metric", "C1525"), "1uF": ("Capacitor_SMD:C_0402_1005Metric", "C52923"),
         "22nF": ("Capacitor_SMD:C_0402_1005Metric", "C1532"), "10uF": ("Capacitor_SMD:C_0603_1608Metric", "C19702"),
-        "22uF": ("Capacitor_SMD:C_0805_2012Metric", "C45783"), "100uF": ("Capacitor_SMD:C_1206_3216Metric", "C15008"),
-        "220pF": ("Capacitor_SMD:C_0402_1005Metric", ""), "10pF": ("Capacitor_SMD:C_0402_1005Metric", ""),
-        "6.8pF": ("Capacitor_SMD:C_0402_1005Metric", "")}
+        "22uF": ("Capacitor_SMD:C_0805_2012Metric", "C45783"), "47uF": ("Capacitor_SMD:C_1206_3216Metric", "C96123")}
 PARTS = []
 _n = {k: itertools.count(1) for k in ("R", "C", "D", "TP")}
 SOIC14 = "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
@@ -24,12 +24,12 @@ def part(ref, lib, value, footprint, pins, block, lcsc="", dnp=False, rot=0, in_
 
 
 def R(value, a, b, block, dnp=False):
-    part(f"R{next(_n['R'])}", "Device:R", value, R0402, {"1": a, "2": b}, block,
+    part(f"R{next(_n['R'])}", "Device:R", value, R0603 if dnp else R0402, {"1": a, "2": b}, block,
          "" if dnp else RES_LCSC[value], dnp, rot=90, in_bom=not dnp)
 
 
 def C(value, a, b, block, dnp=False):
-    fp, lcsc = CAPS[value]
+    fp, lcsc = (C0603, "") if dnp else CAPS[value]
     part(f"C{next(_n['C'])}", "Device:C", value, fp, {"1": a, "2": b}, block, "" if dnp else lcsc, dnp,
          rot=90, in_bom=not dnp)
 
@@ -86,8 +86,10 @@ part("U4", "74xx:74LCX07", "74LVC07A", SOIC14, u4, B, lcsc="C6049")     # same p
 C("100nF", "+3V3", "GND", B)
 
 # --- C: power ------------------------------------------------------------------------------------------------
-part("J2", "FluxDrive:171826-4", "Floppy power", "FluxDrive:171826-4",
-     {"1": "+5V_IN", "2": "GND", "3": "GND", "4": None}, P, lcsc="C590635")
+part("J2", "FluxDrive:171825-4", "Floppy power", "FluxDrive:171825-4",          # vertical (spec 8)
+     {"1": "+5V_IN", "2": "GND", "3": "GND", "4": None}, P, lcsc="C210162")
+part("D4", "Diode:SMAJ13A", "SMAJ13A", "Diode_SMD:D_SMA", {"1": "+5V_IN", "2": "GND"}, P, dnp=True,
+     in_bom=False)                          # unfitted: 13 V standoff, for hot-plug ringing (review SPWR-3)
 part("U5", "FluxDrive:TPS259531", "TPS259531", "Package_SON:Texas_DSG0008A_WSON-8-1EP_2x2mm_P0.5mm_EP0.9x1.6mm",
      {"1": "EFUSE_DVDT", "2": "EFUSE_EN", "3": "+5V_IN", "4": "+5V_IN", "5": "+5V_A", "6": None,
       "7": "EFUSE_ILM", "8": "GND", "9": "GND"}, P, lcsc="C2155674")
@@ -96,21 +98,24 @@ C("22nF", "EFUSE_DVDT", "GND", P)
 R("10K", "+5V_IN", "EFUSE_EN", P)           # UVLO 1.2 V x 14.7/4.7 = 3.75 V; EN 3.8 V with 12 V on IN
 R("4K7", "EFUSE_EN", "GND", P)
 R("2K2", "EFUSE_ILM", "GND", P)             # current limit about 0.95 A
-C("100uF", "+5V_A", "GND", P)
+C("47uF", "+5V_A", "GND", P)               # 10 V parts: the clamp is 5.7 V (review SPCB-2)
+C("47uF", "+5V_A", "GND", P)
 C("100nF", "+5V_A", "GND", P)
 part("D1", "Diode:SS34", "SS34", "Diode_SMD:D_SMA", {"1": "V5SYS", "2": "+5V_A"}, P, lcsc="C8678")
 part("D2", "Diode:SS34", "SS34", "Diode_SMD:D_SMA", {"1": "V5SYS", "2": "VBUS"}, P, lcsc="C8678")
-C("10uF", "V5SYS", "GND", P)
+C("10uF", "V5SYS", "GND", P)               # 4.7 uF if the damper below is fitted (USB limit 10 uF)
 C("100nF", "V5SYS", "GND", P)
+R("1R", "V5SYS", "V5SYS_DAMP", P, dnp=True)  # unfitted hot-plug damper (review SPWR-2)
+C("4.7uF", "V5SYS_DAMP", "GND", P, dnp=True)
 part("U6", "Regulator_Switching:TLV62569DBV", "TLV62569DBVR", "Package_TO_SOT_SMD:SOT-23-5",
      {"EN": "V5SYS", "GND": "GND", "SW": "BUCK_SW", "VIN": "V5SYS", "FB": "BUCK_FB"}, P, lcsc="C141836")
 part("L1", "Device:L", "2.2uH", "Inductor_SMD:L_Sunlord_SWPA4020S", {"1": "BUCK_SW", "2": "+3V3"}, P, lcsc="C83423")
 R("100K", "+3V3", "BUCK_FB", P)             # 0.6 V x (1 + 100/22) = 3.33 V
 R("22K", "BUCK_FB", "GND", P)
-C("6.8pF", "+3V3", "BUCK_FB", P, dnp=True)   # feed-forward, optional (TLV62569 datasheet SLVSDG1C 8.2.2.2)
+C("15pF", "+3V3", "BUCK_FB", P, dnp=True)    # feed-forward, optional; 15 pF suits the 100k top (review SPWR-5)
 C("22uF", "+3V3", "GND", P)
-R("10K", "+5V_A", "AMIGA_PWR", P)           # 3.0 V at 5 V, 3.5 V at the 5.7 V clamp
-R("15K", "AMIGA_PWR", "GND", P)
+R("1K", "+5V_A", "AMIGA_PWR", P)            # 3.0 V at 5 V, 3.5 V at the clamp; stiff enough that the bus
+R("1K5", "AMIGA_PWR", "GND", P)             # pull-ups cannot lift it on USB alone (review SESP-1)
 PWR_FLAGS = ["GND", "+3V3", "+5V_IN", "V5SYS", "VBUS"]          # +5V_A is driven by the eFuse OUT pin
 
 # --- D: ESP32-S3 module --------------------------------------------------------------------------------------
@@ -142,7 +147,9 @@ part("J3", "FluxDrive:TYPE-C16PIN", "USB-C", "FluxDrive:USB-C-SMD_TYPE-C16PIN",
 R("5K1", "USB_CC1", "GND", U)
 R("5K1", "USB_CC2", "GND", U)
 part("U7", "Power_Protection:USBLC6-2SC6", "USBLC6-2SC6", "Package_TO_SOT_SMD:SOT-23-6",
-     {"1": "USB_DN_C", "6": "USB_DN_C", "3": "USB_DP_C", "4": "USB_DP_C", "5": "VBUS", "2": "GND"}, U, lcsc="C2687116")
+     {"1": "USB_DN_C", "6": "USB_DN_C", "3": "USB_DP_C", "4": "USB_DP_C", "5": "+3V3", "2": "GND"}, U,
+     lcsc="C2687116")                       # pin 5 on 3V3: on VBUS, D+ would lift VBUS (review SPWR-1)
+R("10K", "VBUS", "GND", U)                  # bleeds D2's leakage, so VBUS reads 0 V without a cable
 R("22", "USB_DP_C", "USB_DP", U)
 R("22", "USB_DN_C", "USB_DN", U)
 C("10pF", "USB_DP", "GND", U, dnp=True)

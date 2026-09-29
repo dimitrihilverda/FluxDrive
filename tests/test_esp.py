@@ -35,7 +35,10 @@ def test_usb(nl):
         assert pulls(nl, net) == [("5K1", "GND")]
     assert nl.net_of("J3", "A5") != nl.net_of("J3", "B5")                  # two separate 5.1k
     assert {nl.net_of("U7", 1), nl.net_of("U7", 3)} == {"USB_DP_C", "USB_DN_C"}
-    assert nl.net_of("U7", 5) == "VBUS" and nl.net_of("U7", 2) == "GND"
+    assert nl.net_of("U7", 5) == "+3V3" and nl.net_of("U7", 2) == "GND"     # SPWR-1: D+ must not lift VBUS
+    assert pulls(nl, "VBUS") == [("10K", "GND")]                               # bleeds D2's leakage
+    from tests.fd import dnp_between
+    assert len(dnp_between(nl, "USB_DP", "GND", "C")) == len(dnp_between(nl, "USB_DN", "GND", "C")) == 1
 
 
 def test_led_uart_spare(nl):

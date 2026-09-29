@@ -12,13 +12,14 @@ def r(nl, a, b):
 
 
 def test_power_header_to_efuse(nl):
-    assert nl.components["J2"]["footprint"].endswith(":171826-4")
+    assert nl.components["J2"]["footprint"] == "FluxDrive:171825-4"          # SPCB-1: vertical, spec 8
+    assert nl.components["J2"]["fields"].get("LCSC") == "C210162"
     assert nl.net_of("J2", 1) == "+5V_IN" and nl.net_of("J2", 2) == nl.net_of("J2", 3) == "GND"
     assert (nl.net_of("J2", 4) or "").startswith("unconnected-")          # +12 V not used
     assert nl.net_of("U5", 3) == nl.net_of("U5", 4) == "+5V_IN"
     assert nl.net_of("U5", 5) == "+5V_A"
     assert nl.components["U5"]["value"] == "TPS259531"
-    assert {r_ for r_, _, _ in nl.nets["+5V_IN"]} <= {"J2", "U5", *parts_between(nl, "+5V_IN", "GND", "C"),
+    assert {r_ for r_, _, _ in nl.nets["+5V_IN"]} <= {"J2", "U5", "D4", *parts_between(nl, "+5V_IN", "GND", "C"),
                                                       *parts_between(nl, "+5V_IN", "EFUSE_EN")}
 
 
@@ -56,6 +57,8 @@ def test_buck(nl):
     fb = nl.net_of_function("U6", "FB")
     vout = 0.6 * (1 + r(nl, "+3V3", fb) / r(nl, fb, "GND"))
     assert abs(vout - 3.3) < 0.05, vout
+    from tests.fd import dnp_between
+    assert [nl.components[c]["value"] for c in dnp_between(nl, "+3V3", fb, "C")] == ["15pF"]   # SPWR-5
 
 
 def test_amiga_pwr_sense(nl):
@@ -81,3 +84,31 @@ def test_no_backfeed_paths(nl):
     feeders = {r_ for r_, _, _ in nl.nets["+5V_A"]} - {"U5", "D1"}
     for ref in feeders:
         assert ref.startswith(("R", "C", "TP", "#")), ref
+
+
+def test_usb_alone_leaves_everything_defined(nl):
+    """SESP-1/SPWR-4: USB power only, no Amiga, no ribbon. +3V3 leaks into +5V_A through the pull-ups; AMIGA_PWR
+    must still read low (ESP32-S3 VIL = 0.25 x 3.3 V) and every bus input must sit at a 74LVC14A level that is
+    defined: below VT- min 0.8 V or above VT+ max 2.0 V (Nexperia 74LVC14A, VCC = 3.0-3.6 V)."""
+    from tests.fd import solve
+    v = solve(nl, {"+3V3": 3.3, "GND": 0.0})
+    assert v["AMIGA_PWR"] < 0.8, v["AMIGA_PWR"]
+    for sig in ("STEP", "DIR", "SIDE", "SEL0", "SEL1", "MTR0", "DKWD", "DKWE", "MTR0_P4", "PIN6", "PIN14"):
+        x = v[f"{sig}_B"]
+        assert x < 0.8 or x > 2.0, (sig, x)
+
+
+def test_bulk_capacitors_rated_above_the_clamp(nl):
+    """SPCB-2: no 6.3 V part on +5V_A (the eFuse clamps at 5.7 V, up to 5.9 V); 2 x 47 uF 10 V instead."""
+    caps = [nl.components[c] for c in parts_between(nl, "+5V_A", "GND", "C")]
+    assert all(c["fields"].get("LCSC") != "C15008" for c in caps)
+    assert sum(1 for c in caps if c["fields"].get("LCSC") == "C96123") == 2
+
+
+def test_protection_pads(nl):
+    """SPWR-2/3: an unfitted V5SYS damper (1R + 4.7uF) and an unfitted 13 V TVS on +5V_IN."""
+    from tests.fd import dnp_between
+    assert [nl.components[r_]["value"] for r_ in dnp_between(nl, "V5SYS", "V5SYS_DAMP", "R")] == ["1R"]
+    assert [nl.components[c]["value"] for c in dnp_between(nl, "V5SYS_DAMP", "GND", "C")] == ["4.7uF"]
+    assert not nl.fitted("D4") and nl.components["D4"]["value"] == "SMAJ13A"
+    assert nl.net_of("D4", 1) == "+5V_IN" and nl.net_of("D4", 2) == "GND"      # cathode on +5V_IN

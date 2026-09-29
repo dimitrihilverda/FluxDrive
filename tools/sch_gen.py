@@ -96,11 +96,14 @@ def resolve(ref, pins, allpins):
     for key, net in pins.items():
         key = str(key)
         if key in numbers:
-            out[key] = net
+            num = key
         elif len(by_name.get(key, ())) == 1:
-            out[next(iter(by_name[key]))] = net
+            num = next(iter(by_name[key]))
         else:
             raise ValueError(f"{ref}: pin {key!r} is not a pin number or a unique pin name")
+        if num in out:
+            raise ValueError(f"{ref}: pin {num} assigned twice (as {key!r})")
+        out[num] = net
     missing = sorted(numbers - set(out), key=lambda s: (len(s), s))
     if missing:
         raise ValueError(f"{ref}: pins not in the design: {', '.join(missing)}")
@@ -126,7 +129,8 @@ def instance(p, unit, pins, at, root_uuid, project):
     x, y = at
     sym = ["symbol", ["lib_id", Q(p["lib"])], ["at", x, y, p.get("rot", 0)], ["unit", unit],
            ["body_style", 1], ["exclude_from_sim", "no"], ["in_bom", "yes" if p.get("in_bom", True) else "no"],
-           ["on_board", "yes" if p.get("on_board", True) else "no"], ["in_pos_files", "yes"],
+           ["on_board", "yes" if p.get("on_board", True) else "no"],
+           ["in_pos_files", "yes" if p.get("in_bom", True) and not p.get("dnp") else "no"],
            ["dnp", "yes" if p.get("dnp") else "no"], ["uuid", uid(f"sym:{p['ref']}:{unit}")],
            prop("Reference", p["ref"], x, y - 5.08, angle=p.get("rot", 0)),
            prop("Value", p["value"], x, y + 5.08, angle=p.get("rot", 0)),
@@ -135,7 +139,7 @@ def instance(p, unit, pins, at, root_uuid, project):
     if p.get("lcsc"):
         sym.append(prop("LCSC", p["lcsc"], x, y, hide=True))
     for n in sorted({pin[0] for pin in pins}, key=lambda s: (len(s), s)):     # this unit's pins only
-        sym.append(["pin", Q(n), ["uuid", uid(f"pin:{p['ref']}:{n}")]])
+        sym.append(["pin", Q(n), ["uuid", uid(f"pin:{p['ref']}:{unit}:{n}")]])
     sym.append(["instances", ["project", Q(project), ["path", Q("/" + root_uuid),
                                                        ["reference", Q(p["ref"])], ["unit", unit]]]])
     return sym
@@ -172,10 +176,11 @@ def layout(blocks, parts, page_w, root_uuid, project):
                     dx, dy = place(px, py, p.get("rot", 0))
                     px_, py_ = snap(ox + dx), snap(oy + dy)
                     net = p["_nets"][n]
+                    key = f"{p['ref']}:{unit}:{n}"     # common pins are drawn on every unit
                     if net is None:
-                        items.append(["no_connect", ["at", px_, py_], ["uuid", uid(f"nc:{p['ref']}:{n}")]])
+                        items.append(["no_connect", ["at", px_, py_], ["uuid", uid(f"nc:{key}")]])
                     else:
-                        items.append(label(net, px_, py_, (a + p.get("rot", 0)) % 360, f"label:{p['ref']}:{n}"))
+                        items.append(label(net, px_, py_, (a + p.get("rot", 0)) % 360, f"label:{key}"))
                 x += (x1 - x0) + 5.08
                 row_h = max(row_h, y1 - y0)
         y += row_h + 2 * ROW_GAP
@@ -197,6 +202,12 @@ def generate(title, blocks, parts, pwr_flags, project="FluxDrive"):
         p["_nets"] = resolve(p["ref"], p["pins"], allpins)
         p["_numbers"] = sorted({n for n, *_ in allpins}, key=lambda s: (len(s), s))
         p["_units"] = {u: units.get(u, []) + units.get(0, []) for u in sorted(units) if u != 0} or {1: units.get(0, [])}
+        for pins in p["_units"].values():
+            first = {}
+            for n, _, px, py, _ in pins:           # stacked pins share one label, so they must share one net
+                other = first.setdefault((px, py), n)
+                if p["_nets"][other] != p["_nets"][n]:
+                    raise ValueError(f"{p['ref']}: stacked pins {other} and {n} are on different nets")
     for paper, (page_w, page_h) in PAPERS.items():
         placed, y = layout(blocks, parts, page_w, root_uuid, project)
         if y < page_h - MARGIN:

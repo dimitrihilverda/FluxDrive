@@ -34,3 +34,43 @@ def esp_net(nl, gpio):
 
 def is_nc(net):
     return net is None or net.startswith("unconnected-")
+
+
+def dnp_between(nl, a, b, prefix):
+    """Unfitted two-pin parts whose pins are on nets a and b."""
+    return sorted(r for r in nl.components
+                  if r.startswith(prefix) and not nl.fitted(r) and between(nl, r) == {a, b})
+
+
+def solve(nl, fixed):
+    """DC node voltages of the fitted resistors, with `fixed` = {net: volts}. Everything else (diodes, the eFuse,
+    IC pins) is open, which is the state with those parts off or reverse-biased."""
+    edges = [(a, b, 1.0 / ohms) for _, a, b, ohms in nl.resistors() if ohms and a and b and a != b]
+    nets = sorted({n for a, b, _ in edges for n in (a, b) if n not in fixed})
+    idx = {n: i for i, n in enumerate(nets)}
+    size = len(nets)
+    g = [[0.0] * size for _ in range(size)]
+    rhs = [0.0] * size
+    for a, b, c in edges:
+        for x, y in ((a, b), (b, a)):
+            if x in idx:
+                g[idx[x]][idx[x]] += c
+                if y in idx:
+                    g[idx[x]][idx[y]] -= c
+                else:
+                    rhs[idx[x]] += c * fixed[y]
+    for i in range(size):
+        g[i][i] += 1e-12                                  # a floating island settles at 0 V instead of failing
+    for i in range(size):                                 # Gaussian elimination with partial pivoting
+        p = max(range(i, size), key=lambda k: abs(g[k][i]))
+        g[i], g[p], rhs[i], rhs[p] = g[p], g[i], rhs[p], rhs[i]
+        for k in range(i + 1, size):
+            f = g[k][i] / g[i][i]
+            if f:
+                for j in range(i, size):
+                    g[k][j] -= f * g[i][j]
+                rhs[k] -= f * rhs[i]
+    v = [0.0] * size
+    for i in reversed(range(size)):
+        v[i] = (rhs[i] - sum(g[i][j] * v[j] for j in range(i + 1, size))) / g[i][i]
+    return {**fixed, **dict(zip(nets, v))}
