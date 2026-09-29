@@ -368,7 +368,7 @@ Main parts (review suggestions, to be re-checked in JLC's BOM tool):
 | Buck | TLV62569DBVR | C141836 |
 | Schottky ×2 | SS34 | C8678 |
 | USB ESD | USBLC6-2SC6 | C7519 or C2687116 |
-| USB-C 16-pin | TYPE-C 16PIN 2MD(073) | C2765186 |
+| USB-C 16-pin | TYPE-C16PIN (the Nano-Tek part and footprint, placed by JLC before) | C393939 |
 | Tactile switch | TS-1187A-B-A-B | C318884 |
 | LED | KT-0603R | C2286 |
 
