@@ -43,3 +43,13 @@ def test_generation_is_deterministic():
     a = sch_gen.generate(d.TITLE, d.BLOCKS, d.PARTS, d.PWR_FLAGS)
     b = sch_gen.generate(d.TITLE, d.BLOCKS, d.PARTS, d.PWR_FLAGS)
     assert a == b
+
+
+def test_everything_fits_on_the_sheet():
+    import re
+    import hardware.design as d
+    text = sch_gen.generate(d.TITLE, d.BLOCKS, d.PARTS, d.PWR_FLAGS)
+    paper = re.search(r'\(paper "(A\d)"\)', text).group(1)
+    w, h = sch_gen.PAPERS[paper]
+    ats = [(float(x), float(y)) for x, y in re.findall(r"\(at ([\d.\-]+) ([\d.\-]+)", text)]
+    assert max(x for x, _ in ats) < w - 10 and max(y for _, y in ats) < h - 10, paper

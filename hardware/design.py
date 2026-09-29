@@ -82,7 +82,7 @@ for sig, conn, gpio, pin_in, pin_out in OUTPUTS:
     R("10K", f"{sig}_N", "+3V3", B)
     R("33", f"{sig}_D", conn, B)
     u4.update({str(pin_in): f"{sig}_N", str(pin_out): f"{sig}_D"})
-part("U4", "74xx:74LS07", "74LVC07A", SOIC14, u4, B, lcsc="C6049")
+part("U4", "74xx:74LCX07", "74LVC07A", SOIC14, u4, B, lcsc="C6049")     # same pinout and open-drain outputs
 C("100nF", "+3V3", "GND", B)
 
 # --- C: power ------------------------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ C("6.8pF", "+3V3", "BUCK_FB", P, dnp=True)   # feed-forward, optional (TLV62569 
 C("22uF", "+3V3", "GND", P)
 R("10K", "+5V_A", "AMIGA_PWR", P)           # 3.0 V at 5 V, 3.5 V at the 5.7 V clamp
 R("15K", "AMIGA_PWR", "GND", P)
-PWR_FLAGS = ["GND", "+3V3", "+5V_IN", "+5V_A", "V5SYS", "VBUS"]
+PWR_FLAGS = ["GND", "+3V3", "+5V_IN", "V5SYS", "VBUS"]          # +5V_A is driven by the eFuse OUT pin
 
 # --- D: ESP32-S3 module --------------------------------------------------------------------------------------
 esp = {"1": "GND", "40": "GND", "41": "GND", "3V3": "+3V3", "EN": "ESP_EN", "IO0": "BOOT", "IO1": "AMIGA_PWR",
