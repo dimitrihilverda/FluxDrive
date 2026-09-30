@@ -80,7 +80,23 @@ def test_gate_pairs(nl):
     for sig, _, _ in OUTPUTS:
         pins = [int(p) for r, p, _ in nl.nets[f"{sig}_N"] if r == "U4"]
         assert len(pins) == 1 and pins[0] in GATE and nl.net_of("U4", GATE[pins[0]]) == f"{sig}_D", sig
-    assert nl.net_of("U3", 13) == "GND"                     # the spare inverter's input
+    assert nl.net_of("U2", 9) == "GND"                      # the spare inverter's input
+    assert (nl.net_of("U2", 8) or "").startswith("unconnected-")
+
+
+def test_buffers_follow_the_connector(nl):
+    """LBUS-3: U3 (west) takes the inputs on J1 pins 4-16, U2 (east) the ones on pins 18-32, and each buffer's
+    gates are used in the connector's west-to-east order, so the lines between row A and the buffers do not cross.
+    With the SOIC turned 90 degrees, the input pins from west to east are 1, 13, 3, 11, 5, 9."""
+    pin_of = {net: pin for pin, net in EVEN.items()}
+    order = [1, 13, 3, 11, 5, 9]
+    used = {"U2": [], "U3": []}
+    for sig, conn, _, _ in INPUTS:
+        (u, pin_in), = [(r, int(p)) for r, p, _ in nl.nets[f"{sig}_B"] if r in ("U2", "U3")]
+        assert u == ("U3" if pin_of[conn] <= 16 else "U2"), sig
+        used[u].append((pin_of[conn], pin_in))
+    for u, pairs in used.items():
+        assert [p for _, p in sorted(pairs)] == order[:len(pairs)], u
 
 
 def test_unfitted_pads_exist(nl):

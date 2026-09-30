@@ -45,21 +45,24 @@ j1.update({str(p): n for p, n in EVEN.items()})
 part("J1", "Connector_Generic:Conn_02x17_Odd_Even", "Amiga floppy 34", "Connector_IDC:IDC-Header_2x17_P2.54mm_Vertical",
      j1, A, lcsc="C601943")
 
-# signal, connector net, pull-up (value, rail) or None, GPIO, buffer, input pin, output pin, optional C pad
+# signal, connector net, pull-up (value, rail) or None, GPIO, buffer, input pin, output pin, optional C pad.
+# U3 (west) takes the lines on J1 pins 4-16, U2 (east) the ones on pins 18-32, each in the connector's
+# west-to-east order over the gates (input pins 1, 13, 3, 11, 5, 9 with the SOIC turned 90 degrees on the
+# board), so the lines from the connector to the buffers do not cross (layout review LBUS-3).
 INPUTS = [
-    ("STEP", "_STEP", ("1K", "+5V_A"), 6, "U2", 1, 2, True),
-    ("DIR", "_DIR", ("1K", "+5V_A"), 7, "U2", 3, 4, False),
-    ("SIDE", "_SIDE", ("1K", "+5V_A"), 15, "U2", 5, 6, False),
-    ("SEL0", "_SEL0", ("1K", "+5V_A"), 17, "U2", 9, 8, True),
-    ("SEL1", "_SEL1", ("10K", "+5V_A"), 9, "U2", 11, 10, True),
-    ("MTR0", "_MTR0", None, 11, "U2", 13, 12, True),
-    ("DKWD", "_DKWD", ("4K7", "+5V_A"), 5, "U3", 1, 2, False),
-    ("DKWE", "_DKWE", ("4K7", "+5V_A"), 16, "U3", 3, 4, False),
-    ("MTR0_P4", "_MTR0_P4", None, 4, "U3", 5, 6, False),
-    ("PIN6", "FD_PIN6", ("10K", "+3V3"), 8, "U3", 9, 8, False),
-    ("PIN14", "FD_PIN14", ("10K", "+3V3"), 10, "U3", 11, 10, False),
+    ("STEP", "_STEP", ("1K", "+5V_A"), 6, "U2", 13, 12, True),        # J1 pin 20
+    ("DIR", "_DIR", ("1K", "+5V_A"), 7, "U2", 1, 2, False),           # 18
+    ("SIDE", "_SIDE", ("1K", "+5V_A"), 15, "U2", 5, 6, False),        # 32
+    ("SEL0", "_SEL0", ("1K", "+5V_A"), 17, "U3", 3, 4, True),         # 10
+    ("SEL1", "_SEL1", ("10K", "+5V_A"), 9, "U3", 11, 10, True),       # 12
+    ("MTR0", "_MTR0", None, 11, "U3", 9, 8, True),                    # 16
+    ("DKWD", "_DKWD", ("4K7", "+5V_A"), 5, "U2", 3, 4, False),        # 22
+    ("DKWE", "_DKWE", ("4K7", "+5V_A"), 16, "U2", 11, 10, False),     # 24
+    ("MTR0_P4", "_MTR0_P4", None, 4, "U3", 1, 2, False),              # 4
+    ("PIN6", "FD_PIN6", ("10K", "+3V3"), 8, "U3", 13, 12, False),     # 6
+    ("PIN14", "FD_PIN14", ("10K", "+3V3"), 10, "U3", 5, 6, False),    # 14
 ]
-buf = {"U2": {"14": "+3V3", "7": "GND"}, "U3": {"14": "+3V3", "7": "GND", "13": "GND", "12": None}}
+buf = {"U2": {"14": "+3V3", "7": "GND", "9": "GND", "8": None}, "U3": {"14": "+3V3", "7": "GND"}}
 for sig, conn, pull, gpio, u, pin_in, pin_out, cpad in INPUTS:
     if pull:
         R(pull[0], conn, pull[1], A)
@@ -75,8 +78,11 @@ for u in ("U2", "U3"):
     C("100nF", "+3V3", "GND", A)
 
 # --- B: outputs --------------------------------------------------------------------------------------------
-OUTPUTS = [("DKRD", "_DKRD", 38, 1, 2), ("INDEX", "_INDEX", 39, 3, 4), ("TRK0", "_TRK0", 40, 5, 6),
-           ("WPROT", "_WPROT", 41, 9, 8), ("CHNG", "_CHNG", 42, 11, 10), ("RDY", "_RDY", 21, 13, 12)]
+# signal, connector net, GPIO, U4 input pin, output pin. The gates whose output faces the connector (the
+# bottom row with the SOIC turned 90 degrees: 2, 4, 6) take /WPROT, /DKRD and /RDY in the connector's order,
+# so /DKRD runs straight down to its 33 ohm; /TRK0, /CHNG and /INDEX go the long way anyway (layout review LBUS-4).
+OUTPUTS = [("DKRD", "_DKRD", 38, 3, 4), ("INDEX", "_INDEX", 39, 9, 8), ("TRK0", "_TRK0", 40, 13, 12),
+           ("WPROT", "_WPROT", 41, 1, 2), ("CHNG", "_CHNG", 42, 11, 10), ("RDY", "_RDY", 21, 5, 6)]
 u4 = {"14": "+3V3", "7": "GND"}
 for sig, conn, gpio, pin_in, pin_out in OUTPUTS:
     R("10K", f"{sig}_N", "+3V3", B)

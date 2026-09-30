@@ -1,4 +1,4 @@
-"""Ground stitching: GND vias between the F.Cu fill and the B.Cu plane, after routing (spec 8).
+"""Ground stitching: GND vias joining the F.Cu and B.Cu ground pours to the In1 plane, after routing (spec 8).
 
     "/c/Program Files/KiCad/10.0/bin/python.exe" tools/pcb_stitch.py FluxDrive.kicad_pcb
 
@@ -6,6 +6,9 @@ Candidates lie on a 2.5 mm grid over the board. A via goes where it keeps the cl
 tools/pcb_fanout.py to every other net on both layers, the hole-to-hole rule and the edge, stays out of
 the module's footprint (only its own ground vias belong under it) and is at least SPACING from every GND
 via already there (the fan-out included). Along the edges the spacing is tighter. New vias are locked.
+No via touches a pad, not even one of its own net (LCODE-5: a via against a through-hole GND pin exposes
+copper and drains solder). A pad that asks for more clearance than the board's gets it (the fiducials keep
+0.6 mm; build 10 put a via 0.44 mm from FID1). The outline comes from Edge.Cuts.
 Only adds: a re-run finds the vias of the last run and places nothing new. A via that DRC then reports as
 unconnected (it joined two cut-off pieces of pour, not the plane) is taken out again, in a fresh process.
 """
@@ -18,7 +21,8 @@ import pcbnew
 
 from pcb_fanout import CLEARANCE, HOLE_GAP, VIA_D, VIA_DRILL, holes, mm
 
-X0, Y0, X1, Y1 = 100.0, 100.0, 160.0, 148.0
+X0 = Y0 = X1 = Y1 = 0.0     # the board outline, from Edge.Cuts (set in main)
+WEB = 0.15                 # via ring to a pad of its own net
 GRID = 2.5
 SPACING, EDGE_SPACING = 5.0, 4.0
 EDGE_BAND = 2.5            # mm: candidates this close to the outline count as edge stitching
@@ -28,22 +32,30 @@ KICAD_CLI = r"C:/Program Files/KiCad/10.0/bin/kicad-cli.exe"
 
 
 def main(path):
+    global X0, Y0, X1, Y1
     board = pcbnew.LoadBoard(path)
+    e = board.GetBoardEdgesBoundingBox()
+    X0, X1, Y0, Y1 = (pcbnew.ToMM(v) for v in (e.GetLeft(), e.GetRight(), e.GetTop(), e.GetBottom()))
     gnd = board.FindNet("/GND")
-    others = {layer: [] for layer in (pcbnew.F_Cu, pcbnew.B_Cu)}
+    own = []
+    others = {layer: [] for layer in (pcbnew.F_Cu, pcbnew.B_Cu)}     # (shape, clearance in mm)
     for t in board.GetTracks():
         for layer in others:
             if t.GetNetCode() != gnd.GetNetCode() and t.IsOnLayer(layer):
-                others[layer].append(t.GetEffectiveShape(layer))
+                others[layer].append((t.GetEffectiveShape(layer), CLEARANCE))
     for fp in board.GetFootprints():
         for p in fp.Pads():
             for layer in others:
-                if p.IsOnLayer(layer) and (p.GetNetCode() != gnd.GetNetCode() or not p.HasHole()):
-                    others[layer].append(p.GetEffectiveShape(layer))   # SMD GND pads too: no via in a pad
+                if p.IsOnLayer(layer):
+                    if p.GetNetCode() == gnd.GetNetCode():
+                        own.append(p.GetEffectiveShape(layer))
+                    else:
+                        c = max(CLEARANCE, pcbnew.ToMM(p.GetOwnClearance(layer)))
+                        others[layer].append((p.GetEffectiveShape(layer), c))
     for z in list(board.Zones()) + [z for fp in board.GetFootprints() for z in fp.Zones()]:
         if z.GetIsRuleArea() and z.GetDoNotAllowVias():
             for layer in others:
-                others[layer].append(z.Outline())
+                others[layer].append((z.Outline(), CLEARANCE))
     no_go = []
     fps = {fp.GetReference(): fp for fp in board.GetFootprints()}
     for ref, hw, hh in NO_GO:
@@ -70,7 +82,9 @@ def main(path):
         if any((pos - hp).EuclideanNorm() < mm(VIA_DRILL / 2 + pcbnew.ToMM(hd) / 2 + HOLE_GAP) for hp, hd in hole_list):
             continue
         circle = pcbnew.SHAPE_CIRCLE(pos, mm(VIA_D / 2))
-        if any(s.Collide(circle, mm(CLEARANCE)) for layer in others for s in others[layer]):
+        if any(s.Collide(circle, mm(c)) for layer in others for s, c in others[layer]):
+            continue
+        if any(s.Collide(circle, mm(WEB)) for s in own):
             continue
         via = pcbnew.PCB_VIA(board)
         via.SetPosition(pos)

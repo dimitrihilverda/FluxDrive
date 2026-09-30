@@ -3,8 +3,11 @@
 Run with KiCad 10's own Python (it has the pcbnew module):
     "/c/Program Files/KiCad/10.0/bin/python.exe" tools/pcb_sync.py build/FluxDrive.net FluxDrive.kicad_pcb
 
-- starts a new 2-layer board if the file does not exist yet (it takes the rules and netclasses of the
-  .kicad_pro with the same name);
+- starts a new 4-layer board if the file does not exist yet (In1 and In2 are plane layers; the rules and
+  netclasses come from the .kicad_pro with the same name);
+- gives every footprint a fixed ID (uuid5 of its reference): KiCad saves footprints sorted by ID, and the
+  tools after this one work through them in file order, so random IDs gave a different fan-out per build;
+- takes the solder paste off the pads of unfitted parts (JLC would print paste on them);
 - adds footprints that are in the netlist but not on the board (parked below the board), with the
   schematic path and library name, so KiCad's own F8 later recognises them;
 - updates value and fields (LCSC, Datasheet, Description), DNP and BOM flags of existing ones;
@@ -13,6 +16,7 @@ Adapted from the Nano-Tek tool (2623d2f), without its Rev 1.2 migration.
 """
 import pathlib
 import sys
+import uuid
 
 import pcbnew
 
@@ -22,7 +26,8 @@ from tools.netlist import _child, _children, _parse_sexpr, _value  # noqa: E402
 
 KICAD_FP = pathlib.Path(r"C:/Program Files/KiCad/10.0/share/kicad/footprints")
 FIELDS = ("LCSC", "Datasheet", "Description")
-PARK_Y = 160.0                  # mm, below the board (the outline is y 100..145)
+PARK_Y = 160.0                  # mm, below the board
+_NS = uuid.UUID("0b6e2f7c-41d9-4f3a-9a52-7d1c3e8b5f24")
 
 
 def read_netlist(path):
@@ -79,8 +84,20 @@ def open_board(pcb_path):
     if pathlib.Path(pcb_path).exists():
         return pcbnew.LoadBoard(pcb_path)
     board = pcbnew.NewBoard(pcb_path)
-    board.SetCopperLayerCount(2)
+    board.SetCopperLayerCount(4)
+    for layer in (pcbnew.In1_Cu, pcbnew.In2_Cu):
+        board.SetLayerType(layer, pcbnew.LT_POWER)
     return board
+
+
+def drop_paste(fp):
+    """No paste on an unfitted part's pads (only removes: some pads have no paste on purpose, e.g. the module's
+    windowpane ground pad, and a fitted part keeps its library pads)."""
+    for pad in fp.Pads():
+        ls = pad.GetLayerSet()
+        if ls.Contains(pcbnew.F_Paste):
+            ls.RemoveLayer(pcbnew.F_Paste)
+            pad.SetLayerSet(ls)
 
 
 def main(net_path, pcb_path):
@@ -101,6 +118,7 @@ def main(net_path, pcb_path):
         lib, name = c["fp"].split(":", 1)
         if fp is None:
             fp = load_fp(lib, name)
+            fp.SetUuidDirect(pcbnew.KIID(str(uuid.uuid5(_NS, "fp:" + ref))))
             fp.SetReference(ref)
             fp.SetPosition(pcbnew.VECTOR2I_MM(park_x, PARK_Y))
             park_x += 4
@@ -119,6 +137,8 @@ def main(net_path, pcb_path):
             if c["fields"].get(k) or fp.HasField(k):
                 set_field(fp, k, c["fields"].get(k, ""))
         fp.SetDNP(c["dnp"])
+        if c["dnp"]:
+            drop_paste(fp)
         fp.SetExcludedFromBOM(c["no_bom"])
         fp.SetExcludedFromPosFiles(c["no_bom"] or c["dnp"])
         for pad in fp.Pads():

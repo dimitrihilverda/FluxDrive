@@ -1,12 +1,13 @@
 # FluxDrive v1 — hardware design
 
-**Status:** v0.3, 2026-09-29. Dimitri approved v0.2; v0.3 takes in the schematic review and nothing else.
+**Status:** v0.4, 2026-09-29. Dimitri approved v0.2; v0.3 took in the schematic review, v0.4 the layout review and Dimitri's two decisions on it (4 layers; the antenna on the board).
 **Authors:** Dimitri Hilverda (GTi co-author), with Claude
 **Based on:** `docs/input/OMEGAWARE_FluxDrive_HW_Design_v0.1.md` (MES), `docs/input/FluxDrive_v0.1_review_notes.md`
 (breadboard measurements), and the A500 bus research done for the Nano-Tek Rev 2.0 GTi.
 **Review:** `docs/reviews/2026-09-29-spec-review.md` lists every finding (BUS-, PWR-, SI-, ESP-, PCB-numbers below)
 and what was done with it; `docs/reviews/2026-09-29-schematic-review.md` does the same for the schematic (SBUS-,
-SPWR-, SESP-, SPCB-, SCODE-numbers).
+SPWR-, SESP-, SPCB-, SCODE-numbers), `docs/reviews/2026-09-29-layout-review.md` for the layout (LBUS-, LPWR-,
+LESP-, LPCB-, LCODE-numbers).
 
 FluxDrive is an Amiga floppy drive emulator built around one ESP32-S3 and nothing else: no Gotek, no second
 microcontroller. It plugs into the A500's internal floppy connector, holds a disk image in PSRAM and generates the
@@ -241,7 +242,10 @@ review (PCB-2).
   and 11-2). It is the fallback if the PCB antenna does not reach the GTi from inside the A500's shielded case (O5).
   It only helps if the antenna cable can leave the shield.
 - **Antenna** (Espressif hardware design guidelines, PCB layout):
-  - the antenna end of the module overhangs the board edge, with its feed point near the edge;
+  - the antenna end of the module lies at the north board edge (0.5 mm inside it, so JLC can assemble the
+    board: O10), over board material that is free of copper on all four layers, with its feed point near the
+    edge. An overhanging antenna would reach a little further, but JLC's economic assembly wants every part inside
+    the outline (Dimitri's decision after the layout review, LPCB-1);
   - no copper on any layer, no components and no ground pour under or beside it; dense ground vias along the
     keep-out border;
   - at least 15 mm clearance from metal in the housing, in all directions. In the plug-on variant the motherboard is
@@ -285,17 +289,19 @@ review (PCB-2).
 
 ## 8. PCB
 
-- 2 layers, 1.6 mm, JLC standard process. All SMD on the top side, assembled by JLC. **Hand-soldered** by the
+- **4 layers**, 1.6 mm, JLC standard process: F.Cu signals, In1.Cu a solid GND plane, In2.Cu a solid +3V3 plane,
+  B.Cu signals (Dimitri's decision after the layout review: on 2 layers the router cut the bottom plane into
+  pieces under the buffers, LBUS-1/LPWR-1). All SMD on the top side, assembled by JLC. **Hand-soldered** by the
   builder: every through-hole part (the 34-pin connector, top or bottom (§4.4), the power header, the two headers of
   §7). Unfitted pads are 0603, so the builder can fit them by hand (SPCB-3).
-- **Size:** at least 56 mm along the connector axis (a 34-way boxed header body is 51–54 mm long), about 45 mm the
-  other way; the final outline follows the layout and the fit test (O7). A 54 × 10 mm area on the top side above the
+- **Size:** 60 × 54.5 mm: at least 56 mm along the connector axis (a 34-way boxed header body is 51–54 mm long),
+  48 mm for the parts and 6.5 mm for the antenna; the fit test (O7) can still change it. A 54 × 10 mm area on the top side above the
   connector stays free of SMD parts, for the header body and for the soldering iron.
-- **Floorplan** (review suggestion, 56 × 45 mm, top view):
+- **Floorplan** (top view):
   - south edge: the 2×17 connector, even row inward;
-  - above it: the resistors, the two LVC14As under pins 4–24 and 32, the LVC07A at the pin 26–34 end, so `/DKRD`
-    is a track of about 10 mm;
-  - north half: the module, antenna overhanging the north edge;
+  - above it: the resistors, the two LVC14As (one under pins 4–16, one under pins 18–32, each gate in the
+    connector's order), the LVC07A at the pin 26–34 end, so `/DKRD` is a track of about 10 mm without a via;
+  - north half: the module, its antenna along the north edge;
   - west strip: the power header next to the 34-way connector (vertical, so plugging it in pushes straight down
     through the socket), eFuse, bulk capacitor, diodes, buck; USB-C on the west edge near GPIO19/20, with the ESD
     part at the connector;
@@ -303,20 +309,27 @@ review (PCB-2).
 - **Mechanics:** two 3.2 mm non-plated holes at the far end for a nylon standoff or a printed foot; they are also
   tooling holes. All bottom-side vias tented, no exposed copper on the bottom (the plug-on board may rest on
   motherboard parts). Clearance under the A500's shield is part of the fit test.
-- **Grounding and noise:** the bottom layer is an unbroken ground plane under the signal area, with only short
-  bottom jumpers crossing at right angles; every odd connector pin gets its own via; stitching vias about every 5 mm
-  around the buck and along the edges and the keep-out. The buck sits at least 15 mm from `/DKRD` and the antenna.
+- **Grounding and noise:** In1 is an unbroken ground plane under the whole board (apart from the antenna area);
+  every GND and +3V3 pad has its own via to its plane, none in a pad; the odd connector pins are plated through to
+  In1; the GND pours on F.Cu and B.Cu are stitched to In1 about every 5 mm, closer along the edges. No track runs
+  between the rows of the 34-way connector or between its GND pins (the plug-on socket is soldered there). The buck sits at least 15 mm from `/DKRD` and the antenna.
   Buck layout per the TLV62569 datasheet: tight input capacitor loop, small switch node with nothing under it or the
-  inductor, separate feedback sense track.
-- **USB pair:** 90 Ω ±10 % differential, ground-return vias at any layer change.
-- **Rules:** tracks and spacing 0.2 / 0.2 mm (0.15 mm allowed at the module), power 0.4 mm; vias 0.3 mm drill /
+  inductor (no track under it on B.Cu, none between its pads), separate feedback sense track.
+- **USB pair:** full speed (12 Mbit/s) only, so the impedance is not controlled (LESP-3): D+ and D− run close
+  together over the In1 plane, the 22 Ω series pads next to the ESD part, the unfitted 10 pF pads on their module
+  side.
+- **Rules:** tracks and spacing 0.2 / 0.2 mm (0.15 mm allowed at the module), power 0.3 mm (the eFuse's 0.5 mm
+  pitch pads take no wider track; 0.3 mm carries its 0.95 A limit); vias 0.3 mm drill /
   0.6 mm pad; through-hole annular ring ≥ 0.25 mm, header holes 1.0 mm with 1.7 mm pads; copper ≥ 0.3 mm from the
   edge; thermal reliefs on the ground pins of the 34-way and the power header; silkscreen text ≥ 1.0 mm with
   0.15 mm lines, 0.15 mm clear of pads.
 - **Production features:** three fiducials (1 mm copper, 2 mm mask opening); a 15 × 6 mm silkscreen box on the
   bottom for a serial number and "FluxDrive v1 rev A"; a chosen position for JLC's order number.
-- **Panel:** the outline allows a 2-up JLC panel with mouse bites (JLC's economic assembly takes 30 or 50 pieces;
-  its pages disagree). Decided at order time.
+- **Panel:** none needed: the board is ordered as a single board (economic assembly takes 2–50 pieces). A 2-up
+  panel with mouse bites is possible if a larger run wants it; tracks and parts keep at least 0.3 mm from the
+  edges.
+- **Test pads:** 1.0 mm, on the top side, for a probe (SPCB-8: no pogo-pin fixture in v1). The connector-side ones
+  sit in the strip south of J1; a map of all sixteen is in the README.
 
 ## 9. What the firmware must do because of this hardware
 
@@ -340,6 +353,8 @@ Firmware is a separate design; these points follow from the board and are fixed 
   2.4 V (+5V_A above about 4 V), with some hysteresis, also covers the reverse leakage of the +5V_A Schottky, which grows when hot (SPWR-4).
 - **RTC slow clock:** internal only, never the external 32 kHz crystal: GPIO15/16 are bus inputs, driven by the
   LVC14A (SBUS-3).
+- **Spare header J5:** GPIO13, 14, 47 and 48 get their internal pull-ups until something uses them; their tracks
+  are 33–48 mm long and would float (LESP-10).
 - **Outputs are gated by `/SEL0` only**, not by whether an image is mounted. While deselected all six are released.
 - **Selected, no disk:** `/CHNG` asserted, `/WPROT` asserted, `/TRK0` live (it follows the head), no `/DKRD`, no
   `/INDEX`.
@@ -362,7 +377,9 @@ Firmware is a separate design; these points follow from the board and are fixed 
 
 ## 10. Cost
 
-Estimate from the PCB review (JLC economic assembly: $8.18 setup, $1.53 stencil, $3.07 per extended part), plus the
+Estimate from the PCB review (JLC economic assembly: $8.18 setup, $1.53 stencil, $3.07 per extended part), with
+about €1 per board (5–10 boards) or €0.5 (50) for 4 layers instead of 2 (layout review; to check in JLC's
+calculator at order time), plus the
 eFuse added after the power review. Parts at JLC's price tier per quantity, PCB price estimated, 1 EUR = 1.15 USD,
 shipping, VAT and customs excluded. LCSC numbers and prices are fixed in the plan.
 
@@ -371,9 +388,9 @@ shipping, VAT and customs excluded. LCSC numbers and prices are fixed in the pla
 
 | Quantity | Per board |
 |---|---|
-| 5 | ≈ €14 |
-| 10 | ≈ €11 |
-| 50 | ≈ €7.5 |
+| 5 | ≈ €15 |
+| 10 | ≈ €12 |
+| 50 | ≈ €8 |
 
 The WROOM-1U variant adds about €1.5–2 per board (module plus antenna and pigtail).
 
@@ -445,7 +462,6 @@ decisions. The same four reviews ran again on the schematic (2026-09-29, no bloc
 | O7 | Board outline, overhang direction and mounting in the A500 (fit test) | layout |
 | O8 | Write-back policy for v2 (RAM disk, push to GTi, microSD) | nothing in v1 |
 | O9 | Licence and where the repo is published (OMEGAWARE / GTi) | publication |
-| O10 | Does JLC economic assembly take a module overhanging the board edge? Otherwise a U-shaped cut-out around the antenna, or a panel with a slot | layout |
 | O12 | Real-drive `/DKRD` and `/INDEX` pulse widths, Paula's `/DKWD` pulse width (the 4.7 kΩ rise of 0.7 µs) | firmware, v2 |
 | O13 | Kickstart 1.3/2.x/3.x with a DF0 ID; whether reset clears Gary's motor latch; the A500+ `/MTR0` network | firmware |
 | O14 | External DF1 (later): outputs gated by `/SEL` in logic, a hardware motor latch for `MTRXD` | v2 hardware |
@@ -454,3 +470,4 @@ decisions. The same four reviews ran again on the schematic (2026-09-29, no bloc
 Closed in review: O1 (Gary latches `/MTR0`), O2 (pull-up values, §4.2), O3 (output GPIOs without a power-up
 glitch, §2.3), O4 (buck TLV62569, §5), O6 (GPIO allocation, §4.1 and §6). Closed in the schematic review: O11
 (TPS259531 clamp, current limit, pinout and package checked against SLVSE57C; stock see §10).
+Closed in the layout review: O10 (the module lies on the board with its antenna 0.5 mm inside the north edge, §6).

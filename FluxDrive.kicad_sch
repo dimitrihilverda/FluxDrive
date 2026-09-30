@@ -10300,7 +10300,7 @@
 			)
 		)
 	)
-	(label "STEP_B"
+	(label "DIR_B"
 		(at 133.35 100.33 180)
 		(effects
 			(font
@@ -10310,7 +10310,7 @@
 		)
 		(uuid "3064cfc6-2fc7-5913-b870-e3030740f7bf")
 	)
-	(label "STEP"
+	(label "DIR"
 		(at 148.59 100.33 0)
 		(effects
 			(font
@@ -10322,7 +10322,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74HC14")
-		(at 180.34 100.33 0)
+		(at 179.07 100.33 0)
 		(unit 2)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10332,7 +10332,7 @@
 		(dnp no)
 		(uuid "c6aca012-218f-5737-9da4-61c3289a06f7")
 		(property "Reference" "U2"
-			(at 180.34 95.25 0)
+			(at 179.07 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10340,7 +10340,7 @@
 			)
 		)
 		(property "Value" "74LVC14A"
-			(at 180.34 105.41 0)
+			(at 179.07 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10348,7 +10348,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 180.34 100.33 0)
+			(at 179.07 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10357,7 +10357,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 180.34 100.33 0)
+			(at 179.07 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10366,7 +10366,7 @@
 			)
 		)
 		(property "LCSC" "C133541"
-			(at 180.34 100.33 0)
+			(at 179.07 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10389,8 +10389,8 @@
 			)
 		)
 	)
-	(label "DIR_B"
-		(at 172.72 100.33 180)
+	(label "DKWD_B"
+		(at 171.45 100.33 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10399,8 +10399,8 @@
 		)
 		(uuid "da2710b6-a2d9-5171-a072-370bd7c017ff")
 	)
-	(label "DIR"
-		(at 187.96 100.33 0)
+	(label "DKWD"
+		(at 186.69 100.33 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10500,7 +10500,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74HC14")
-		(at 257.81 100.33 0)
+		(at 255.27 100.33 0)
 		(unit 4)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10510,7 +10510,7 @@
 		(dnp no)
 		(uuid "081007d2-9d73-5435-9d7f-5258e28ad1b4")
 		(property "Reference" "U2"
-			(at 257.81 95.25 0)
+			(at 255.27 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10518,7 +10518,7 @@
 			)
 		)
 		(property "Value" "74LVC14A"
-			(at 257.81 105.41 0)
+			(at 255.27 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10526,7 +10526,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 257.81 100.33 0)
+			(at 255.27 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10535,7 +10535,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 257.81 100.33 0)
+			(at 255.27 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10544,7 +10544,7 @@
 			)
 		)
 		(property "LCSC" "C133541"
-			(at 257.81 100.33 0)
+			(at 255.27 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10567,18 +10567,12 @@
 			)
 		)
 	)
-	(label "SEL0"
-		(at 265.43 100.33 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "a8acba7c-bc27-5c73-ab88-a6343473ebba")
+	(no_connect
+		(at 262.89 100.33)
+		(uuid "c9d3a0ed-0196-55c2-ad2d-722ebb4a36ef")
 	)
-	(label "SEL0_B"
-		(at 250.19 100.33 180)
+	(label "GND"
+		(at 247.65 100.33 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10589,7 +10583,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74HC14")
-		(at 297.18 100.33 0)
+		(at 289.56 100.33 0)
 		(unit 5)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10599,7 +10593,7 @@
 		(dnp no)
 		(uuid "8df85819-df2a-534b-b5d7-d96ac29774bf")
 		(property "Reference" "U2"
-			(at 297.18 95.25 0)
+			(at 289.56 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10607,7 +10601,7 @@
 			)
 		)
 		(property "Value" "74LVC14A"
-			(at 297.18 105.41 0)
+			(at 289.56 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10615,7 +10609,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 297.18 100.33 0)
+			(at 289.56 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10624,7 +10618,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 297.18 100.33 0)
+			(at 289.56 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10633,7 +10627,7 @@
 			)
 		)
 		(property "LCSC" "C133541"
-			(at 297.18 100.33 0)
+			(at 289.56 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10656,8 +10650,8 @@
 			)
 		)
 	)
-	(label "SEL1"
-		(at 304.8 100.33 0)
+	(label "DKWE"
+		(at 297.18 100.33 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10666,8 +10660,8 @@
 		)
 		(uuid "fc9106a5-6b48-581e-bd33-c0e5eea6c55e")
 	)
-	(label "SEL1_B"
-		(at 289.56 100.33 180)
+	(label "DKWE_B"
+		(at 281.94 100.33 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10678,7 +10672,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74HC14")
-		(at 336.55 100.33 0)
+		(at 328.93 100.33 0)
 		(unit 6)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10688,7 +10682,7 @@
 		(dnp no)
 		(uuid "b1f80dd4-4a81-53de-9126-b1e14c700e18")
 		(property "Reference" "U2"
-			(at 336.55 95.25 0)
+			(at 328.93 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10696,7 +10690,7 @@
 			)
 		)
 		(property "Value" "74LVC14A"
-			(at 336.55 105.41 0)
+			(at 328.93 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10704,7 +10698,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 336.55 100.33 0)
+			(at 328.93 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10713,7 +10707,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 336.55 100.33 0)
+			(at 328.93 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10722,7 +10716,7 @@
 			)
 		)
 		(property "LCSC" "C133541"
-			(at 336.55 100.33 0)
+			(at 328.93 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10745,8 +10739,8 @@
 			)
 		)
 	)
-	(label "MTR0"
-		(at 344.17 100.33 0)
+	(label "STEP"
+		(at 336.55 100.33 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10755,8 +10749,8 @@
 		)
 		(uuid "0d444ee2-500b-550f-a645-2c4288e711a7")
 	)
-	(label "MTR0_B"
-		(at 328.93 100.33 180)
+	(label "STEP_B"
+		(at 321.31 100.33 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10767,7 +10761,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74HC14")
-		(at 360.68 118.11 0)
+		(at 353.06 118.11 0)
 		(unit 7)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10777,7 +10771,7 @@
 		(dnp no)
 		(uuid "1d6bb4f5-5cfb-5e9b-8aac-9ddefc96d98d")
 		(property "Reference" "U2"
-			(at 360.68 113.03 0)
+			(at 353.06 113.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10785,7 +10779,7 @@
 			)
 		)
 		(property "Value" "74LVC14A"
-			(at 360.68 123.19 0)
+			(at 353.06 123.19 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10793,7 +10787,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 360.68 118.11 0)
+			(at 353.06 118.11 0)
 			(hide yes)
 			(effects
 				(font
@@ -10802,7 +10796,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 360.68 118.11 0)
+			(at 353.06 118.11 0)
 			(hide yes)
 			(effects
 				(font
@@ -10811,7 +10805,7 @@
 			)
 		)
 		(property "LCSC" "C133541"
-			(at 360.68 118.11 0)
+			(at 353.06 118.11 0)
 			(hide yes)
 			(effects
 				(font
@@ -10835,7 +10829,7 @@
 		)
 	)
 	(label "GND"
-		(at 360.68 130.81 270)
+		(at 353.06 130.81 270)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10845,7 +10839,7 @@
 		(uuid "16e5b072-c11c-56f8-9781-c2d260a46491")
 	)
 	(label "+3V3"
-		(at 360.68 105.41 90)
+		(at 353.06 105.41 90)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10856,7 +10850,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 379.73 100.33 90)
+		(at 373.38 100.33 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10866,7 +10860,7 @@
 		(dnp no)
 		(uuid "b780acc8-ac65-5e3d-8b0c-efd7892a1949")
 		(property "Reference" "C5"
-			(at 379.73 95.25 90)
+			(at 373.38 95.25 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10874,7 +10868,7 @@
 			)
 		)
 		(property "Value" "100nF"
-			(at 379.73 105.41 90)
+			(at 373.38 105.41 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10882,7 +10876,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 379.73 100.33 0)
+			(at 373.38 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10891,7 +10885,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 379.73 100.33 0)
+			(at 373.38 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10900,7 +10894,7 @@
 			)
 		)
 		(property "LCSC" "C1525"
-			(at 379.73 100.33 0)
+			(at 373.38 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10924,7 +10918,7 @@
 		)
 	)
 	(label "+3V3"
-		(at 375.92 100.33 180)
+		(at 369.57 100.33 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10934,7 +10928,7 @@
 		(uuid "890123a1-261a-5fb6-87e7-f483ff7f9496")
 	)
 	(label "GND"
-		(at 383.54 100.33 0)
+		(at 377.19 100.33 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -10945,7 +10939,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74HC14")
-		(at 415.29 100.33 0)
+		(at 410.21 100.33 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10955,7 +10949,7 @@
 		(dnp no)
 		(uuid "34abf2d8-7f8d-5fe2-94b6-38b7420d1421")
 		(property "Reference" "U3"
-			(at 415.29 95.25 0)
+			(at 410.21 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10963,7 +10957,7 @@
 			)
 		)
 		(property "Value" "74LVC14A"
-			(at 415.29 105.41 0)
+			(at 410.21 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10971,7 +10965,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 415.29 100.33 0)
+			(at 410.21 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10980,7 +10974,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 415.29 100.33 0)
+			(at 410.21 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -10989,7 +10983,7 @@
 			)
 		)
 		(property "LCSC" "C133541"
-			(at 415.29 100.33 0)
+			(at 410.21 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11012,8 +11006,8 @@
 			)
 		)
 	)
-	(label "DKWD_B"
-		(at 407.67 100.33 180)
+	(label "MTR0_P4_B"
+		(at 402.59 100.33 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11022,8 +11016,8 @@
 		)
 		(uuid "bd354eba-8153-54cc-872e-ec02bd1f7b4a")
 	)
-	(label "DKWD"
-		(at 422.91 100.33 0)
+	(label "MTR0_P4"
+		(at 417.83 100.33 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11034,7 +11028,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74HC14")
-		(at 454.66 100.33 0)
+		(at 453.39 100.33 0)
 		(unit 2)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11044,7 +11038,7 @@
 		(dnp no)
 		(uuid "0a91acdd-5ce6-5ed2-aec4-e1e5c66ee178")
 		(property "Reference" "U3"
-			(at 454.66 95.25 0)
+			(at 453.39 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11052,7 +11046,7 @@
 			)
 		)
 		(property "Value" "74LVC14A"
-			(at 454.66 105.41 0)
+			(at 453.39 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11060,7 +11054,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 454.66 100.33 0)
+			(at 453.39 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11069,7 +11063,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 454.66 100.33 0)
+			(at 453.39 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11078,7 +11072,7 @@
 			)
 		)
 		(property "LCSC" "C133541"
-			(at 454.66 100.33 0)
+			(at 453.39 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11101,8 +11095,8 @@
 			)
 		)
 	)
-	(label "DKWE_B"
-		(at 447.04 100.33 180)
+	(label "SEL0_B"
+		(at 445.77 100.33 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11111,8 +11105,8 @@
 		)
 		(uuid "d6286c11-6fb9-5c85-83f7-c4b5d91853dd")
 	)
-	(label "DKWE"
-		(at 462.28 100.33 0)
+	(label "SEL0"
+		(at 461.01 100.33 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11123,7 +11117,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74HC14")
-		(at 496.57 100.33 0)
+		(at 494.03 100.33 0)
 		(unit 3)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11133,7 +11127,7 @@
 		(dnp no)
 		(uuid "c7ab5915-fa39-5280-af0c-2c4f2ca9d92e")
 		(property "Reference" "U3"
-			(at 496.57 95.25 0)
+			(at 494.03 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11141,7 +11135,7 @@
 			)
 		)
 		(property "Value" "74LVC14A"
-			(at 496.57 105.41 0)
+			(at 494.03 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11149,7 +11143,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 496.57 100.33 0)
+			(at 494.03 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11158,7 +11152,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 496.57 100.33 0)
+			(at 494.03 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11167,7 +11161,7 @@
 			)
 		)
 		(property "LCSC" "C133541"
-			(at 496.57 100.33 0)
+			(at 494.03 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11190,8 +11184,8 @@
 			)
 		)
 	)
-	(label "MTR0_P4_B"
-		(at 488.95 100.33 180)
+	(label "PIN14_B"
+		(at 486.41 100.33 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11200,8 +11194,8 @@
 		)
 		(uuid "b66b863f-5d90-572a-b647-d574c5896eeb")
 	)
-	(label "MTR0_P4"
-		(at 504.19 100.33 0)
+	(label "PIN14"
+		(at 501.65 100.33 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11212,7 +11206,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74HC14")
-		(at 538.48 100.33 0)
+		(at 534.67 100.33 0)
 		(unit 4)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11222,7 +11216,7 @@
 		(dnp no)
 		(uuid "beceea44-7e6e-5b06-9453-2a0c087a9d16")
 		(property "Reference" "U3"
-			(at 538.48 95.25 0)
+			(at 534.67 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11230,7 +11224,7 @@
 			)
 		)
 		(property "Value" "74LVC14A"
-			(at 538.48 105.41 0)
+			(at 534.67 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11238,7 +11232,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 538.48 100.33 0)
+			(at 534.67 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11247,7 +11241,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 538.48 100.33 0)
+			(at 534.67 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11256,7 +11250,7 @@
 			)
 		)
 		(property "LCSC" "C133541"
-			(at 538.48 100.33 0)
+			(at 534.67 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11279,8 +11273,8 @@
 			)
 		)
 	)
-	(label "PIN6"
-		(at 546.1 100.33 0)
+	(label "MTR0"
+		(at 542.29 100.33 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11289,8 +11283,8 @@
 		)
 		(uuid "d1bf8534-04c6-556b-b19f-4624b317c588")
 	)
-	(label "PIN6_B"
-		(at 530.86 100.33 180)
+	(label "MTR0_B"
+		(at 527.05 100.33 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11301,7 +11295,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74HC14")
-		(at 579.12 100.33 0)
+		(at 574.04 100.33 0)
 		(unit 5)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11311,7 +11305,7 @@
 		(dnp no)
 		(uuid "8e8eb10f-d3d9-51c4-8da2-46127dab15cb")
 		(property "Reference" "U3"
-			(at 579.12 95.25 0)
+			(at 574.04 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11319,7 +11313,7 @@
 			)
 		)
 		(property "Value" "74LVC14A"
-			(at 579.12 105.41 0)
+			(at 574.04 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11327,7 +11321,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 579.12 100.33 0)
+			(at 574.04 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11336,7 +11330,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 579.12 100.33 0)
+			(at 574.04 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11345,7 +11339,7 @@
 			)
 		)
 		(property "LCSC" "C133541"
-			(at 579.12 100.33 0)
+			(at 574.04 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11368,8 +11362,8 @@
 			)
 		)
 	)
-	(label "PIN14"
-		(at 586.74 100.33 0)
+	(label "SEL1"
+		(at 581.66 100.33 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11378,8 +11372,8 @@
 		)
 		(uuid "57536420-f98a-55b3-9f03-42d08faa4430")
 	)
-	(label "PIN14_B"
-		(at 571.5 100.33 180)
+	(label "SEL1_B"
+		(at 566.42 100.33 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11390,7 +11384,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74HC14")
-		(at 617.22 100.33 0)
+		(at 613.41 100.33 0)
 		(unit 6)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11400,7 +11394,7 @@
 		(dnp no)
 		(uuid "72bf0f38-35ef-58b3-b2b6-110e132b2813")
 		(property "Reference" "U3"
-			(at 617.22 95.25 0)
+			(at 613.41 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11408,7 +11402,7 @@
 			)
 		)
 		(property "Value" "74LVC14A"
-			(at 617.22 105.41 0)
+			(at 613.41 105.41 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11416,7 +11410,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 617.22 100.33 0)
+			(at 613.41 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11425,7 +11419,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 617.22 100.33 0)
+			(at 613.41 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11434,7 +11428,7 @@
 			)
 		)
 		(property "LCSC" "C133541"
-			(at 617.22 100.33 0)
+			(at 613.41 100.33 0)
 			(hide yes)
 			(effects
 				(font
@@ -11457,12 +11451,18 @@
 			)
 		)
 	)
-	(no_connect
-		(at 624.84 100.33)
-		(uuid "f8b03f8d-b971-5313-897d-bd866cbd7f13")
+	(label "PIN6"
+		(at 621.03 100.33 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "76dae4db-27f1-51e5-8501-22dc360f79c6")
 	)
-	(label "GND"
-		(at 609.6 100.33 180)
+	(label "PIN6_B"
+		(at 605.79 100.33 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -12730,7 +12730,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74LCX07")
-		(at 427.99 181.61 0)
+		(at 429.26 181.61 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -12740,7 +12740,7 @@
 		(dnp no)
 		(uuid "5ef54dba-321e-5df5-ad48-697c9a18eb91")
 		(property "Reference" "U4"
-			(at 427.99 176.53 0)
+			(at 429.26 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12748,7 +12748,7 @@
 			)
 		)
 		(property "Value" "74LVC07A"
-			(at 427.99 186.69 0)
+			(at 429.26 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12756,7 +12756,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 427.99 181.61 0)
+			(at 429.26 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -12765,7 +12765,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 427.99 181.61 0)
+			(at 429.26 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -12774,7 +12774,7 @@
 			)
 		)
 		(property "LCSC" "C6049"
-			(at 427.99 181.61 0)
+			(at 429.26 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -12797,8 +12797,8 @@
 			)
 		)
 	)
-	(label "DKRD_N"
-		(at 420.37 181.61 180)
+	(label "WPROT_N"
+		(at 421.64 181.61 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -12807,8 +12807,8 @@
 		)
 		(uuid "b7337fb1-147d-5644-a247-b95c6af05162")
 	)
-	(label "DKRD_D"
-		(at 435.61 181.61 0)
+	(label "WPROT_D"
+		(at 436.88 181.61 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -12819,7 +12819,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74LCX07")
-		(at 471.17 181.61 0)
+		(at 472.44 181.61 0)
 		(unit 2)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -12829,7 +12829,7 @@
 		(dnp no)
 		(uuid "a4100edb-8ed4-5620-a656-5064ced08383")
 		(property "Reference" "U4"
-			(at 471.17 176.53 0)
+			(at 472.44 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12837,7 +12837,7 @@
 			)
 		)
 		(property "Value" "74LVC07A"
-			(at 471.17 186.69 0)
+			(at 472.44 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12845,7 +12845,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 471.17 181.61 0)
+			(at 472.44 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -12854,7 +12854,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 471.17 181.61 0)
+			(at 472.44 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -12863,7 +12863,7 @@
 			)
 		)
 		(property "LCSC" "C6049"
-			(at 471.17 181.61 0)
+			(at 472.44 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -12886,8 +12886,8 @@
 			)
 		)
 	)
-	(label "INDEX_N"
-		(at 463.55 181.61 180)
+	(label "DKRD_N"
+		(at 464.82 181.61 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -12896,8 +12896,8 @@
 		)
 		(uuid "f391d0e4-0671-5f1f-969d-e92f631adbe5")
 	)
-	(label "INDEX_D"
-		(at 478.79 181.61 0)
+	(label "DKRD_D"
+		(at 480.06 181.61 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -12908,7 +12908,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74LCX07")
-		(at 513.08 181.61 0)
+		(at 511.81 181.61 0)
 		(unit 3)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -12918,7 +12918,7 @@
 		(dnp no)
 		(uuid "663cc9df-125d-57fd-a751-dd3a48ed54b2")
 		(property "Reference" "U4"
-			(at 513.08 176.53 0)
+			(at 511.81 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12926,7 +12926,7 @@
 			)
 		)
 		(property "Value" "74LVC07A"
-			(at 513.08 186.69 0)
+			(at 511.81 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12934,7 +12934,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 513.08 181.61 0)
+			(at 511.81 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -12943,7 +12943,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 513.08 181.61 0)
+			(at 511.81 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -12952,7 +12952,7 @@
 			)
 		)
 		(property "LCSC" "C6049"
-			(at 513.08 181.61 0)
+			(at 511.81 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -12975,8 +12975,8 @@
 			)
 		)
 	)
-	(label "TRK0_N"
-		(at 505.46 181.61 180)
+	(label "RDY_N"
+		(at 504.19 181.61 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -12985,8 +12985,8 @@
 		)
 		(uuid "e9df6e59-622d-591c-b826-230e102b8a32")
 	)
-	(label "TRK0_D"
-		(at 520.7 181.61 0)
+	(label "RDY_D"
+		(at 519.43 181.61 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -12997,7 +12997,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74LCX07")
-		(at 556.26 181.61 0)
+		(at 553.72 181.61 0)
 		(unit 4)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -13007,7 +13007,7 @@
 		(dnp no)
 		(uuid "49932159-0111-527f-be40-e8276019f851")
 		(property "Reference" "U4"
-			(at 556.26 176.53 0)
+			(at 553.72 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13015,7 +13015,7 @@
 			)
 		)
 		(property "Value" "74LVC07A"
-			(at 556.26 186.69 0)
+			(at 553.72 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13023,7 +13023,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 556.26 181.61 0)
+			(at 553.72 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -13032,7 +13032,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 556.26 181.61 0)
+			(at 553.72 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -13041,7 +13041,7 @@
 			)
 		)
 		(property "LCSC" "C6049"
-			(at 556.26 181.61 0)
+			(at 553.72 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -13064,8 +13064,8 @@
 			)
 		)
 	)
-	(label "WPROT_D"
-		(at 563.88 181.61 0)
+	(label "INDEX_D"
+		(at 561.34 181.61 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -13074,8 +13074,8 @@
 		)
 		(uuid "407abaf2-f0ac-5237-8c9f-637c571f41f6")
 	)
-	(label "WPROT_N"
-		(at 548.64 181.61 180)
+	(label "INDEX_N"
+		(at 546.1 181.61 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -13086,7 +13086,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74LCX07")
-		(at 598.17 181.61 0)
+		(at 595.63 181.61 0)
 		(unit 5)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -13096,7 +13096,7 @@
 		(dnp no)
 		(uuid "5083fa54-bc5f-59a4-9ec0-34b492184c44")
 		(property "Reference" "U4"
-			(at 598.17 176.53 0)
+			(at 595.63 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13104,7 +13104,7 @@
 			)
 		)
 		(property "Value" "74LVC07A"
-			(at 598.17 186.69 0)
+			(at 595.63 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13112,7 +13112,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 598.17 181.61 0)
+			(at 595.63 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -13121,7 +13121,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 598.17 181.61 0)
+			(at 595.63 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -13130,7 +13130,7 @@
 			)
 		)
 		(property "LCSC" "C6049"
-			(at 598.17 181.61 0)
+			(at 595.63 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -13154,7 +13154,7 @@
 		)
 	)
 	(label "CHNG_D"
-		(at 605.79 181.61 0)
+		(at 603.25 181.61 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -13164,7 +13164,7 @@
 		(uuid "c49d55bf-94c9-5351-b94b-e91d51a39b14")
 	)
 	(label "CHNG_N"
-		(at 590.55 181.61 180)
+		(at 588.01 181.61 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -13175,7 +13175,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74LCX07")
-		(at 638.81 181.61 0)
+		(at 637.54 181.61 0)
 		(unit 6)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -13185,7 +13185,7 @@
 		(dnp no)
 		(uuid "daec9c69-ba00-55f0-bc16-34559ab01df2")
 		(property "Reference" "U4"
-			(at 638.81 176.53 0)
+			(at 637.54 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13193,7 +13193,7 @@
 			)
 		)
 		(property "Value" "74LVC07A"
-			(at 638.81 186.69 0)
+			(at 637.54 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13201,7 +13201,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
-			(at 638.81 181.61 0)
+			(at 637.54 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -13210,7 +13210,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 638.81 181.61 0)
+			(at 637.54 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -13219,7 +13219,7 @@
 			)
 		)
 		(property "LCSC" "C6049"
-			(at 638.81 181.61 0)
+			(at 637.54 181.61 0)
 			(hide yes)
 			(effects
 				(font
@@ -13242,8 +13242,8 @@
 			)
 		)
 	)
-	(label "RDY_D"
-		(at 646.43 181.61 0)
+	(label "TRK0_D"
+		(at 645.16 181.61 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -13252,8 +13252,8 @@
 		)
 		(uuid "35c2f3f2-a6e4-55fb-8c66-ccd79d65f9bb")
 	)
-	(label "RDY_N"
-		(at 631.19 181.61 180)
+	(label "TRK0_N"
+		(at 629.92 181.61 180)
 		(effects
 			(font
 				(size 1.27 1.27)

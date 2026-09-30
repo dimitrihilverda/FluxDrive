@@ -1,8 +1,16 @@
-"""Fan out the SMD ground pads to the B.Cu ground plane with a short track and a via.
+"""Fan out the SMD pads of the plane nets (GND -> In1.Cu, +3V3 -> In2.Cu) with a short track and a via.
 
     "/c/Program Files/KiCad/10.0/bin/python.exe" tools/pcb_fanout.py FluxDrive.kicad_pcb
 
-Adapted from the Nano-Tek tool (2623d2f): 2 layers, one plane net (GND on B.Cu), the board of pcb_place.
+Adapted from the Nano-Tek tool (2623d2f). Changes after the FluxDrive layout review:
+- a via never touches a pad, its own included (LCODE-4: solder would drain into it): the search starts
+  outside the pad, and every pad's copper counts as an obstacle for the via ring (other nets with the
+  clearance, the same net with a mask web);
+- pads are handled in reference order (LCODE-2: the file order depended on footprint IDs);
+- the board edge comes from Edge.Cuts;
+- stubs and vias stay out of the rule areas (the module's antenna keep-out, pcb_place's track keep-outs);
+- a pad that holds plated holes of its own net (the module's ground pad with its thermal vias) is on the
+  plane already and gets nothing.
 
 Run it before Freerouting (which does not fan out to planes itself). Only pads that have no
 track attached yet. Pass 1 gives each pad its own via: it tries positions around the pad
@@ -16,14 +24,16 @@ import sys
 
 import pcbnew
 
-NETS = ("/GND",)
+NETS = ("/GND", "/+3V3")
 VIA_D, VIA_DRILL = 0.6, 0.3
 TRACK_W = 0.3
 CLEARANCE = 0.22          # via to other copper: a bit more than the 0.2 board rule
 SEG_CLEARANCE = 0.21      # stubs: the board rule plus a hair
 HOLE_GAP = 0.52           # hole edge to hole edge, board rule 0.5 (also between vias of the same net)
 EDGE = 0.6                # copper to board edge
-X0, X1, Y0, Y1 = 100.0, 160.0, 100.0, 148.0
+WEB = 0.12                # via ring to a pad of its own net: a solder-mask web between them
+X0 = X1 = Y0 = Y1 = 0.0   # the board outline, from Edge.Cuts (set in main)
+KO_TRACK, KO_VIA = [], []  # outlines of the rule areas that forbid F.Cu tracks / vias (set in main)
 
 
 def mm(v):
@@ -59,7 +69,7 @@ def holes(board):
     return hs
 
 
-def free(pos, seg_from, width, cache, hole_list):
+def free(pos, seg_from, width, cache, hole_list, own):
     x, y = pcbnew.ToMM(pos.x), pcbnew.ToMM(pos.y)
     if not (X0 + EDGE + VIA_D / 2 < x < X1 - EDGE - VIA_D / 2 and Y0 + EDGE + VIA_D / 2 < y < Y1 - EDGE - VIA_D / 2):
         return False
@@ -70,7 +80,23 @@ def free(pos, seg_from, width, cache, hole_list):
     for s in cache[pcbnew.F_Cu] + cache[pcbnew.B_Cu]:
         if s.Collide(circle, mm(CLEARANCE)):
             return False
+    if any(s.Collide(circle, mm(WEB)) for s in own):        # its own pad and the other pads of its net
+        return False
+    if any(z.Collide(circle, 0) for z in KO_VIA):
+        return False
     return clear_path([seg_from, pos], width, cache)
+
+
+def own_pads(board, netcode):
+    """Copper of every pad on this net, top and bottom: a via must keep a mask web from all of them."""
+    out = []
+    for fp in board.GetFootprints():
+        for p in fp.Pads():
+            if p.GetNetCode() == netcode:
+                for layer in (pcbnew.F_Cu, pcbnew.B_Cu):
+                    if p.IsOnLayer(layer):
+                        out.append(p.GetEffectiveShape(layer))
+    return out
 
 
 def clear_path(points, width, cache):
@@ -82,6 +108,8 @@ def clear_path(points, width, cache):
                 return False
         seg = pcbnew.SHAPE_SEGMENT(a, b, mm(width))
         if any(s.Collide(seg, mm(SEG_CLEARANCE)) for s in cache[pcbnew.F_Cu]):
+            return False
+        if any(z.Collide(seg, 0) for z in KO_TRACK):
             return False
     return True
 
@@ -151,11 +179,15 @@ def connect_to_same_net(board, pad, cache, axis, width, with_pads):
 def place_via(board, pad, cache, axis, width):
     p = pad.GetPosition()
     hole_list = holes(board)
-    for dist in (1.0, 1.3, 1.7, 2.2, 2.8, 3.5, 4.2, 4.8):
+    own = own_pads(board, pad.GetNetCode())
+    bb = pad.GetBoundingBox()
+    half = pcbnew.ToMM(max(bb.GetWidth(), bb.GetHeight())) / 2       # start outside the pad in every direction
+    start = half + VIA_D / 2 + WEB
+    for dist in (start + d for d in (0.0, 0.3, 0.6, 1.0, 1.5, 2.1, 2.8, 3.5)):
         for k in (0, 1, -1, 2, -2, 3, -3, 4, 0.5, -0.5, 1.5, -1.5, 2.5, -2.5, 3.5, -3.5, "up", "down"):
             a = -math.pi / 2 if k == "up" else math.pi / 2 if k == "down" else axis + k * math.pi / 4
             q = pcbnew.VECTOR2I(int(p.x + mm(dist) * math.cos(a)), int(p.y + mm(dist) * math.sin(a)))
-            if free(q, p, width, cache, hole_list):
+            if free(q, p, width, cache, hole_list, own):
                 via = pcbnew.PCB_VIA(board)
                 via.SetPosition(q)
                 via.SetWidth(pcbnew.F_Cu, mm(VIA_D))
@@ -168,10 +200,20 @@ def place_via(board, pad, cache, axis, width):
     return False
 
 
+def natural(ref):
+    head = ref.rstrip("0123456789")
+    return head, int(ref[len(head):] or 0)
+
+
 def plane_pads(board):
-    for fp in board.GetFootprints():
-        for pad in fp.Pads():
+    """SMD pads of the plane nets, in reference and pad order (not file order: see LCODE-2 above)."""
+    fps = sorted(board.GetFootprints(), key=lambda f: natural(f.GetReference()))
+    for fp in fps:
+        holes_here = [q for q in fp.Pads() if q.HasHole()]
+        for pad in sorted(fp.Pads(), key=lambda q: (q.GetNumber(), q.GetPosition().x, q.GetPosition().y)):
             if pad.GetNetname() in NETS and not pad.HasHole() and pad.IsOnLayer(pcbnew.F_Cu):
+                if any(h.GetNetCode() == pad.GetNetCode() and pad.HitTest(h.GetPosition()) for h in holes_here):
+                    continue                                   # on the plane through its own plated holes
                 yield fp, pad
 
 
@@ -183,7 +225,16 @@ def outward_axis(fp, pad):
 
 
 def main(path):
+    global X0, X1, Y0, Y1
     board = pcbnew.LoadBoard(path)
+    e = board.GetBoardEdgesBoundingBox()
+    X0, X1, Y0, Y1 = (pcbnew.ToMM(v) for v in (e.GetLeft(), e.GetRight(), e.GetTop(), e.GetBottom()))
+    for z in list(board.Zones()) + [z for fp in board.GetFootprints() for z in fp.Zones()]:
+        if z.GetIsRuleArea():
+            if z.GetDoNotAllowTracks() and z.IsOnLayer(pcbnew.F_Cu):
+                KO_TRACK.append(z.Outline())
+            if z.GetDoNotAllowVias():
+                KO_VIA.append(z.Outline())
     done, failed = 0, []
     # pass 1: a via of its own (or a straight stub to a nearby via of the same net)
     for fp, pad in plane_pads(board):
