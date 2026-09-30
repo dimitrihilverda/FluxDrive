@@ -253,3 +253,33 @@ def test_usb_data_pads_joined_on_top(board):
             parent[find(a)] = find(b)
         roots = [{find(q) for q in list(parent) if math.dist(q, pad) < 0.1} for pad in pads]   # tracks from the pad centres
         assert roots[0] & roots[1], net
+
+
+def _production_mismatches(board, out_dir):
+    """What differs between the board and the BOM/CPL in out_dir: missing or extra designators, and passives
+    whose CPL position is not the footprint's (a CPL left from an earlier build)."""
+    import csv
+    from tools.netlist import _child, _children
+    want = {}
+    for fp in _children(board, "footprint"):
+        props = {p[1]: p[2] for p in _children(fp, "property") if len(p) > 2}
+        attr = _child(fp, "attr") or []
+        smd = any(pad[2] == "smd" for pad in _children(fp, "pad"))      # the USB-C: SMD pins, through-hole shell
+        if smd and "dnp" not in attr and "exclude_from_pos_files" not in attr and props.get("LCSC", "").strip():
+            at = _child(fp, "at")
+            want[props["Reference"]] = (float(at[1]), float(at[2]))
+    out = pathlib.Path(out_dir)
+    cpl = {r["Designator"]: r for r in csv.DictReader(open(out / "CPL-FluxDrive.csv", encoding="utf-8"))}
+    bom = [d for r in csv.DictReader(open(out / "BOM-FluxDrive.csv", encoding="utf-8")) for d in r["Designator"].split(",")]
+    bad = sorted(set(want) ^ set(cpl)) + sorted(set(want) ^ set(bom)) + [d for d in bom if bom.count(d) > 1]
+    for ref, (x, y) in want.items():
+        r = cpl.get(ref)
+        if r and ref[0] in "RC" and (abs(float(r["Mid X"]) - x) > 0.01 or abs(float(r["Mid Y"]) + y) > 0.01):
+            bad.append(ref)
+    return bad
+
+
+def test_production_files_match_the_board(board):
+    """Task 12: jlcpcb/production_files/ belongs to this board: every fitted SMD part with an LCSC number is in the
+    BOM once and in the CPL at its place, nothing else is (tools/jlc_production.sh after every board build)."""
+    assert _production_mismatches(board, ROOT / "jlcpcb" / "production_files") == []
