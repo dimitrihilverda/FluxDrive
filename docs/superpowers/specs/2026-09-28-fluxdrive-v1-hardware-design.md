@@ -428,7 +428,7 @@ Main parts (review suggestions, to be re-checked in JLC's BOM tool):
    - the DC levels on USB alone (a resistor-network solve): AMIGA_PWR low, every bus input at a defined level;
    - the tests read a netlist exported fresh from the committed schematic, and fail if that schematic is not what
      the design file generates; ERC on the real schematic at every severity.
-2. **ERC and DRC clean**, with JLC's 2-layer rules.
+2. **ERC and DRC clean**, with JLC's 4-layer rules.
 3. **Bench gate** (MES §8), before the Amiga is involved: flux on a bare dev board for 30 minutes, with ESP-NOW
    flooding. Tight 4/6/8 µs clusters, nothing at buffer boundaries or the wrap point, no gap in the endless
    transmission.
@@ -464,7 +464,7 @@ decisions. The same four reviews ran again on the schematic (2026-09-29, no bloc
 | # | Item | Decides |
 |---|---|---|
 | O5 | PCB antenna or U.FL: range test with a WROOM-1 board, both connector variants | module variant |
-| O7 | Board outline, overhang direction and mounting in the A500 (fit test) | layout |
+| O7 | Mounting of the plug-on variant (the printed foot of §8) and a printed dummy in the A500; the outline and the overhang direction are fixed by the paper fit test | mechanics |
 | O8 | Write-back policy for v2 (RAM disk, push to GTi, microSD) | nothing in v1 |
 | O9 | Licence and where the repo is published (OMEGAWARE / GTi) | publication |
 | O12 | Real-drive `/DKRD` and `/INDEX` pulse widths, Paula's `/DKWD` pulse width (the 4.7 kΩ rise of 0.7 µs) | firmware, v2 |
@@ -476,3 +476,6 @@ Closed in review: O1 (Gary latches `/MTR0`), O2 (pull-up values, §4.2), O3 (out
 glitch, §2.3), O4 (buck TLV62569, §5), O6 (GPIO allocation, §4.1 and §6). Closed in the schematic review: O11
 (TPS259531 clamp, current limit, pinout and package checked against SLVSE57C; stock see §10).
 Closed in the layout review: O10 (the module lies on the board with its antenna 0.5 mm inside the north edge, §6).
+Fit test with the paper template (Dimitri, 2026-09-29/30): the board lies over CN11 towards the A500's front, over the
+8520 and Gary; 60 mm is the width between CN12 and an electrolytic capacitor; the room under the shield is enough
+and the drive's power cable reaches J2 from CN12. O7 keeps only the plug-on mounting and the printed dummy.

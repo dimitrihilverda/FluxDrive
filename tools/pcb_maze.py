@@ -4,7 +4,8 @@
 
 With net names, only the open connections of those nets are routed. --lock locks the new tracks, so a
 later Freerouting run keeps them. --no-ripup treats autorouted tracks of other nets as fixed.
-Adapted from the Nano-Tek tool (2623d2f): 2 layers, FluxDrive's 0.2/0.2 mm rules and netclasses.
+Adapted from the Nano-Tek tool (2623d2f): the two outer layers (In1/In2 are planes), FluxDrive's 0.2/0.2 mm rules
+and netclasses.
 
 Takes the unconnected items from kicad-cli DRC (JSON) and routes each pair over a 0.05 mm grid that
 keeps the board rules: 0.2 mm clearance to other nets, 0.3 mm to the edge, 0.5 mm between drill

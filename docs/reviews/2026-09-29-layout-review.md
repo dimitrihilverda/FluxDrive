@@ -27,7 +27,7 @@ Fit test (Dimitri, 2026-09-29, paper template on an A500): CN11's pin 1 is on th
 the template's pin 1 sits over it with the board running towards the front, over the 8520 and Gary. The board's east
 edge ends at the motherboard's CN12, its west edge next to an electrolytic capacitor: 60 mm is the width there is.
 The Berg header J2 and its plug stay inside the outline. A "A500 FRONT" mark now sits on both sides of the antenna
-edge. Open from the fit test: whether the drive's power cable reaches J2 from CN12, and the height under the shield.
+edge. Answered on 2026-09-30: the room under the shield is enough, and the drive's power cable reaches J2 from CN12.
 
 ## The rebuilt board
 

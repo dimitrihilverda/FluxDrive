@@ -39,10 +39,10 @@ by hand.
 - **J2:** check the outline of the TE 171825-4 (C210162) against its footprint (spec O15).
 - **Fit:** print `mech/fit_template.pdf` at 100 % (both scale bars must measure 50 mm and 40 mm) and lay it on
   CN11 in the A500: pin 1 over pin 1, the "A500 FRONT" edge towards the front of the computer. Check that the
-  drive's power cable from CN12 reaches J2 (about 6 cm) and that nothing is taller than the room under the shield
+  drive's power cable from CN12 reaches J2 (about 6 cm) and that the room under the shield takes the tallest part
   (`mech/FluxDrive.step` has the heights; the USB-C, the buttons and the eFuse are missing from it, none taller
-  than 3.3 mm). The rectangle that reaches 14.5 mm past the north edge on the template is the module's antenna
-  keep-out, not board.
+  than 3.3 mm). On Dimitri's A500 both are fine. The rectangle that reaches 14.5 mm past the north edge on the
+  template is the module's antenna keep-out, not board.
 
 ### Order settings (JLCPCB)
 
