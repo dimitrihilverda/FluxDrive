@@ -1,4 +1,4 @@
-# Review of the v1 layout (commit 0e820ad)
+# Review of the v1 layout (commit 91eaca9)
 
 Four specialist reviews of `FluxDrive.kicad_pcb` as it stood after plan task 10 (2 layers, 60 × 48 mm, the module's
 antenna 6 mm past the north edge), its build scripts and its tests, done by separate agents on 2026-09-29. None of

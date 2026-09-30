@@ -1,4 +1,4 @@
-# Review of the v1 schematic (commit 6c543dd)
+# Review of the v1 schematic (commit f2901b3)
 
 Four specialist reviews of the generated schematic (`FluxDrive.kicad_sch`, from `hardware/design.py`), its netlist
 and its tests, done by separate agents on 2026-09-29. None of them changed a file. This document lists every
@@ -11,7 +11,7 @@ finding, what was decided and where it went. The spec went to v0.3 for this revi
 | ESP32-S3 hardware (SESP) | 3: 1 minor, 2 nits | — |
 | PCB and manufacturing at JLC (SPCB) and the generator and tests (SCODE) | 15: 1 major, 7 minor, 7 nits | — |
 
-Reference designators below are those of the fixed schematic; the reviews quoted the numbers of 6c543dd, which
+Reference designators below are those of the fixed schematic; the reviews quoted the numbers of f2901b3, which
 shifted when parts were added.
 
 ## Sources the reviews used
