@@ -3,7 +3,8 @@
 An Amiga floppy drive emulator built around one ESP32-S3: no Gotek, no second microcontroller. It plugs into the
 A500's internal floppy connector, holds a disk image in PSRAM and generates the MFM flux stream itself. Disk
 images come from the [GTi](https://github.com/mesarim/Gotek-Touchscreen-interface) touchscreen over ESP-NOW, or
-from a phone over WiFi.
+from a phone over WiFi. The design starts from Mez's OMEGAWARE FluxDrive hardware design document (see
+[Credits](#credits)).
 
 Status: v1 hardware (rev A) designed and reviewed: schematic, 4-layer layout (DRC clean) and JLCPCB production
 files. It can be ordered once the checks under [Before ordering](#before-ordering) pass. Not built yet; the
@@ -14,7 +15,7 @@ firmware is a separate project.
 | Where | What |
 |---|---|
 | `docs/superpowers/specs/` | design specs (start with the v1 hardware design) |
-| `docs/input/` | the documents this design builds on: MES's FluxDrive HW design v0.1, breadboard measurements |
+| `docs/input/` | the documents this design builds on: Mez's OMEGAWARE FluxDrive HW design v0.1, breadboard measurements |
 | `docs/reviews/` | specialist reviews of the spec, schematic and layout, with what was done about each finding |
 | `FluxDrive_Schematic.pdf` | the schematic (generated from `hardware/design.py` by `tools/sch_gen.py`) |
 | `FluxDrive.kicad_pcb` | the board (built by `tools/pcb_build.sh`; KiCad 10) |
@@ -137,3 +138,13 @@ bash tools/export_netlist.sh && python -m pytest -q    # schematic and its tests
 bash tools/pcb_build.sh                                # the board: placement, routing, DRC (15-60 min)
 bash tools/jlc_production.sh                           # gerbers, BOM and CPL
 ```
+
+## Credits
+
+- **Mez** ([mesarim](https://github.com/mesarim)): the *OMEGAWARE FluxDrive Hardware Design Document, Rev 0.1*
+  ([`docs/input/OMEGAWARE_FluxDrive_HW_Design_v0.1.md`](docs/input/OMEGAWARE_FluxDrive_HW_Design_v0.1.md)), the input
+  this design is built on: one ESP32-S3 on the Shugart bus that generates the MFM flux itself and gets its disk
+  images from the GTi over ESP-NOW, the bus interface, the bench gate and the bring-up order. The v1 spec says where
+  it follows that document and where it departs from it.
+- **Dimmy (Dimitri Hilverda)**: the v1 hardware, from the spec to the board and the production files.
+- Disk images come from the [GTi](https://github.com/mesarim/Gotek-Touchscreen-interface) touchscreen.
