@@ -57,6 +57,27 @@ edge. Open from the fit test: whether the drive's power cable reaches J2 from CN
 - Tests: 71 passed, among them `test_usb_data_pads_joined_on_top` (new) and `test_dkrd_short_and_on_one_layer`,
   both red on the builds before their pre-route.
 
+## Final review (2026-09-30)
+
+A fresh reviewer checked tasks 8–12 against the board itself (DRC, pcbnew, regenerated gerbers, renders): no
+critical or important finding; "order it". It reproduced every number above, found the gerbers identical to a fresh
+export, BOM and CPL consistent with the board, the JLC rules met (narrowest track 0.2 mm, vias 0.3/0.6 mm tented,
+closest hole-to-hole 0.544 mm, copper to edge ≥ 0.3 mm) and the README's test-pad table, pin-1 and cathode
+directions right. Its judgements:
+
+- The hand routes are sound; USB D+ in front of the receptacle runs under its plastic, not under the metal shell.
+- The three long `_B` routes cost nothing on rev A: PIN14 is static (not connected on the A500, held high), DKWD is
+  unused in v1 (/WPROT is always asserted), and SIDE_B's worst neighbour (SEL0, 23.7 mm side by side) couples an
+  estimated 0.15–0.5 V against more than 1 V of margin.
+- The antenna area is free of copper on all four layers; SIDE_B passes 2.1 mm and SEL0 1.7 mm south of its base
+  line, on B.Cu behind In1 and In2.
+
+Taken in: LBUS-2 and LBUS-6 above (the +3V3 vias and `/CHNG_D` along the J1 GND row), LPCB-12, spec §8's
+grounding text, and three README lines (the `/CHNG_D` check after soldering J1, J3's shell legs, the keep-out
+outline on the fit template). Left for rev B or later, with the rest of the minor points in the ledger: the sparse
+ground vias along the east side of the antenna keep-out (spec §6 asks for dense ones), the +3V3 vias, the
+`/CHNG_D` route.
+
 ## Findings and decisions
 
 "Accepted" means the design, the scripts or the spec now do what the finding asks. A test named in the Decision
@@ -67,11 +88,11 @@ column failed before the fix and passes on the rebuilt board.
 | ID | Sev. | Finding | Decision |
 |---|---|---|---|
 | LBUS-1 | major | No ground plane under the buffers and resistor rows: B.Cu GND 15–20 % under U2–U4, 30 % between the rows; 43 of 48 B.Cu pieces floating. | 4 layers (Dimitri): In1 is the plane. `test_four_copper_layers_with_planes`. |
-| LBUS-2 | major | Buffer decoupling and ground returns over 60–70 mm; U3's and U4's ground vias on islands. | Every GND and +3V3 pad has its own via to its plane within 1.6 mm. `test_decoupling_reaches_the_planes`. |
+| LBUS-2 | major | Buffer decoupling and ground returns over 60–70 mm; U3's and U4's ground vias on islands. | Every GND pad of U2–U4 and their 100 nF has its own via to In1 within 1.6 mm. `test_decoupling_reaches_the_planes`. The +3V3 side does not meet that everywhere (final review): U2/U4 pin 14 reach In2 over 3.7 mm through their capacitor's via, U3 pin 14 over 8.6 mm through L1's output pad and C17, the 17 row B pull-ups share 4 vias, and the buck output enters In2 through one via. Small at these loads and edges; rev B gives each pin 14 and C17/L1 their own vias. |
 | LBUS-3 | major | The input gate assignment made the `_B` nets cross (398 mm, 39 vias for 11 nets). | Accepted: U3 takes J1 pins 4–16, U2 pins 18–32, each over its gates in connector order; row B follows the buffer inputs; the spare gate moved to U2. `test_buffers_follow_the_connector`, `test_gate_pairs`. Measured on the rebuilt board: 420 mm, 34 vias, three detours (see above). |
 | LBUS-4 | minor | `/DKRD` 16.7 mm with 2 vias, no plane under its B.Cu part. | Accepted: U4's connector-facing gates take /WPROT, /DKRD and /RDY in connector order, so /DKRD runs straight down, routed by hand (6.4 mm). `test_dkrd_short_and_on_one_layer` (≤ 10 mm, no via). The six U4 pull-ups stay in row B: with In1 under every route their wrap-around costs nothing. |
 | LBUS-5 | minor | `/INDEX_D` 88 mm (under the module and the buck inductor), `/CHNG_D` 81 mm into the J1 pin field. | With In1 both have a reference plane their whole length; the "module underside" and "buck" rule areas keep them from under U1's body and L1, the "J1 rows" rule area out of the pin field. No hand route. |
-| LBUS-6 | minor | F.Cu tracks between the J1 rows and between its GND pins (+5V_A, /SEL0_B, /TRK0_D, /CHNG_D), 0.22 mm from where the plug-on socket is soldered. | Accepted: "J1 rows" track keep-out on F.Cu and B.Cu from the even row's pads to past the odd row, with notches on F.Cu only for the five test-pad stubs. `test_rule_areas`. |
+| LBUS-6 | minor | F.Cu tracks between the J1 rows and between its GND pins (+5V_A, /SEL0_B, /TRK0_D, /CHNG_D), 0.22 mm from where the plug-on socket is soldered. | Accepted: "J1 rows" track keep-out on F.Cu and B.Cu from the even row's pads to past the odd row, with notches on F.Cu only for the five test-pad stubs. `test_rule_areas`. Left (final review): `/CHNG_D` runs along the outside of the GND pin row, 0.25–0.30 mm from the pads (B.Cu x 121.9–156, F.Cu past pins 1–7); the README asks for a continuity check after soldering J1, rev B keeps 0.8 mm. |
 | LBUS-7 | minor | In the plug-on variant J1's orientation fixes which way the board lies. | Fit test done: the board lies towards the A500's front; "A500 FRONT" on both sides. |
 | LBUS-8 | nit | A box header longer than 52 mm would overhang the east edge. | The IDC footprint's body is 50.84 mm (DIN 41651); the part's drawing (C601943) is to be checked when ordering (README). |
 
@@ -125,7 +146,7 @@ column failed before the fix and passes on the rebuilt board.
 | LPCB-9 | nit | The module's thermal vias had a 0.15 mm ring. | Accepted: 0.7 mm pads, 0.2 mm ring. |
 | LPCB-10 | nit | Paste on the unfitted parts' pads. | Accepted: `pcb_sync.py` takes the paste off unfitted parts. |
 | LPCB-11 | nit | Bottom texts over tented vias print bumpy. | Accepted as is. |
-| LPCB-12 | nit | J3's peg-to-slot hole gap 0.34 mm, below JLC's 0.45 mm. | Kept: the Nano-Tek's footprint; JLC's check decides at order time. |
+| LPCB-12 | nit | J3's peg-to-slot hole gap 0.34 mm, below JLC's 0.45 mm. | Kept: the Nano-Tek's footprint. The final review measured 0.805 mm from the drill file's slot geometry, so no remark is expected. |
 
 ### Build scripts
 

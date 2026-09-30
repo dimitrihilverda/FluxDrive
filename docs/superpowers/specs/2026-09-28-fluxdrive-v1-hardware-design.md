@@ -310,9 +310,14 @@ review (PCB-2).
   tooling holes. All bottom-side vias tented, no exposed copper on the bottom (the plug-on board may rest on
   motherboard parts). Clearance under the A500's shield is part of the fit test.
 - **Grounding and noise:** In1 is an unbroken ground plane under the whole board (apart from the antenna area);
-  every GND and +3V3 pad has its own via to its plane, none in a pad; the odd connector pins are plated through to
-  In1; the GND pours on F.Cu and B.Cu are stitched to In1 about every 5 mm, closer along the edges. No track runs
-  between the rows of the 34-way connector or between its GND pins (the plug-on socket is soldered there). The buck sits at least 15 mm from `/DKRD` and the antenna.
+  every GND pad of a logic IC and of its decoupling capacitor has its own via to In1 within 1.6 mm, none in a pad;
+  +3V3 pads reach In2 through a via of their own or of a pad next to them (rev A: U2-U4 pin 14 through their
+  100 nF, the row B pull-ups share four vias, the buck output enters In2 through one via; rev B gives each IC pin
+  14 and C17/L1 their own vias); the odd connector pins are plated through to In1; the GND pours on F.Cu and B.Cu
+  are stitched to In1 about every 5 mm, closer along the edges. No track runs between the rows of the 34-way
+  connector (the plug-on socket is soldered there); between its GND pins only the five test-pad stubs, on F.Cu.
+  Rev A has `/CHNG_D` running along the outside of the GND pin row, 0.25-0.30 mm from the pads (the README asks
+  for a continuity check after soldering J1); rev B keeps tracks 0.8 mm from that row. The buck sits at least 15 mm from `/DKRD` and the antenna.
   Buck layout per the TLV62569 datasheet: tight input capacitor loop, small switch node with nothing under it or the
   inductor (no track under it on B.Cu, none between its pads), separate feedback sense track.
 - **USB pair:** full speed (12 Mbit/s) only, so the impedance is not controlled (LESP-3): D+ and D− run close

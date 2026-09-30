@@ -41,7 +41,8 @@ by hand.
   CN11 in the A500: pin 1 over pin 1, the "A500 FRONT" edge towards the front of the computer. Check that the
   drive's power cable from CN12 reaches J2 (about 6 cm) and that nothing is taller than the room under the shield
   (`mech/FluxDrive.step` has the heights; the USB-C, the buttons and the eFuse are missing from it, none taller
-  than 3.3 mm).
+  than 3.3 mm). The rectangle that reaches 14.5 mm past the north edge on the template is the module's antenna
+  keep-out, not board.
 
 ### Order settings (JLCPCB)
 
@@ -82,6 +83,12 @@ Before paying, look at every part below in JLC's preview; fix a wrong rotation t
 | J2 | TE 171825-4 floppy power header, vertical | C210162 | polarised; pin 1 = +5 V at the north end |
 | J4 | 1×6 pin header, 2.54 mm | — | optional: UART recovery (TX, RX, EN, IO0, 3V3, GND from the ESP32's side) |
 | J5 | 1×6 pin header, 2.54 mm | — | optional: spare GPIO13, 14, 47, 48, 3V3, GND |
+
+- **J3's shell legs:** the four through-hole legs of the USB-C receptacle get no solder paste. Check them on
+  delivery; if they are bare, solder them from the bottom side (they carry the plugging force, not the SMD pins).
+- **After soldering J1:** `/CHNG_D` runs 0.25–0.30 mm past the row of J1's ground pins, on both sides. With the
+  board unpowered, beep between U4 pin 10 (`/CHNG_D`) and J1 pin 1 (GND): a steady beep means a solder bridge or
+  a scratched mask there, and the Amiga would see a disk change all the time.
 
 The unfitted pads (0603 unless noted), only if bring-up asks for them: C1–C4 220 pF input filters on STEP, SEL0,
 SEL1 and MTR0; R16 and R25 1 kΩ pull-ups for the two /MTR0 pins; C16 15 pF buck feed-forward; C21/C22 10 pF on
