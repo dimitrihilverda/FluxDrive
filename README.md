@@ -141,7 +141,7 @@ bash tools/jlc_production.sh                           # gerbers, BOM and CPL
 
 ## Credits
 
-- **Mez**: the *OMEGAWARE FluxDrive Hardware Design Document, Rev 0.1*
+- **Mez** ([mesarim](https://github.com/mesarim)): the *OMEGAWARE FluxDrive Hardware Design Document, Rev 0.1*
   ([`docs/input/OMEGAWARE_FluxDrive_HW_Design_v0.1.md`](docs/input/OMEGAWARE_FluxDrive_HW_Design_v0.1.md)), the input
   this design is built on: one ESP32-S3 on the Shugart bus that generates the MFM flux itself and gets its disk
   images from the GTi over ESP-NOW, the bus interface, the bench gate and the bring-up order. The v1 spec says where

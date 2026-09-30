@@ -2,7 +2,7 @@
 
 **Status:** v0.4, 2026-09-29. Dimitri approved v0.2; v0.3 took in the schematic review, v0.4 the layout review and Dimitri's two decisions on it (4 layers; the antenna on the board).
 **Authors:** Dimitri Hilverda (GTi co-author), with Claude
-**Based on:** `docs/input/OMEGAWARE_FluxDrive_HW_Design_v0.1.md` (MES), `docs/input/FluxDrive_v0.1_review_notes.md`
+**Based on:** `docs/input/OMEGAWARE_FluxDrive_HW_Design_v0.1.md` (Mez, [mesarim](https://github.com/mesarim)), `docs/input/FluxDrive_v0.1_review_notes.md`
 (breadboard measurements), and the A500 bus research done for the Nano-Tek Rev 2.0 GTi.
 **Review:** `docs/reviews/2026-09-29-spec-review.md` lists every finding (BUS-, PWR-, SI-, ESP-, PCB-numbers below)
 and what was done with it; `docs/reviews/2026-09-29-schematic-review.md` does the same for the schematic (SBUS-,
@@ -281,7 +281,7 @@ review (PCB-2).
 - **Recovery/console header** (6 pins, 2.54 mm, holes only): TX (GPIO43, 470 Ω in series), RX (GPIO44), EN, IO0,
   3.3 V, GND. A USB-serial adapter can reflash the board through it even if USB is dead. The ROM prints its boot
   messages on UART0, so a wired link to the GTi uses UART1 on the spare header, not this one.
-- **Spare header** (holes only): GPIO13, 14, 47, 48, 3.3 V, GND. It replaces MES's unpopulated RP2350 footprint:
+- **Spare header** (holes only): GPIO13, 14, 47, 48, 3.3 V, GND. It replaces Mez's unpopulated RP2350 footprint:
   that fallback needs a crystal, flash and a second power domain, and is better as a separate board if the bench gate
   ever fails.
 - **Test pads, on the top side:** `/DKRD`, `/INDEX`, `/SEL0`, `/STEP`, `/MTR0` (both sides of the buffers), +5V_A,
@@ -429,14 +429,14 @@ Main parts (review suggestions, to be re-checked in JLC's BOM tool):
    - the tests read a netlist exported fresh from the committed schematic, and fail if that schematic is not what
      the design file generates; ERC on the real schematic at every severity.
 2. **ERC and DRC clean**, with JLC's 4-layer rules.
-3. **Bench gate** (MES §8), before the Amiga is involved: flux on a bare dev board for 30 minutes, with ESP-NOW
+3. **Bench gate** (Mez §8), before the Amiga is involved: flux on a bare dev board for 30 minutes, with ESP-NOW
    flooding. Tight 4/6/8 µs clusters, nothing at buffer boundaries or the wrap point, no gap in the endless
    transmission.
 4. **Fit test:** a 1:1 paper template and a printed dummy in the A500, in both connector variants, including the
    overhang direction and the clearance under the shield.
 5. **Range test** with a real WROOM-1 board (a SuperMini has a different antenna) inside the closed A500, in both
    connector variants. If it does not reach the GTi, the board is ordered with the WROOM-1U.
-6. **Bring-up** in MES's order (§7 of the input document):
+6. **Bring-up** in Mez's order (§7 of the input document):
    - power: a reversed plug on a lab supply with current limit; USB alone with the Amiga off (+5V_A about 0.5 V,
      AMIGA_PWR low); hot-plug a 1 m and a 2 m USB-C cable with the Amiga off and scope V5SYS: it must stay below
      6 V, otherwise fit the damper of §5;
