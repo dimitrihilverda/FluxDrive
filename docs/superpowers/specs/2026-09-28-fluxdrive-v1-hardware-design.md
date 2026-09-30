@@ -1,11 +1,13 @@
 # FluxDrive v1 — hardware design
 
-**Status:** v0.2, after the specialist review, 2026-09-29. Waiting for Dimitri's approval before the plan is written.
+**Status:** v0.4, 2026-09-29. Dimitri approved v0.2; v0.3 took in the schematic review, v0.4 the layout review and Dimitri's two decisions on it (4 layers; the antenna on the board).
 **Authors:** Dimitri Hilverda (GTi co-author), with Claude
 **Based on:** `docs/input/OMEGAWARE_FluxDrive_HW_Design_v0.1.md` (MES), `docs/input/FluxDrive_v0.1_review_notes.md`
 (breadboard measurements), and the A500 bus research done for the Nano-Tek Rev 2.0 GTi.
 **Review:** `docs/reviews/2026-09-29-spec-review.md` lists every finding (BUS-, PWR-, SI-, ESP-, PCB-numbers below)
-and what was done with it.
+and what was done with it; `docs/reviews/2026-09-29-schematic-review.md` does the same for the schematic (SBUS-,
+SPWR-, SESP-, SPCB-, SCODE-numbers), `docs/reviews/2026-09-29-layout-review.md` for the layout (LBUS-, LPWR-,
+LESP-, LPCB-, LCODE-numbers).
 
 FluxDrive is an Amiga floppy drive emulator built around one ESP32-S3 and nothing else: no Gotek, no second
 microcontroller. It plugs into the A500's internal floppy connector, holds a disk image in PSRAM and generates the
@@ -139,7 +141,10 @@ Eleven inputs on twelve inverters (one spare, input tied to ground). Six outputs
 - **Topology per line, in this order:** connector pin → pull-up node → 100 Ω → LVC14A input, with 100 kΩ from the
   LVC14A input to +3.3 V. The pull-up must be on the connector side: on the buffer side, 4 mA through the 100 Ω
   would lift a low to 0.92 V, above the LVC14A's minimum VT− of 0.8 V (BUS-3). The 100 Ω limits current for ESD
-  and when the board is unpowered; the 100 kΩ keeps the inputs defined on the bench.
+  and when the board is unpowered. On the bench (USB only, no Amiga, no ribbon) +3V3 leaks through the 100 kΩ
+  and the pull-ups into +5V_A, which the AMIGA_PWR divider (§5) holds at about 0.5 V. Every input then sits at a
+  defined level: 0.5–0.75 V on the lines pulled up to +5V_A (they read as asserted), 3.3 V on the others. The
+  firmware ignores them while AMIGA_PWR is low (SPWR-4).
 - **Pull-up values** (to +5V_A, the Amiga side of the power OR, §5):
 
   | Lines | Value | Why |
@@ -189,28 +194,40 @@ review (PCB-2).
 
 ## 5. Power
 
-- **Input:** polarised 4-pin floppy power header **TE 171826-4** (as on the Gotek and the Nano-Tek), fed from CN12.
+- **Input:** polarised 4-pin floppy power header **TE 171825-4**, vertical (LCSC C210162), fed from CN12. It is the
+  same Berg family as on the Gotek and the Nano-Tek; their right-angle 171826-4 has almost no stock at LCSC (SPCB-1).
+  For runs of 50, buy it from a distributor; it is hand-soldered anyway.
   A bare 1×4 header is not allowed: a plug shifted by one pin shorts the PSU. Only +5 V is used; +12 V is not
   connected.
-- **eFuse** on CN12 pin 1: TPS259531 (to be verified against its datasheet in the plan) with an over-voltage clamp at
-  5.7 V, a current limit and soft-start (about 22 nF). It survives a reversed plug (+12 V on the 5 V pin) and keeps
-  it off the bus pull-ups, the LVC14A inputs (abs. max 6.5 V) and the Amiga's own pins. Its output is **+5V_A**.
+- **eFuse** on CN12 pin 1: TPS259531 (checked against datasheet SLVSE57C in the schematic review) with an over-voltage clamp at
+  5.7 V, a current limit and soft-start (about 22 nF). It survives a reversed plug (+12 V on the 5 V pin) **fitted
+  with the power off**, and keeps it off the bus pull-ups, the LVC14A inputs (abs. max 6.5 V) and the Amiga's own
+  pins. Its output is **+5V_A**. A reversed plug pushed on while the PSU runs can ring above the eFuse's 20 V
+  absolute maximum: an unfitted pad for an SMAJ13A TVS (13 V standoff) sits on its input for that (SPWR-3).
 - **Power OR:** `+5V_A` → Schottky (SS34) → **V5SYS**; USB-C VBUS → USBLC6-2SC6 → Schottky (SS34) → V5SYS. There
   is no P-FET: a reverse-polarity P-FET conducts both ways and would let USB feed the whole A500 (PWR-1).
-  - The Amiga cannot reach VBUS, and USB cannot reach +5V_A or the Amiga.
+  - The Amiga cannot reach VBUS, and USB cannot power +5V_A or the Amiga (only the 100 kΩ leakage of §4.2, BUS-4).
+  - The USBLC6's supply pin goes to +3V3, not to VBUS: on VBUS, the ESP32's D+ pull-up would lift VBUS to about
+    2.7 V through the ESD diodes, and a USB-C host on a C-to-C cable would then not switch VBUS on. A 10 kΩ bleeder
+    holds VBUS at 0 V without a cable against the leakage of the VBUS diode (SPWR-1).
   - Alternative: two LM66100 ideal diodes instead of the Schottkys (±6 V abs. max, behind the eFuse).
 - **3.3 V:** buck converter **TLV62569DBVR** (2.5–5.5 V in, 2 A, 100 % duty cycle), 2.2 µH, 22 µF out plus the
-  module's own 22 µF. It runs from USB's 4.75 V minus a Schottky; the TPS562201 of the input document needs 4.5 V in
+  module's own 22 µF, and an unfitted 15 pF feed-forward pad across the top feedback resistor (SPWR-5). It runs
+  from USB's 4.75 V minus a Schottky; the TPS562201 of the input document needs 4.5 V in
   and does not (PWR-5). The ESP32-S3 peaks at 350–500 mA while transmitting; an LDO would burn up to 0.8 W inside
   the closed case.
 - **Capacitors:**
   - eFuse input: 1 µF ceramic.
-  - +5V_A: 47–100 µF ceramic (1206). The eFuse soft-start separates it from the cable, so the hot-plug overshoot of a
-    ceramic on a bare cable does not apply.
-  - V5SYS (buck input, seen by USB through its diode): 10 µF + 100 nF, no more (USB allows 10 µF on VBUS).
+  - +5V_A: 2 × 47 µF 10 V X5R ceramic (1206, LCSC C96123), no 6.3 V parts: the clamp is 5.7 V (SPCB-2). The eFuse
+    soft-start separates them from the cable, so the hot-plug overshoot of a ceramic on a bare cable does not apply.
+  - V5SYS (buck input, seen by USB through its diode): 10 µF + 100 nF, no more (USB allows 10 µF on VBUS). An
+    unfitted 1 Ω + 4.7 µF damper pad sits next to them in case a USB hot-plug rings V5SYS towards the buck's 6 V
+    absolute maximum; if it is fitted, the 10 µF becomes 4.7 µF (SPWR-2).
   - 22 µF + 100 nF at the module's 3V3 pin, 100 nF per logic IC.
-- **AMIGA_PWR:** 10 kΩ / 15 kΩ divider from +5V_A to GPIO1 (3.0 V at 5 V). While it reads low, the firmware keeps
-  every output released and ignores the inputs, because with the Amiga off every input reads as asserted.
+- **AMIGA_PWR:** 1 kΩ / 1.5 kΩ divider from +5V_A to GPIO1 (3.0 V at 5 V, 3.5 V at the clamp, 2 mA). It is this
+  stiff so that on USB alone the leakage of §4.2 leaves it at about 0.3 V, well below the ESP32's 0.83 V low
+  threshold (SESP-1). While it reads low, the firmware keeps every output released and ignores the inputs, because
+  with the Amiga off every input reads as asserted.
 - **Unsupported:** the 34-pin cable connected without the power cable. The pull-ups then hang on a dead +5V_A and
   the bus levels are undefined. The manual says so.
 
@@ -225,7 +242,10 @@ review (PCB-2).
   and 11-2). It is the fallback if the PCB antenna does not reach the GTi from inside the A500's shielded case (O5).
   It only helps if the antenna cable can leave the shield.
 - **Antenna** (Espressif hardware design guidelines, PCB layout):
-  - the antenna end of the module overhangs the board edge, with its feed point near the edge;
+  - the antenna end of the module lies at the north board edge (0.5 mm inside it, so JLC can assemble the
+    board: O10), over board material that is free of copper on all four layers, with its feed point near the
+    edge. An overhanging antenna would reach a little further, but JLC's economic assembly wants every part inside
+    the outline (Dimitri's decision after the layout review, LPCB-1);
   - no copper on any layer, no components and no ground pour under or beside it; dense ground vias along the
     keep-out border;
   - at least 15 mm clearance from metal in the housing, in all directions. In the plug-on variant the motherboard is
@@ -254,11 +274,11 @@ review (PCB-2).
 - **USB-C** (USB 2.0 only) on GPIO19/20 for flashing and the serial console:
   - separate 5.1 kΩ on CC1 and CC2 (sink); A6–B6 and A7–B7 tied;
   - 22 Ω series pads on D+/D− near the module (0 Ω fitted if not needed) and unfitted capacitor pads to ground;
-  - USBLC6-2SC6 at the connector, ahead of the VBUS diode;
+  - USBLC6-2SC6 at the connector, its supply pin on +3V3 (§5);
   - automatic download mode over USB-Serial/JTAG needs no extra parts, but stops working if the firmware
     reconfigures GPIO19/20, switches that controller off or sleeps. Recovery is then BOOT + RESET, or the UART header.
 - **Activity LED** on GPIO2.
-- **Recovery/console header** (6 pins, 2.54 mm, holes only): TX (GPIO43, 499 Ω in series), RX (GPIO44), EN, IO0,
+- **Recovery/console header** (6 pins, 2.54 mm, holes only): TX (GPIO43, 470 Ω in series), RX (GPIO44), EN, IO0,
   3.3 V, GND. A USB-serial adapter can reflash the board through it even if USB is dead. The ROM prints its boot
   messages on UART0, so a wired link to the GTi uses UART1 on the spare header, not this one.
 - **Spare header** (holes only): GPIO13, 14, 47, 48, 3.3 V, GND. It replaces MES's unpopulated RP2350 footprint:
@@ -269,17 +289,19 @@ review (PCB-2).
 
 ## 8. PCB
 
-- 2 layers, 1.6 mm, JLC standard process. All SMD on the top side, assembled by JLC. **Hand-soldered** by the
+- **4 layers**, 1.6 mm, JLC standard process: F.Cu signals, In1.Cu a solid GND plane, In2.Cu a solid +3V3 plane,
+  B.Cu signals (Dimitri's decision after the layout review: on 2 layers the router cut the bottom plane into
+  pieces under the buffers, LBUS-1/LPWR-1). All SMD on the top side, assembled by JLC. **Hand-soldered** by the
   builder: every through-hole part (the 34-pin connector, top or bottom (§4.4), the power header, the two headers of
-  §7).
-- **Size:** at least 56 mm along the connector axis (a 34-way boxed header body is 51–54 mm long), about 45 mm the
-  other way; the final outline follows the layout and the fit test (O7). A 54 × 10 mm area on the top side above the
+  §7). Unfitted pads are 0603, so the builder can fit them by hand (SPCB-3).
+- **Size:** 60 × 54.5 mm: at least 56 mm along the connector axis (a 34-way boxed header body is 51–54 mm long),
+  48 mm for the parts and 6.5 mm for the antenna; the fit test (O7) can still change it. A 54 × 10 mm area on the top side above the
   connector stays free of SMD parts, for the header body and for the soldering iron.
-- **Floorplan** (review suggestion, 56 × 45 mm, top view):
+- **Floorplan** (top view):
   - south edge: the 2×17 connector, even row inward;
-  - above it: the resistors, the two LVC14As under pins 4–24 and 32, the LVC07A at the pin 26–34 end, so `/DKRD`
-    is a track of about 10 mm;
-  - north half: the module, antenna overhanging the north edge;
+  - above it: the resistors, the two LVC14As (one under pins 4–16, one under pins 18–32, each gate in the
+    connector's order), the LVC07A at the pin 26–34 end, so `/DKRD` is a track of about 10 mm without a via;
+  - north half: the module, its antenna along the north edge;
   - west strip: the power header next to the 34-way connector (vertical, so plugging it in pushes straight down
     through the socket), eFuse, bulk capacitor, diodes, buck; USB-C on the west edge near GPIO19/20, with the ESD
     part at the connector;
@@ -287,20 +309,32 @@ review (PCB-2).
 - **Mechanics:** two 3.2 mm non-plated holes at the far end for a nylon standoff or a printed foot; they are also
   tooling holes. All bottom-side vias tented, no exposed copper on the bottom (the plug-on board may rest on
   motherboard parts). Clearance under the A500's shield is part of the fit test.
-- **Grounding and noise:** the bottom layer is an unbroken ground plane under the signal area, with only short
-  bottom jumpers crossing at right angles; every odd connector pin gets its own via; stitching vias about every 5 mm
-  around the buck and along the edges and the keep-out. The buck sits at least 15 mm from `/DKRD` and the antenna.
+- **Grounding and noise:** In1 is an unbroken ground plane under the whole board (apart from the antenna area);
+  every GND pad of a logic IC and of its decoupling capacitor has its own via to In1 within 1.6 mm, none in a pad;
+  +3V3 pads reach In2 through a via of their own or of a pad next to them (rev A: U2-U4 pin 14 through their
+  100 nF, the row B pull-ups share four vias, the buck output enters In2 through one via; rev B gives each IC pin
+  14 and C17/L1 their own vias); the odd connector pins are plated through to In1; the GND pours on F.Cu and B.Cu
+  are stitched to In1 about every 5 mm, closer along the edges. No track runs between the rows of the 34-way
+  connector (the plug-on socket is soldered there); between its GND pins only the five test-pad stubs, on F.Cu.
+  Rev A has `/CHNG_D` running along the outside of the GND pin row, 0.25-0.30 mm from the pads (the README asks
+  for a continuity check after soldering J1); rev B keeps tracks 0.8 mm from that row. The buck sits at least 15 mm from `/DKRD` and the antenna.
   Buck layout per the TLV62569 datasheet: tight input capacitor loop, small switch node with nothing under it or the
-  inductor, separate feedback sense track.
-- **USB pair:** 90 Ω ±10 % differential, ground-return vias at any layer change.
-- **Rules:** tracks and spacing 0.2 / 0.2 mm (0.15 mm allowed at the module), power 0.4 mm; vias 0.3 mm drill /
+  inductor (no track under it on B.Cu, none between its pads), separate feedback sense track.
+- **USB pair:** full speed (12 Mbit/s) only, so the impedance is not controlled (LESP-3): D+ and D− run close
+  together over the In1 plane, the 22 Ω series pads next to the ESD part, the unfitted 10 pF pads on their module
+  side.
+- **Rules:** tracks and spacing 0.2 / 0.2 mm (0.15 mm allowed at the module), power 0.3 mm (the eFuse's 0.5 mm
+  pitch pads take no wider track; 0.3 mm carries its 0.95 A limit); vias 0.3 mm drill /
   0.6 mm pad; through-hole annular ring ≥ 0.25 mm, header holes 1.0 mm with 1.7 mm pads; copper ≥ 0.3 mm from the
   edge; thermal reliefs on the ground pins of the 34-way and the power header; silkscreen text ≥ 1.0 mm with
   0.15 mm lines, 0.15 mm clear of pads.
 - **Production features:** three fiducials (1 mm copper, 2 mm mask opening); a 15 × 6 mm silkscreen box on the
   bottom for a serial number and "FluxDrive v1 rev A"; a chosen position for JLC's order number.
-- **Panel:** the outline allows a 2-up JLC panel with mouse bites (JLC's economic assembly takes 30 or 50 pieces;
-  its pages disagree). Decided at order time.
+- **Panel:** none needed: the board is ordered as a single board (economic assembly takes 2–50 pieces). A 2-up
+  panel with mouse bites is possible if a larger run wants it; tracks and parts keep at least 0.3 mm from the
+  edges.
+- **Test pads:** 1.0 mm, on the top side, for a probe (SPCB-8: no pogo-pin fixture in v1). The connector-side ones
+  sit in the strip south of J1; a map of all sixteen is in the README.
 
 ## 9. What the firmware must do because of this hardware
 
@@ -320,7 +354,12 @@ Firmware is a separate design; these points follow from the board and are fixed 
   to input. Releasing a line always means switching it to input. RMT channels use idle and end-of-transmission level
   1 (or `invert_out`); a GPIO is set high before it is made an output; I2S `auto_clear` must not send zeros onto
   `/DKRD`.
-- **AMIGA_PWR low:** every output released, inputs ignored.
+- **AMIGA_PWR low:** every output released, inputs ignored. Reading GPIO1 with ADC1_CH0 and a threshold of about
+  2.4 V (+5V_A above about 4 V), with some hysteresis, also covers the reverse leakage of the +5V_A Schottky, which grows when hot (SPWR-4).
+- **RTC slow clock:** internal only, never the external 32 kHz crystal: GPIO15/16 are bus inputs, driven by the
+  LVC14A (SBUS-3).
+- **Spare header J5:** GPIO13, 14, 47 and 48 get their internal pull-ups until something uses them; their tracks
+  are 33–48 mm long and would float (LESP-10).
 - **Outputs are gated by `/SEL0` only**, not by whether an image is mounted. While deselected all six are released.
 - **Selected, no disk:** `/CHNG` asserted, `/WPROT` asserted, `/TRK0` live (it follows the head), no `/DKRD`, no
   `/INDEX`.
@@ -335,14 +374,17 @@ Firmware is a separate design; these points follow from the board and are fixed 
   at the track wrap.
 - **`/DKRD` pulse width:** fixed in the firmware spec after measuring a real drive (O12).
 - **eFuses:** never burn `EFUSE_STRAP_JTAG_SEL` (GPIO39–42 must stay GPIO); `EFUSE_DIS_PAD_JTAG` may be burnt to lock
-  that in. On v1, no secure boot, no flash encryption, no `DIS_DOWNLOAD_MODE`, no `DIS_USB_SERIAL_JTAG`: each would
+  that in. `EFUSE_DIS_USB_JTAG` only together with `EFUSE_DIS_PAD_JTAG`: alone it moves JTAG onto GPIO39–42,
+  and GPIO40 would drive the bus until `app_main` runs (SESP-3). On v1, no secure boot, no flash encryption, no `DIS_DOWNLOAD_MODE`, no `DIS_USB_SERIAL_JTAG`: each would
   remove a recovery path.
 - **GTi compatibility:** from the GTi's side FluxDrive is a dongle-class device, with the same ESP-NOW protocol and
   the same pairing gesture as the GTi SuperMini dongle (hold BOOT 5 s to pair, 15 s to wipe).
 
 ## 10. Cost
 
-Estimate from the PCB review (JLC economic assembly: $8.18 setup, $1.53 stencil, $3.07 per extended part), plus the
+Estimate from the PCB review (JLC economic assembly: $8.18 setup, $1.53 stencil, $3.07 per extended part), with
+about €1 per board (5–10 boards) or €0.5 (50) for 4 layers instead of 2 (layout review; to check in JLC's
+calculator at order time), plus the
 eFuse added after the power review. Parts at JLC's price tier per quantity, PCB price estimated, 1 EUR = 1.15 USD,
 shipping, VAT and customs excluded. LCSC numbers and prices are fixed in the plan.
 
@@ -351,9 +393,9 @@ shipping, VAT and customs excluded. LCSC numbers and prices are fixed in the pla
 
 | Quantity | Per board |
 |---|---|
-| 5 | ≈ €14 |
-| 10 | ≈ €11 |
-| 50 | ≈ €7.5 |
+| 5 | ≈ €15 |
+| 10 | ≈ €12 |
+| 50 | ≈ €8 |
 
 The WROOM-1U variant adds about €1.5–2 per board (module plus antenna and pigtail).
 
@@ -364,13 +406,15 @@ Main parts (review suggestions, to be re-checked in JLC's BOM tool):
 | Module | ESP32-S3-WROOM-1-N16R8 (1U: WROOM-1U-N16R8) | C2913202 (C3013946) |
 | Schmitt inverter | SN74LVC14ADR, SOIC-14 (or Nexperia) | C133541 (C6065) |
 | Open-drain buffer | 74LVC07AD, SOIC-14 | C6049 (reserve stock before a 50-piece order) |
-| eFuse | TPS259531DSGR | C2155674 |
+| eFuse | TPS259531DSGR | C2155674 (single source, about 2,000 in stock: reserve before an order, SPCB-4) |
 | Buck | TLV62569DBVR | C141836 |
 | Schottky ×2 | SS34 | C8678 |
 | USB ESD | USBLC6-2SC6 | C7519 or C2687116 |
 | USB-C 16-pin | TYPE-C16PIN (the Nano-Tek part and footprint, placed by JLC before) | C393939 |
 | Tactile switch | TS-1187A-B-A-B | C318884 |
 | LED | KT-0603R | C2286 |
+| Bulk capacitor ×2 | 47 µF 10 V X5R 1206, CL31A476MPHNNNE | C96123 |
+| Power header | TE 171825-4, vertical, hand-soldered | C210162 |
 
 ## 11. How the design is proven
 
@@ -379,8 +423,12 @@ Main parts (review suggestions, to be re-checked in JLC's BOM tool):
    - no pull-up on `/MTR0`; pull-ups on +5V_A, not on V5SYS;
    - every output GPIO in {21, 38–42}, every output buffer input with its 10 kΩ, 33 Ω in series at every output;
    - strapping pins free, GPIO0 with 10 kΩ, no 5 V on a 3.3 V pin;
-   - the power path: eFuse before +5V_A, a diode between +5V_A and V5SYS and between VBUS and V5SYS.
-2. **ERC and DRC clean**, with JLC's 2-layer rules.
+   - the power path: eFuse before +5V_A, a diode between +5V_A and V5SYS and between VBUS and V5SYS;
+   - every gate used in and out of the same gate; the unfitted pads present, between the right nets;
+   - the DC levels on USB alone (a resistor-network solve): AMIGA_PWR low, every bus input at a defined level;
+   - the tests read a netlist exported fresh from the committed schematic, and fail if that schematic is not what
+     the design file generates; ERC on the real schematic at every severity.
+2. **ERC and DRC clean**, with JLC's 4-layer rules.
 3. **Bench gate** (MES §8), before the Amiga is involved: flux on a bare dev board for 30 minutes, with ESP-NOW
    flooding. Tight 4/6/8 µs clusters, nothing at buffer boundaries or the wrap point, no gap in the endless
    transmission.
@@ -389,9 +437,13 @@ Main parts (review suggestions, to be re-checked in JLC's BOM tool):
 5. **Range test** with a real WROOM-1 board (a SuperMini has a different antenna) inside the closed A500, in both
    connector variants. If it does not reach the GTi, the board is ordered with the WROOM-1U.
 6. **Bring-up** in MES's order (§7 of the input document):
-   - power: a reversed plug on a lab supply with current limit; USB alone with the Amiga off (nothing on +5V_A);
+   - power: a reversed plug on a lab supply with current limit; USB alone with the Amiga off (+5V_A about 0.5 V,
+     AMIGA_PWR low); hot-plug a 1 m and a 2 m USB-C cable with the Amiga off and scope V5SYS: it must stay below
+     6 V, otherwise fit the damper of §5;
    - scope the six outputs through power-up, a RESET press and a flash over USB: no low pulse;
-   - bus with firmware halted (the Amiga boots and sees an empty DF0), inputs logged, static outputs, synthetic
+   - bus with firmware halted: all outputs released, so DF0 looks like a drive holding an unreadable disk (not an
+     empty drive); the Amiga must still reach the insert-disk screen or boot its next device (SBUS-1). Then inputs
+     logged, static outputs, synthetic
      track, one real track, Workbench boot, GTi insert, eject;
    - one hour lid-closed at the module: air temperature below 85 °C.
 
@@ -404,21 +456,26 @@ powered but with the firmware halted or unflashed. Fitted without the power cabl
 Four specialist agents reviewed draft v0.1 on 2026-09-28/29: Amiga floppy bus, power and EMC, ESP32-S3 hardware,
 PCB and manufacturing at JLC. Two blockers (the P-FET back-feed, the power-up glitches on the output GPIOs), 16
 major findings and the rest minor. All of them are in `docs/reviews/2026-09-29-spec-review.md` with their sources and
-decisions. The same four reviews run again on the schematic and on the layout.
+decisions. The same four reviews ran again on the schematic (2026-09-29, no blockers, two majors, both fixed:
+`docs/reviews/2026-09-29-schematic-review.md`) and run once more on the layout.
 
 ## 13. Open items
 
 | # | Item | Decides |
 |---|---|---|
 | O5 | PCB antenna or U.FL: range test with a WROOM-1 board, both connector variants | module variant |
-| O7 | Board outline, overhang direction and mounting in the A500 (fit test) | layout |
+| O7 | Mounting of the plug-on variant (the printed foot of §8) and a printed dummy in the A500; the outline and the overhang direction are fixed by the paper fit test | mechanics |
 | O8 | Write-back policy for v2 (RAM disk, push to GTi, microSD) | nothing in v1 |
 | O9 | Licence and where the repo is published (OMEGAWARE / GTi) | publication |
-| O10 | Does JLC economic assembly take a module overhanging the board edge? Otherwise a U-shaped cut-out around the antenna, or a panel with a slot | layout |
-| O11 | TPS259531: check clamp voltage, current limit, package and JLC stock against the datasheet | BOM |
 | O12 | Real-drive `/DKRD` and `/INDEX` pulse widths, Paula's `/DKWD` pulse width (the 4.7 kΩ rise of 0.7 µs) | firmware, v2 |
 | O13 | Kickstart 1.3/2.x/3.x with a DF0 ID; whether reset clears Gary's motor latch; the A500+ `/MTR0` network | firmware |
 | O14 | External DF1 (later): outputs gated by `/SEL` in logic, a hardware motor latch for `MTRXD` | v2 hardware |
+| O15 | TE 171825-4: body outline and the pin row's place in it against TE drawing 171825 (the footprint's pads are the right-angle part's, its outline an estimate) | layout |
 
 Closed in review: O1 (Gary latches `/MTR0`), O2 (pull-up values, §4.2), O3 (output GPIOs without a power-up
-glitch, §2.3), O4 (buck TLV62569, §5), O6 (GPIO allocation, §4.1 and §6).
+glitch, §2.3), O4 (buck TLV62569, §5), O6 (GPIO allocation, §4.1 and §6). Closed in the schematic review: O11
+(TPS259531 clamp, current limit, pinout and package checked against SLVSE57C; stock see §10).
+Closed in the layout review: O10 (the module lies on the board with its antenna 0.5 mm inside the north edge, §6).
+Fit test with the paper template (Dimitri, 2026-09-29/30): the board lies over CN11 towards the A500's front, over the
+8520 and Gary; 60 mm is the width between CN12 and an electrolytic capacitor; the room under the shield is enough
+and the drive's power cable reaches J2 from CN12. O7 keeps only the plug-on mounting and the printed dummy.

@@ -25,14 +25,14 @@ Java 17 + Freerouting 1.9 (`~/.kicad-mcp/freerouting.jar`, already installed for
 - Inputs: connector → pull-up node → 100 Ω → 74LVC14A, 100 kΩ from the LVC14A input to +3.3 V.
 - Pull-ups to **+5V_A**: 1 kΩ `/STEP` `/DIR` `/SIDE` `/SEL0`; 4.7 kΩ `/DKWD` `/DKWE`; 10 kΩ `/SEL1`; none fitted on `/MTR0` (pins 4, 16).
 - Outputs: 74LVC07A, 10 kΩ to +3.3 V on every buffer input, 33 Ω in series at every output.
-- Power: TE 171826-4 → TPS259531 eFuse (5.7 V clamp) → +5V_A → SS34 → V5SYS; VBUS → USBLC6-2SC6 → SS34 → V5SYS; V5SYS ≤ 10 µF; TLV62569 buck, 2.2 µH, to +3V3. No P-FET.
-- AMIGA_PWR: 10 kΩ / 15 kΩ from +5V_A to GPIO1.
+- Power: TE 171825-4 (vertical; was 171826-4 before the schematic review) → TPS259531 eFuse (5.7 V clamp) → +5V_A → SS34 → V5SYS; VBUS → USBLC6-2SC6 → SS34 → V5SYS; V5SYS ≤ 10 µF; TLV62569 buck, 2.2 µH, to +3V3. No P-FET.
+- AMIGA_PWR: 1 kΩ / 1.5 kΩ from +5V_A to GPIO1 (10 kΩ / 15 kΩ before the schematic review, SESP-1).
 - GPIO0: 10 kΩ pull-up, no capacitor. EN: 10 kΩ pull-up, 1 µF.
 - Board: 2 layers, 1.6 mm, ≥ 56 mm along the connector, about 45 mm deep; all SMD on top, assembled by JLC; every through-hole part hand-soldered by Dimitri.
 - Rules: tracks 0.2/0.2 mm (0.15 mm at the module), power 0.4 mm, vias 0.3/0.6 mm, copper ≥ 0.3 mm from the edge.
 - Antenna end of the module over the north edge, keep-out on all layers, 15 mm clearance from housing metal (fit test).
 - Silkscreen: pin-1 triangle and edge mark for the 34-pin connector on both sides, "FluxDrive v1 rev A", "by Dimmy (Dimitri Hilverda)".
-- Git: commit with `git -c core.autocrlf=false`, never push. Commit messages end with the `Co-Authored-By` line of the session (not in Dimitri's own texts).
+- Git: commit with `git -c core.autocrlf=false`, never push. No AI attribution in commits (no `Co-Authored-By`), per Dimitri's global rules.
 
 ## Review focus
 
@@ -60,7 +60,7 @@ Failure modes the spec implies that no single task's main tests would catch; eac
 | `tools/sch_gen.py` | `design.py` → `FluxDrive.kicad_sch`. |
 | `tools/netlist.py` | Netlist reader (copied from Nano-Tek `2623d2f`, plus DNP awareness). |
 | `tools/export_netlist.sh` | `kicad-cli` netlist export to `build/FluxDrive.net`. |
-| `FluxDrive.kicad_sym`, `FluxDrive.pretty/` | Project symbols (TPS259531, TYPE-C16PIN, 171826-4) and footprints (USB-C, 171826-4). |
+| `FluxDrive.kicad_sym`, `FluxDrive.pretty/` | Project symbols (TPS259531, TYPE-C16PIN, 171825-4) and footprints (USB-C, 171825-4). |
 | `FluxDrive.kicad_pro`, `sym-lib-table`, `fp-lib-table` | KiCad project. |
 | `tests/fd.py`, `tests/conftest.py` | Test helpers and the netlist fixture. |
 | `tests/test_bus.py`, `test_power.py`, `test_esp.py`, `test_bom.py`, `test_sch_gen.py`, `test_pcb.py` | Spec checks. |
