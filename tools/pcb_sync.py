@@ -7,7 +7,8 @@ Run with KiCad 10's own Python (it has the pcbnew module):
   netclasses come from the .kicad_pro with the same name);
 - gives every footprint a fixed ID (uuid5 of its reference): KiCad saves footprints sorted by ID, and the
   tools after this one work through them in file order, so random IDs gave a different fan-out per build;
-- takes the solder paste off the pads of unfitted parts (JLC would print paste on them);
+- takes the solder paste off the pads of unfitted parts and of the parts placed by hand (tools/assembly.py):
+  JLC prints paste on every stencil opening, placed or not;
 - adds footprints that are in the netlist but not on the board (parked below the board), with the
   schematic path and library name, so KiCad's own F8 later recognises them;
 - updates value and fields (LCSC, Datasheet, Description), DNP and BOM flags of existing ones;
@@ -22,6 +23,7 @@ import pcbnew
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from tools.assembly import HAND_PLACED  # noqa: E402
 from tools.netlist import _child, _children, _parse_sexpr, _value  # noqa: E402
 
 KICAD_FP = pathlib.Path(r"C:/Program Files/KiCad/10.0/share/kicad/footprints")
@@ -91,8 +93,8 @@ def open_board(pcb_path):
 
 
 def drop_paste(fp):
-    """No paste on an unfitted part's pads (only removes: some pads have no paste on purpose, e.g. the module's
-    windowpane ground pad, and a fitted part keeps its library pads)."""
+    """No paste on the pads of a part JLC does not place (only removes: a fitted part keeps its library pads). A
+    paste-only pad (the module's windowpane openings) is left with no layer at all."""
     for pad in fp.Pads():
         ls = pad.GetLayerSet()
         if ls.Contains(pcbnew.F_Paste):
@@ -137,7 +139,7 @@ def main(net_path, pcb_path):
             if c["fields"].get(k) or fp.HasField(k):
                 set_field(fp, k, c["fields"].get(k, ""))
         fp.SetDNP(c["dnp"])
-        if c["dnp"]:
+        if c["dnp"] or ref in HAND_PLACED:
             drop_paste(fp)
         fp.SetExcludedFromBOM(c["no_bom"])
         fp.SetExcludedFromPosFiles(c["no_bom"] or c["dnp"])
