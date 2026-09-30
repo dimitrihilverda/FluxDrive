@@ -28,8 +28,8 @@ Related: the breadboard prototype and its firmware live in
 
 ## Building one
 
-The board is 60 × 54.5 mm, 4 layers. JLCPCB places every SMD part on the top side; the connectors are soldered
-by hand.
+The board is 60 × 54.5 mm, 4 layers. JLCPCB places every SMD part on the top side except the ESP32 module; the
+module and the connectors are soldered by hand.
 
 ### Before ordering
 
@@ -59,8 +59,9 @@ Upload `jlcpcb/production_files/GERBER-FluxDrive.zip`:
 | Mark on PCB | order number at a specified position (the `JLCJLCJLCJLC` text on the bottom) |
 | PCB assembly | yes: Economic (Standard if the form does not offer it for 4 layers), top side, 2 or 5 boards |
 
-Then upload `BOM-FluxDrive.csv` and `CPL-FluxDrive.csv`. They hold the 87 SMD parts that JLC places; the unfitted
-pads, the test pads, the fiducials and every through-hole part are left out (`tools/jlc_export.py` lists them).
+Then upload `BOM-FluxDrive.csv` and `CPL-FluxDrive.csv`. They hold the 86 SMD parts that JLC places. Left out
+(`tools/jlc_export.py` lists them): the ESP32 module U1, which you place yourself (`tools/assembly.py`; its pads get
+no solder paste, see below), the unfitted pads, the test pads, the fiducials and every through-hole part.
 
 ### Check in JLC's placement preview
 
@@ -68,8 +69,7 @@ Before paying, look at every part below in JLC's preview; fix a wrong rotation t
 
 - **U2, U3, U4** (74LVC14A, 74LVC07A, SOIC-14): pin 1 at the south-west corner of each. The CPL gives SOIC the same
   correction as the TSSOP that JLC placed on the Nano-Tek; the JLCPCB Tools default would be 270°.
-- **U1** (ESP32-S3-WROOM-1): antenna to the north edge, the whole module inside the outline, pin 1 at the
-  north-west.
+- **U1** (ESP32-S3-WROOM-1) is not placed by JLC: the preview shows its pads empty, and they come without paste.
 - **U5** (TPS259531, WSON-8 with exposed pad), **U6** (TLV62569, SOT-23-5), **U7** (USBLC6-2SC6, SOT-23-6):
   pin 1 dot.
 - **D1, D2** (SS34): cathode band to the west. **D3** (LED): cathode to the west.
@@ -80,6 +80,7 @@ Before paying, look at every part below in JLC's preview; fix a wrong rotation t
 
 | Ref | Part | LCSC | Notes |
 |---|---|---|---|
+| U1 | ESP32-S3-WROOM-1-N16R8 module (exactly this variant) | C2913202 | SMD: antenna to the north edge, pin 1 at the north-west. The pads come bare (no paste from JLC, so the module sits flat). Solder the large ground pad underneath (pin 41) too, for ground and heat: flux or paste on the pads, then hot air or a hot plate. An iron alone reaches only the edge pads. Solder it before the connectors, while the board still lies flat |
 | J1 | 2×17 box header, 2.54 mm, vertical | C601943 | or, to plug the board straight onto CN11, a 2×17 female socket on the bottom side (see the note on the silkscreen); pin 1 is the square pad |
 | J2 | TE 171825-4 floppy power header, vertical | C210162 | polarised; pin 1 = +5 V at the north end |
 | J4 | 1×6 pin header, 2.54 mm | — | optional: UART recovery (TX, RX, EN, IO0, 3V3, GND from the ESP32's side) |

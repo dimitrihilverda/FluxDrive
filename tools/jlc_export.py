@@ -4,8 +4,8 @@
 
 Which parts go in: every footprint with an LCSC field that is not excluded from the BOM or the position file,
 is not DNP and has at least one SMD pad. Through-hole parts (every pad plated through: the floppy, power and
-pin headers) are soldered by hand; the USB-C socket has SMD signal pins, so JLC places it. Everything
-left out is listed.
+pin headers) are soldered by hand; the USB-C socket has SMD signal pins, so JLC places it. The SMD parts the
+builder places himself (tools/assembly.py: the ESP32 module) are left out too. Everything left out is listed.
 
 Position is the centre of the footprint's pads (as the plugin does), rotation is KiCad's plus a
 correction per footprint for JLC's package orientation. The ESP32 module is the exception: its antenna end
@@ -19,6 +19,9 @@ import re
 import sys
 
 import pcbnew
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
+from tools.assembly import HAND_PLACED  # noqa: E402
 
 # footprint name regex -> degrees added to KiCad's rotation, first match wins
 ROTATION = [
@@ -52,11 +55,14 @@ def natural(ref):
 def main(pcb_path, out_dir, check=None):
     board = pcbnew.LoadBoard(pcb_path)
     name = pathlib.Path(pcb_path).stem
-    parts, skipped = [], []
+    parts, skipped, by_hand = [], [], []
     for fp in board.GetFootprints():
         ref = fp.GetReference()
         lcsc = next((f.GetText() for f in fp.GetFields() if f.GetName() == "LCSC"), "")
         through_hole = all(pad.GetAttribute() == pcbnew.PAD_ATTRIB_PTH for pad in fp.Pads())
+        if ref in HAND_PLACED:
+            by_hand.append(ref)
+            continue
         if fp.IsExcludedFromBOM() or fp.IsExcludedFromPosFiles() or fp.IsDNP() or not lcsc.strip() or through_hole:
             skipped.append(ref)
             continue
@@ -97,6 +103,7 @@ def main(pcb_path, out_dir, check=None):
             w.writerow([p["ref"], p["value"], p["fp"], round(p["x"], 4), round(p["y"], 4), p["rot"], p["layer"]])
     print(f"BOM: {len(rows)} lines, {len(parts)} parts; CPL: {len(parts)} placements")
     print("not assembled by JLC:", ", ".join(sorted(skipped, key=natural)))
+    print("placed by hand (SMD, tools/assembly.py):", ", ".join(sorted(by_hand, key=natural)) or "none")
 
     if check:
         old = {r["Designator"]: r for r in csv.DictReader(open(check, encoding="utf-8"))}

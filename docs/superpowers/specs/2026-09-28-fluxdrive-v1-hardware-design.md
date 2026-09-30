@@ -291,8 +291,9 @@ review (PCB-2).
 
 - **4 layers**, 1.6 mm, JLC standard process: F.Cu signals, In1.Cu a solid GND plane, In2.Cu a solid +3V3 plane,
   B.Cu signals (Dimitri's decision after the layout review: on 2 layers the router cut the bottom plane into
-  pieces under the buffers, LBUS-1/LPWR-1). All SMD on the top side, assembled by JLC. **Hand-soldered** by the
-  builder: every through-hole part (the 34-pin connector, top or bottom (§4.4), the power header, the two headers of
+  pieces under the buffers, LBUS-1/LPWR-1). All SMD on the top side, assembled by JLC except the ESP32 module
+  (Dimitri places it himself, 2026-09-30; `tools/assembly.py`: no paste on its pads, left out of JLC's BOM and
+  CPL). **Hand-soldered** by the builder: every through-hole part (the 34-pin connector, top or bottom (§4.4), the power header, the two headers of
   §7). Unfitted pads are 0603, so the builder can fit them by hand (SPCB-3).
 - **Size:** 60 × 54.5 mm: at least 56 mm along the connector axis (a 34-way boxed header body is 51–54 mm long),
   48 mm for the parts and 6.5 mm for the antenna; the fit test (O7) can still change it. A 54 × 10 mm area on the top side above the

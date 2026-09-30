@@ -259,12 +259,15 @@ def _production_mismatches(board, out_dir):
     """What differs between the board and the BOM/CPL in out_dir: missing or extra designators, and passives
     whose CPL position is not the footprint's (a CPL left from an earlier build)."""
     import csv
+    from tools.assembly import HAND_PLACED
     from tools.netlist import _child, _children
     want = {}
     for fp in _children(board, "footprint"):
         props = {p[1]: p[2] for p in _children(fp, "property") if len(p) > 2}
         attr = _child(fp, "attr") or []
         smd = any(pad[2] == "smd" for pad in _children(fp, "pad"))      # the USB-C: SMD pins, through-hole shell
+        if props["Reference"] in HAND_PLACED:
+            continue
         if smd and "dnp" not in attr and "exclude_from_pos_files" not in attr and props.get("LCSC", "").strip():
             at = _child(fp, "at")
             want[props["Reference"]] = (float(at[1]), float(at[2]))
@@ -280,6 +283,20 @@ def _production_mismatches(board, out_dir):
 
 
 def test_production_files_match_the_board(board):
-    """Task 12: jlcpcb/production_files/ belongs to this board: every fitted SMD part with an LCSC number is in the
-    BOM once and in the CPL at its place, nothing else is (tools/jlc_production.sh after every board build)."""
+    """Task 12: jlcpcb/production_files/ belongs to this board: every fitted SMD part with an LCSC number that JLC
+    places (not the hand-placed ones, tools/assembly.py) is in the BOM once and in the CPL at its place, nothing else
+    is (tools/jlc_production.sh after every board build)."""
     assert _production_mismatches(board, ROOT / "jlcpcb" / "production_files") == []
+
+
+def test_hand_placed_parts_have_no_paste(board):
+    """tools/assembly.py: the parts the builder places himself (the ESP32 module) have no solder paste on any pad,
+    also not the paste-only windowpane pads: JLC prints paste on every stencil opening, placed or not."""
+    from tools.assembly import HAND_PLACED
+    from tools.netlist import _child, _children
+    for fp in _children(board, "footprint"):
+        ref = [p[2] for p in _children(fp, "property") if p[1] == "Reference"][0]
+        if ref in HAND_PLACED:
+            pasted = [_child(pad, "at")[1:3] for pad in _children(fp, "pad")
+                      if any(str(layer).endswith(".Paste") for layer in (_child(pad, "layers") or [])[1:])]
+            assert pasted == [], (ref, len(pasted))
