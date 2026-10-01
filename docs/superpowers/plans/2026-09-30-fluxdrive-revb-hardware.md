@@ -124,7 +124,7 @@ everything that spec says still holds unless the rev B spec changes it.
 | `tools/pcb_silk.py` | modify | rev A's texts moved onto the rev B board, J5's labels, the rev B title (Task 12); rev B labels (Task 13) |
 | `tools/pcb_route.py` | modify | Freerouting's time limit stops the whole process tree (`java` on PATH is Oracle's launcher) (Task 12) |
 | `FluxDrive.kicad_pro` | modify | `Drive` netclass: 0.8 mm, clearance 0.2 mm, for /+5V_IN, /+5V_DRIVE, /+12V (Task 12) |
-| `FluxDrive.pretty/171825-4.kicad_mod` | modify only if needed | J2/J8 outline, if TE's drawing differs from it (Task 11 step 0, O15) |
+| `FluxDrive.pretty/171825-4.kicad_mod` | modify | J2/J8 outline to TE's drawing, with the wall side marked: the header fits either way round and the wall decides where +5 V lands (Task 11 step 0, O15) |
 | `README.md`, `docs/superpowers/specs/2026-09-28-fluxdrive-v1-hardware-design.md` | modify | rev B build notes, v1 spec v0.5 |
 | `docs/reviews/2026-09-30-revb-schematic-review.md`, `…-revb-layout-review.md`, `…-revb-final-review.md` | create | review records (Tasks 9, 14, 16) |
 
@@ -2124,36 +2124,68 @@ DRC-clean. It was not routed to completion in the review (Task 12 step 6). What 
 - [ ] **Step 0: gate — the open items due before the layout freezes (spec §11, review F17).** Task 12 does not start
   until all four are in the ledger.
   - **O15 (owner: this plan): TE 171825-4's outline, for J2 and J8, and the clearance of J8's plug to J6's body.**
-    What web pages give (read on 2026-09-30, pages only, no file downloaded):
-    - TE's product page, https://www.te.com/en/product-171825-4.html: vertical, 4 positions, 2.5 mm centreline,
-      partially shrouded, 0.64 mm square posts. The housing outline is only in the customer drawing listed there
-      (ENG_CD_171825).
-    - DigiKey, https://www.digikey.com/en/products/detail/te-connectivity-amp-connectors/171825-4/2135511:
-      insulation height 10.40 mm, mating contact length 7.49 mm, post 3.60 mm, overall contact length 14.00 mm.
-    - LionCircuits, https://www.lioncircuits.com/parts/171825-4: length 10 mm, depth 4.9 mm, height 10 mm.
-    - LCSC, https://www.lcsc.com/product-detail/C210162.html: pitch 2.5 mm, "X-Length (Board Spacing) 12.5 mm" (not
-      defined further).
-    - The plug housing, TE 171822-4: element14,
-      https://nz.element14.com/amp-te-connectivity/171822-4/socket-housing-4way/dp/150665, gives no dimensions; no
-      page read gives its outline.
-    - So the header body is about 10.0 × 4.9 mm, inside the footprint's estimate (body 10.2 × 6.7 mm, courtyard
-      11.2 × 7.7 mm). The plug's outline is not known.
-  - The placement of step 3 holds for any plausible plug: J8's pin row (x 104.0) is 4.58 mm west of J6's body
-    (x 108.58), so a plug up to 9.0 mm deep clears it; J8 pin 1 is 12.6 mm from J2 pin 1, so two plugs up to 19.6 mm
-    long clear each other; a header housing up to 11.5 mm long stays on the board at J2's pin 4 end.
-  - Ask Dimitri for permission to download TE's two customer drawings: ENG_CD_171825 (the header) and the 171822
-    drawing (the plug housing), both PDF from the "Documents" section of te.com's product pages; give him the file
-    names, the source and the sizes the links show before downloading. With the drawings, record in the ledger the
-    header's body length and depth, where the pin row sits in that depth, and the plug's length and depth. If the header
-    body differs from the footprint's F.Fab by more than 0.2 mm, change the footprint's F.Fab, F.SilkS and F.CrtYd
-    outline (pads unchanged) and run step 4 again; if the plug is deeper than 9.0 mm or longer than 19.6 mm, stop and
-    ask Dimitri (J8 moves). If Dimitri declines, record the distributor figures above and the ruling "plug outline
-    unknown; J8 clears J6's body for plugs up to 9.0 mm deep and J2's plug for plugs up to 19.6 mm long".
-  - **R1, R7, R9 (owner: Dimitri):** ask Dimitri and record each with its value, the date and how it was measured:
-    R1 the drive's termination on pins 4, 6, 10, 12, 14, 16 and 20 (ohmmeter to its +5 V, drive unplugged); R7 his
-    motherboard revision and its CN11 and /MTR0 wiring; R9 the drive's peak current on +5 V (shunt in the CN12
-    cable). If R9 is above 1.4 A, or R1 shows a termination below 1 kΩ, stop and ask Dimitri (spec §4.4 load, §6
-    limit).
+    Done on 2026-10-01 with TE's two customer drawings. Dimitri allowed the two downloads; both PDFs come from the
+    "Documents" section of te.com's product pages and are kept, untracked, in `build/o15/`: `ENG_CD_171825_Y4.pdf`
+    (101 196 bytes) and `ENG_CD_171822_L5.pdf` (135 329 bytes).
+    - The header: drawing C-171825, "Post header assy (vertical)", rev Y4 of 30 March 2023 (ECR-22-158621).
+    - Its body is 10.0 ± 0.2 mm long (C, 4 positions), 4.9 mm deep and 10.4 mm high above the board.
+    - Pin 1 is 1.25 mm from the body's end; pins 1 to 4 span 7.5 mm; the pitch is 2.5 ± 0.1 mm, not accumulating.
+    - The pin row is 2.5 mm from the outer face of the wall (the partial shroud) and 2.4 mm from the open side.
+    - The wall is about 0.9 mm thick (scaled), with a 2.4 mm locking window at its centre; the base is 2.9 mm high.
+    - The drawing's board layout asks for 0.9 mm holes (+0.1/-0) in a 1.6 mm board; the footprint drills 1.2 mm.
+    - The plug: drawing C-171822, "Housing, AMP EI series connector", rev L5 of 20 January 2026 (ECN-26-364653).
+    - It is 11.9 mm long on its latch side (C, 4 positions) and 10.6 mm on its open side (A), 5.8 mm deep and 14.0 mm
+      high.
+    - Scaled from the drawing, its contact line is 2.5 mm from the latch face and 3.3 mm from the open face; the lower
+      10.3 mm steps in to 2.4 mm, flush with the header.
+    - The latch face has a 0.9 mm pocket that takes the header's wall, with a 2 mm locking bump at its centre: the
+      plug fits only with its latch face on the wall.
+    - Mated, the plug sits on the header's base: its top is 16.9 mm above the board, and the wires leave it straight
+      up, along the pin row.
+    - The circuit numbers are moulded on the wire face. Seen from above, with pins 1 to 4 running east (rotation 0),
+      the latch face, and so the wall, is north (local -y). Then pin 1 takes circuit 1, the +5 V of a standard drive
+      power cable.
+    - The drawing names contacts 170262 and 170263; TE's 171822-4 page also lists 170204-2, the spec's contact.
+    - Ruling: the footprint changes. Its F.Fab is 10.2 × 6.7 mm, centred on the pins; the header is 10.0 × 4.9 mm,
+      1.8 mm less deep, beyond the 0.2 mm limit.
+    - The new outline, pads unchanged: F.Fab x -1.25 to 8.75, y -2.5 to 2.4, with the wall from y -2.5 to -1.6;
+      F.SilkS the same, with the wall side marked; F.CrtYd the body plus 0.5 mm (x -1.75 to 9.25, y -3.0 to 2.9); the
+      mated plug's outline (x -2.2 to 9.7, y -2.5 to 3.3) on F.Fab. Then step 4 runs again.
+    - The wall mark matters: the header fits either way round and the plug follows the wall, so a header soldered the
+      other way round puts +12 V on pin 1 (+5 V), as a reversed plug does (spec §6).
+    - Task 13's fit test checks the wall side on Dimitri's own cable: its +5 V (red) wire sits at the moulded "1".
+  - The clearances with the drawings, on step 3's placement (J8 at 104.0, 123.5 turned 90; J2 at 104.0, 136.1 turned
+    270; the wall at local -y, so J8's wall is west and J2's east):
+    - J8's plug reaches 3.3 mm east of its pin row, to x 107.3; J6's body starts at x 108.58: 1.28 mm clear. The
+      plan's bound (a plug up to 9.0 mm deep) holds; the test that counts is the reach on J6's side, not half the
+      depth.
+    - Below 13.2 mm above the board the plug's east face is at x 106.4, flush with the header: 2.18 mm clear of J6's
+      body.
+    - J8's plug ends 2.2 mm south of its pin 1 (y 125.7), J2's 2.2 mm north of its pin 1 (y 133.9): 8.2 mm clear. The
+      plan's bound (plugs up to 19.6 mm long) holds: the plug is 11.9 mm long.
+    - J2's header body ends 1.25 mm past pin 4 (y 144.85), 0.75 mm inside the south edge (y 145.6). The plan's bound
+      (a housing up to 11.5 mm long) holds: the body is 10.0 mm long.
+    - J2's plug overhangs the south edge by 0.2 mm (y 145.8), 2.9 mm or more above the board; Task 13's fit test
+      checks it in the A500.
+    - J2's plug reaches x 100.7 on its open side, 0.7 mm inside the west edge; J8's wall face is 1.5 mm inside it.
+    - J2's plug reaches x 106.5 on its wall side; J1's body starts at x 108.58: 2.08 mm clear.
+    - Past the header bodies the plugs are 2.9 mm or more above the board, over low SMD parts only.
+    - So J8 does not move.
+  - **R1, R7, R9 (owner: Dimitri):** he measures them with the guide at
+    https://claude.ai/artifact/BWRmrbVaeXMhPnBMZZuhbv (R7 and R1 in one session without power, R9 in a second one).
+    His entries are in that artifact's database: collection `metingen`, documents `r1`, `r7` and `r9` (read them with
+    the ArtifactData tool). Record each in the ledger with its value, the date and the method.
+    - R1: pins 4, 6, 10, 12, 14, 16, 18, 20 and 32, in both meter polarities. A reading of 0.90 to 1.10 kΩ is the
+      nominal 1 kΩ. Stop and ask Dimitri only if a load sum breaks: 5 V/R4 + 5 V/R16 + 1.06 mA above 16 mA, or
+      5 V/R10 + 1.06 mA above 16 mA (the SN74LVC2G06's VOL of 0.4 V at 16 mA and VCC 3 V; spec §4.4).
+    - R7: the board revision, U36's type and the checks P1 to P13. Stop and ask on P1 open, P4 connected, P8 open, or a
+      drive swapper on /SEL0 or /SEL1. On a Rev 8A board, the README gets the 74LS05 note (spec §5).
+    - R9: the highest +5 V level held for at least 0.25 ms (the TPS2595's current-limit response time). Up to about
+      1.05 A, DRV_ILM becomes 1K5 (C25867, Basic; 1.26 A worst case): change the Global Constraints, Names, Task 8's
+      `R("1K37", ...)` line and its `RES_LCSC` entry, Task 8's test bound (to `1.3 <= ilim <= 1.6`), Task 15's README
+      text and its test, and the extended-part count. From 1.05 to 1.15 A, keep 1K37 (1.37 A worst case). Above
+      1.15 A, stop and ask Dimitri. A multimeter-only result counts only at 0.4 A or less, together with a +12 V
+      reading that shows the motor runs on +12 V.
 
 - [ ] **Step 1: failing tests** — in `tests/test_pcb.py` delete `test_outline`, `test_connector_zone_free`,
   `test_credit_and_revision`, `test_buck_away_from_dkrd_and_antenna` and `test_decoupling_reaches_the_planes` (the
