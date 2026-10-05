@@ -244,3 +244,25 @@ R("1K", "J7_FD", "PRE_A", G)
 R("1K", "J7_REAL", "CLR_A", G)
 C("100nF", "J7_FD", "GND", G)
 C("100nF", "J7_REAL", "GND", G)
+mux("U14", "DF0_FD", "SEL0", "M4_SEL", "REAL_SEL")             # the real drive's select (§4.4)
+mux("U15", "DF0_FD", "MTR0", "M4_MTR", "REAL_MTR")             # and its motor
+part("U18", "74xGxx:74LVC2G06", "SN74LVC2G06", "Package_TO_SOT_SMD:SOT-23-6",
+     {"1": "REAL_SEL", "6": "J6_SEL_D", "3": "REAL_MTR", "4": "J6_MTR_D", "2": "GND", "5": "+3V3"}, G, lcsc="C402162")
+C("100nF", "+3V3", "GND", G)
+R("4K7", "J6_SEL_D", "+5V_A", G)
+R("4K7", "J6_MTR_D", "+5V_A", G)
+part("JP1", JP3B[0], "bypass SEL", JP3B[2], {"1": "J6_SEL_D", "2": "J6_SEL", "3": "_SEL0"}, G, in_bom=False)
+part("JP2", JP3B[0], "bypass MTR", JP3B[2], {"1": "J6_MTR_D", "2": "J6_MTR", "3": "_MTR0"}, G, in_bom=False)
+part("JP3", JP3B[0], "mode 4 SEL", JP3B[2], {"1": "GND", "2": "M4_SEL", "3": "M4_SEL_Q"}, G, in_bom=False)
+part("JP4", JP3B[0], "mode 4 MTR", JP3B[2], {"1": "GND", "2": "M4_MTR", "3": "M4_MTR_Q"}, G, in_bom=False)
+j6 = {str(p): ("GND" if p != 3 else None) for p in range(1, 34, 2)}
+j6.update({str(p): EVEN[p] for p in (2, 8, 18, 20, 22, 24, 26, 28, 30, 32, 34)})
+j6.update({"4": "J6_MTR", "16": "J6_MTR", "10": "J6_SEL", "6": "J6_PIN6", "12": "J6_PIN12", "14": "J6_PIN14"})
+part("J6", "Connector_Generic:Conn_02x17_Odd_Even", "Original drive", "Connector_IDC:IDC-Header_2x17_P2.54mm_Vertical",
+     j6, G, lcsc="C601943")
+for net in ("J6_PIN6", "J6_PIN12", "J6_PIN14"):
+    R("10K", net, "+5V_A", G)
+part("U20", "74xGxx:74LVC1G38", "SN74LVC1G38", "Package_TO_SOT_SMD:SOT-23-5",
+     {"1": "CHNG_REQ", "2": "SEL0", "4": "VCHNG_D", "3": "GND", "5": "+3V3"}, G, lcsc="C2867613")
+C("100nF", "+3V3", "GND", G)
+R("33", "VCHNG_D", "_CHNG", G)                                # virtual disk change on bus DF0 (§4.5)
