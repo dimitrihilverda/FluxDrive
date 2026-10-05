@@ -3,7 +3,7 @@ from tools.netlist import parse_ohms
 
 def test_every_fitted_part_has_lcsc(nl):
     for ref, c in nl.components.items():
-        if ref.startswith("#") or not nl.fitted(ref) or ref.startswith(("TP", "H", "FID", "J4", "J5", "J7", "JP")):
+        if ref.startswith("#") or not nl.fitted(ref) or ref.startswith(("TP", "H", "FID", "J4", "J5", "J7", "J9", "J10", "JP")):
             continue
         assert c["fields"].get("LCSC", "").startswith("C"), ref
 

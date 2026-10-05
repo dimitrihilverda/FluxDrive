@@ -102,3 +102,26 @@ def test_nothing_on_j6_leaves_its_lines_inactive(nl):
                       "_RDY": (1, 1), "KBRESET": (1, 1)})
     for net in ("J6_SEL", "J6_MTR", "J6_PIN6", "J6_PIN12", "J6_PIN14"):
         assert v[net] == 1, net
+
+
+def test_mode4_parts_prepared_not_fitted(nl):
+    assert not nl.fitted("U21") and not nl.fitted("U22") and not nl.fitted("U23")
+    assert (nl.net_of("U21", 6), nl.net_of("U21", 3), nl.net_of("U21", 1), nl.net_of("U21", 4)) == \
+        ("DF0_FD", "GND", "SEL1_EN", "M4_SEL_Q")
+    assert value(nl, "U22") == "SN74LVC1G175"
+    assert nl.components["U22"]["fields"].get("LCSC") == "C128412"          # spec §4.9: the kit's number
+    assert [nl.net_of("U22", p) for p in (1, 3, 6, 4)] == ["SEL1", "M4_MOTOR", "DF1_EN", "M4_MTR_Q"]
+    assert {nl.net_of("U23", 1), nl.net_of("U23", 2)} == {"M4_SEL_Q", "M4_MTR_N"} and nl.net_of("U23", 4) == "ID_D"
+    from tests.fd import dnp_between
+    assert len(dnp_between(nl, "ID_D", "_RDY", "R")) == 1
+    assert nl.net_of("J10", 1) == "MTRX"
+
+
+def test_reset_wire(nl):
+    assert nl.net_of("J9", 1) == "KBRESET"
+    assert not pulls(nl, "KBRESET")                              # no pull-up on the pad: RP501 on the motherboard
+    assert value(nl, "U19") == "SN74LVC1G06"
+    assert (nl.net_of("U19", 2), nl.net_of("U19", 4)) == ("RST_REQ", "KBRESET")
+    assert pulls(nl, "RST_REQ") == [("10K", "GND")]
+    assert [value(nl, r) for r in parts_between(nl, "RST_ACT", "RST_ACT_IO")] == ["1K"]
+    assert esp_net(nl, 4) == "RST_ACT_IO" and esp_net(nl, 10) == "RST_REQ"

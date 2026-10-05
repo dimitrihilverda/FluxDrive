@@ -266,3 +266,20 @@ part("U20", "74xGxx:74LVC1G38", "SN74LVC1G38", "Package_TO_SOT_SMD:SOT-23-5",
      {"1": "CHNG_REQ", "2": "SEL0", "4": "VCHNG_D", "3": "GND", "5": "+3V3"}, G, lcsc="C2867613")
 C("100nF", "+3V3", "GND", G)
 R("33", "VCHNG_D", "_CHNG", G)                                # virtual disk change on bus DF0 (§4.5)
+part("U19", "74xGxx:74LVC1G06", "SN74LVC1G06", "Package_TO_SOT_SMD:SOT-23-5",
+     {"2": "RST_REQ", "4": "KBRESET", "3": "GND", "5": "+3V3"}, G, lcsc="C840103")
+C("100nF", "+3V3", "GND", G)
+R("10K", "RST_REQ", "GND", G)
+R("1K", "RST_ACT", "RST_ACT_IO", G)
+TP_THT = "TestPoint:TestPoint_THTPad_D1.5mm_Drill0.7mm"
+part("J9", "Connector:TestPoint", "RST wire", TP_THT, {"1": "KBRESET"}, G, in_bom=False)   # to _KBRESET (§4.8)
+part("J10", "Connector:TestPoint", "MTRX wire", TP_THT, {"1": "MTRX"}, G, in_bom=False)   # to CIA-B pin 17 (§4.7)
+mux("U21", "DF0_FD", "GND", "SEL1_EN", "M4_SEL_Q", dnp=True)   # M4_SEL = DF0_FD AND SEL1_EN
+part("U22", "74xGxx:74LVC1G175", "SN74LVC1G175", "Package_TO_SOT_SMD:SOT-23-6",   # SN74LVC1G175DBVR
+     {"1": "SEL1", "3": "M4_MOTOR", "6": "DF1_EN", "4": "M4_MTR_Q", "2": "GND", "5": "+3V3"}, G, lcsc="C128412",
+     dnp=True, in_bom=False)
+C("100nF", "+3V3", "GND", G, dnp=True)
+part("U23", "74xGxx:74LVC1G38", "SN74LVC1G38", "Package_TO_SOT_SMD:SOT-23-5",
+     {"1": "M4_SEL_Q", "2": "M4_MTR_N", "4": "ID_D", "3": "GND", "5": "+3V3"}, G, dnp=True, in_bom=False)
+C("100nF", "+3V3", "GND", G, dnp=True)
+R("33", "ID_D", "_RDY", G, dnp=True)                            # the DD ID for the real drive as DF1
