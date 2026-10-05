@@ -13,6 +13,10 @@ no logic level (None), as a divider between two rails has (AMIGA_PWR, EFUSE_EN, 
 what drives its far net apart from that resistor itself, so a net never holds its own level by its own echo through a
 series resistor (a released open-drain output does not keep its bus low). Capacitors and diodes are open (the settled
 state). Parts marked DNP are left out unless their ref is in `fit`.
+A Conflict is raised only if it is still there once the nets have settled: while the nets are settling, a net two
+drivers disagree on has no level for the gates and resistors it feeds, and the next round may resolve it.
+A name the netlist does not have (a source net, a bridged, fit or state ref) raises KeyError, so a misspelled name
+cannot make a check pass for nothing.
 """
 from collections import defaultdict
 
@@ -63,8 +67,17 @@ def _live(nl, ref, fit):
 def evaluate(nl, sources, state=None, bridged=None, fit=(), max_iter=80):
     """{net: 0, 1 or None} after settling. sources: {net: (value, strength)}; state: {(ref, "A"/"B"): q} for the
     flip-flops (missing = 0); bridged: {ref: [(pin, pin), ...]} for jumpers and switch pads that are joined — every
-    footprint whose value or footprint names "Bridged12" is joined on pins 1-2 unless its ref is given here."""
+    footprint whose value or footprint names "Bridged12" is joined on pins 1-2 unless its ref is given here.
+    Raises KeyError for a source net not in nl.nets and for a bridged, fit or state ref not in nl.components;
+    Conflict if two drivers still disagree at the fixed point; NoFixedPoint if the nets do not settle."""
     state = state or {}
+    for n in sources:
+        if n not in nl.nets:
+            raise KeyError(f"source net {n!r} is not in the netlist")
+    for what, refs in (("bridged", bridged or {}), ("fit", fit), ("state", [k[0] for k in state])):
+        for ref in refs:
+            if ref not in nl.components:
+                raise KeyError(f"{what} ref {ref!r} is not in the netlist")
     pins = pin_map(nl)
     parent = {n: n for n in nl.nets}
 
@@ -112,8 +125,7 @@ def evaluate(nl, sources, state=None, bridged=None, fit=(), max_iter=80):
             if n in RAIL:
                 drv[find(n)].append((4, RAIL[n], -1))
         for n, (v, s) in sources.items():
-            if n in parent:
-                drv[find(n)].append((s, v, -1))
+            drv[find(n)].append((s, v, -1))
         for i, (ra, rb, a, b, ohms) in enumerate(resistors):
             for x, y, yn in ((ra, rb, b), (rb, ra, a)):
                 if yn in RAIL:
@@ -133,7 +145,7 @@ def evaluate(nl, sources, state=None, bridged=None, fit=(), max_iter=80):
                 if out not in p:
                     continue
                 iv = [val[find(p[i])] if i in p else None for i in ins]
-                if None in iv:
+                if None in iv or "X" in iv:
                     continue
                 o = find(p[out])
                 if kind == "inv":
@@ -153,17 +165,18 @@ def evaluate(nl, sources, state=None, bridged=None, fit=(), max_iter=80):
                     continue
                 c = val[find(p[clr])] if clr in p else 1
                 s = val[find(p[pre])] if pre and pre in p else 1
-                if c is None or s is None:
+                if c in (None, "X") or s in (None, "X"):
                     continue
                 qv = 1 if s == 0 else (0 if c == 0 else state.get((ref, name), 0))
                 drv[find(p[q])].append((STRONG, qv, -1))
         new, news = {}, {}
         for k in val:
             new[k], news[k] = settle(drv.get(k, []))
-            if new[k] == "X":
-                raise Conflict((k, sorted((c[0], c[1]) for c in drv[k])))
         drv = {k: sorted(v) for k, v in drv.items()}
         if new == val and news == stren and drv == prev:
+            for k in val:
+                if val[k] == "X":
+                    raise Conflict((k, sorted((c[0], c[1]) for c in drv[k])))
             return {n: val[find(n)] for n in nl.nets}
         val, stren, prev = new, news, drv
     raise NoFixedPoint(sorted(k for k in val if val[k] is None)[:10])

@@ -70,8 +70,11 @@ def test_conflict_is_reported():
 def test_dnp_parts_are_open_unless_fitted():
     nl = nl_of([("U1", "74LVC14A", {"1": "A", "2": "Y", "7": "GND", "14": "+3V3"}, False),
                 ("R1", "10K", {"1": "Y", "2": "GND"}, True)])
-    assert evaluate(nl, {"A": (1, STRONG)})["Y"] == 0                     # DNP inverter: only the pull-down
-    assert evaluate(nl, {"A": (0, STRONG)}, fit={"U1"})["Y"] == 1
+    assert evaluate(nl, {"A": (0, STRONG)})["Y"] == 0                     # DNP inverter: only the pull-down
+    assert evaluate(nl, {"A": (0, STRONG)}, fit={"U1"})["Y"] == 1         # a live one would give 1
+    nl = nl_of([("R1", "10K", {"1": "Y", "2": "+3V3"}, False)])
+    assert evaluate(nl, {})["Y"] is None                                  # DNP pull-up: Y floats
+    assert evaluate(nl, {}, fit={"R1"})["Y"] == 1
 
 
 def test_divider_between_rails_is_no_logic_level():
@@ -88,3 +91,38 @@ def test_released_open_drain_does_not_hold_its_bus_low():
                 ("R2", "33", {"1": "OUT", "2": "BUS"}, True)])
     v = evaluate(nl, {"A": (0, STRONG), "BUS": (1, PULL)})
     assert v["OUT"] == v["BUS"] == 1
+
+
+def test_interim_disagreement_is_not_a_conflict():
+    """Round 2 still sees A at its pull-up's 1 while U1 already pulls it to 0, so Y is driven 0 and 1 for one round;
+    at the fixed point A=0 and both inverters drive Y to 1. Only a disagreement that survives is a Conflict."""
+    nl = nl_of([("U1", "74LVC14A", {"1": "N0", "2": "A", "3": "A", "4": "Y", "5": "M0", "6": "Y",
+                                    "7": "GND", "14": "+3V3"}, True),
+                ("R1", "10K", {"1": "A", "2": "+3V3"}, True)])
+    v = evaluate(nl, {"N0": (1, STRONG), "M0": (0, STRONG)})
+    assert v["A"] == 0 and v["Y"] == 1
+
+
+def _small():
+    return nl_of([("U1", "74LVC14A", {"1": "A", "2": "Y", "7": "GND", "14": "+3V3"}, True),
+                  ("JP1", "SolderJumper_2_Open", {"1": "A", "2": "Y"}, True)])
+
+
+def test_unknown_source_net_raises():
+    with pytest.raises(KeyError, match="/A"):
+        evaluate(_small(), {"/A": (0, STRONG)})                           # the board's "/A", not the netlist's "A"
+
+
+def test_unknown_bridged_ref_raises():
+    with pytest.raises(KeyError, match="JP9"):
+        evaluate(_small(), {}, bridged={"JP9": [("1", "2")]})
+
+
+def test_unknown_fit_ref_raises():
+    with pytest.raises(KeyError, match="U99"):
+        evaluate(_small(), {}, fit={"U99"})
+
+
+def test_unknown_state_ref_raises():
+    with pytest.raises(KeyError, match="U99"):
+        evaluate(_small(), {}, state={("U99", "A"): 1})
