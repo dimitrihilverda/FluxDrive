@@ -126,3 +126,18 @@ def test_unknown_fit_ref_raises():
 def test_unknown_state_ref_raises():
     with pytest.raises(KeyError, match="U99"):
         evaluate(_small(), {}, state={("U99", "A"): 1})
+
+
+def test_bridged_pin_not_on_the_part_raises():
+    """A mistyped pad number must not turn a bridge into a no-op: a "never both drives" check would hold for nothing."""
+    nl = nl_of([("U1", "74LVC14A", {"1": "X1", "2": "P", "3": "X2", "4": "Q", "7": "GND", "14": "+3V3"}, True),
+                ("JP1", "SolderJumper_3_Open", {"1": "P", "2": "Q", "3": "Z"}, True)])
+    sources = {"X1": (0, STRONG), "X2": (1, STRONG)}                      # P driven to 1, Q driven to 0
+    v = evaluate(nl, sources)
+    assert v["P"] == 1 and v["Q"] == 0
+    with pytest.raises(Conflict):                                         # the real pair joins them
+        evaluate(nl, sources, bridged={"JP1": [("1", "2")]})
+    with pytest.raises(KeyError, match=r"pin '4'.*JP1"):                  # there is no pad 4
+        evaluate(nl, sources, bridged={"JP1": [("2", "4")]})
+    with pytest.raises(KeyError, match=r"pin '4'.*JP1"):                  # either side of the pair
+        evaluate(nl, sources, bridged={"JP1": [("4", "2")]})

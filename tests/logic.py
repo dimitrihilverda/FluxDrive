@@ -68,7 +68,9 @@ def evaluate(nl, sources, state=None, bridged=None, fit=(), max_iter=80):
     """{net: 0, 1 or None} after settling. sources: {net: (value, strength)}; state: {(ref, "A"/"B"): q} for the
     flip-flops (missing = 0); bridged: {ref: [(pin, pin), ...]} for jumpers and switch pads that are joined — every
     footprint whose value or footprint names "Bridged12" is joined on pins 1-2 unless its ref is given here.
-    Raises KeyError for a source net not in nl.nets and for a bridged, fit or state ref not in nl.components;
+    Raises KeyError for a source net not in nl.nets, for a bridged, fit or state ref not in nl.components, and for a
+    pin in a bridged pair that the part does not have (an unconnected pad is in the netlist, so a missing pin is a pad
+    number that does not exist);
     Conflict if two drivers still disagree at the fixed point; NoFixedPoint if the nets do not settle."""
     state = state or {}
     for n in sources:
@@ -79,6 +81,11 @@ def evaluate(nl, sources, state=None, bridged=None, fit=(), max_iter=80):
             if ref not in nl.components:
                 raise KeyError(f"{what} ref {ref!r} is not in the netlist")
     pins = pin_map(nl)
+    for ref, pairs in (bridged or {}).items():
+        for pair in pairs:
+            for pin in pair:
+                if pin not in pins.get(ref, {}):
+                    raise KeyError(f"bridged pin {pin!r} is not on {ref}")
     parent = {n: n for n in nl.nets}
 
     def find(n):
