@@ -88,18 +88,30 @@ for u in ("U2", "U3"):
     C("100nF", "+3V3", "GND", A)
 
 # --- B: outputs --------------------------------------------------------------------------------------------
-# signal, connector net, GPIO, U4 input pin, output pin. The gates whose output faces the connector (the
-# bottom row with the SOIC turned 90 degrees: 2, 4, 6) take /WPROT, /DKRD and /RDY in the connector's order,
-# so /DKRD runs straight down to its 33 ohm; /TRK0, /CHNG and /INDEX go the long way anyway (layout review LBUS-4).
-OUTPUTS = [("DKRD", "_DKRD", 38, 3, 4), ("INDEX", "_INDEX", 39, 9, 8), ("TRK0", "_TRK0", 40, 13, 12),
-           ("WPROT", "_WPROT", 41, 1, 2), ("CHNG", "_CHNG", 42, 11, 10), ("RDY", "_RDY", 21, 5, 6)]
-u4 = {"14": "+3V3", "7": "GND"}
-for sig, conn, gpio, pin_in, pin_out in OUTPUTS:
-    R("10K", f"{sig}_N", "+3V3", B)
+# signal, connector net, GPIO, buffer, buffer in/out pins, OR chip and its (a, b, y) pins (rev B spec §4.3):
+# U4 keeps the east-end outputs, the SN74LVC2G07 U17 drives /CHNG and /INDEX at the west end
+OUTPUTS = [("DKRD", "_DKRD", 38, "U4", 3, 4, "U10", (1, 2, 3)), ("TRK0", "_TRK0", 40, "U4", 13, 12, "U10", (4, 5, 6)),
+           ("WPROT", "_WPROT", 41, "U4", 1, 2, "U10", (9, 10, 8)), ("RDY", "_RDY", 21, "U4", 5, 6, "U10", (12, 13, 11)),
+           ("CHNG", "_CHNG", 42, "U17", 1, 6, "U11", (1, 2, 3)), ("INDEX", "_INDEX", 39, "U17", 3, 4, "U11", (4, 5, 6))]
+pins_of = {"U4": {"14": "+3V3", "7": "GND", "9": "+3V3", "11": "+3V3", "8": None, "10": None},
+           "U17": {"2": "GND", "5": "+3V3"},
+           "U10": {"14": "+3V3", "7": "GND"},
+           "U11": {"14": "+3V3", "7": "GND", "9": "SEL0", "10": "SEL1", "8": "BUSY", "12": "GND", "13": "GND",
+                   "11": None}}
+for sig, conn, gpio, bufr, pin_in, pin_out, orc, (a, b, y) in OUTPUTS:
+    R("10K", f"{sig}_N", "+3V3", B)                 # release pull-up, on the OR input (rev B §4.3)
     R("33", f"{sig}_D", conn, B)
-    u4.update({str(pin_in): f"{sig}_N", str(pin_out): f"{sig}_D"})
-part("U4", "74xx:74LCX07", "74LVC07A", SOIC14, u4, B, lcsc="C6049")     # same pinout and open-drain outputs
+    pins_of[orc].update({str(a): f"{sig}_N", str(b): "SEL_FD_N", str(y): f"{sig}_G"})
+    pins_of[bufr].update({str(pin_in): f"{sig}_G", str(pin_out): f"{sig}_D"})
+    GPIO_NET[gpio] = f"{sig}_N"
+part("U4", "74xx:74LCX07", "74LVC07A", SOIC14, pins_of["U4"], B, lcsc="C6049")
 C("100nF", "+3V3", "GND", B)
+part("U17", "74xGxx:74LVC2G07", "SN74LVC2G07", "Package_TO_SOT_SMD:SOT-23-6", pins_of["U17"], B, lcsc="C37708")
+C("100nF", "+3V3", "GND", B)
+TSSOP14 = "Package_SO:TSSOP-14_4.4x5mm_P0.65mm"
+for u in ("U10", "U11"):
+    part(u, "74xx:74LS32", "74LVC32A", TSSOP14, pins_of[u], B, lcsc="C6087")
+    C("100nF", "+3V3", "GND", B)
 
 # --- C: power ------------------------------------------------------------------------------------------------
 part("J2", "FluxDrive:171825-4", "Floppy power", "FluxDrive:171825-4",          # vertical (spec 8)
@@ -142,8 +154,6 @@ for g in (3, 4, 8, 10, 12, 18, 35, 36, 37, 45, 46):
     esp[f"IO{g}"] = None
 for gpio, net in GPIO_NET.items():
     esp[f"IO{gpio}"] = net
-for sig, _, gpio, *_ in OUTPUTS:
-    esp[f"IO{gpio}"] = f"{sig}_N"
 part("U1", "RF_Module:ESP32-S3-WROOM-1", "ESP32-S3-WROOM-1-N16R8", "FluxDrive:ESP32-S3-WROOM-1", esp, E,
      lcsc="C2913202")
 C("22uF", "+3V3", "GND", E)

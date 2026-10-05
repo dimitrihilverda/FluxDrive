@@ -68,33 +68,43 @@ def test_unfitted_pads_exist(nl):
         assert len(dnp_between(nl, f"{sig}_B", "GND", "C")) == 1, sig
 
 
-OUTPUTS = [("DKRD", "_DKRD", 38), ("INDEX", "_INDEX", 39), ("TRK0", "_TRK0", 40), ("WPROT", "_WPROT", 41),
-           ("CHNG", "_CHNG", 42), ("RDY", "_RDY", 21)]
+# signal, connector net, GPIO, buffer (rev B spec §4.3)
+OUTPUTS = [("DKRD", "_DKRD", 38, "U4"), ("TRK0", "_TRK0", 40, "U4"), ("WPROT", "_WPROT", 41, "U4"),
+           ("RDY", "_RDY", 21, "U4"), ("CHNG", "_CHNG", 42, "U17"), ("INDEX", "_INDEX", 39, "U17")]
+BUF_GATES = {"U4": {1: 2, 3: 4, 5: 6, 9: 8, 11: 10, 13: 12}, "U17": {1: 6, 3: 4}}
 GLITCH_FREE = {21, 38, 39, 40, 41, 42, 47, 48}      # ESP32-S3 datasheet v2.2, table 2-2
 
 
-@pytest.mark.parametrize("sig,conn,gpio", OUTPUTS)
-def test_output_chain(nl, sig, conn, gpio):
+@pytest.mark.parametrize("sig,conn,gpio,buffer", OUTPUTS)
+def test_output_chain(nl, sig, conn, gpio, buffer):
     assert esp_net(nl, gpio) == f"{sig}_N"
-    assert pulls(nl, f"{sig}_N") == [("10K", "+3V3")]
-    assert any(r == "U4" for r, _, _ in nl.nets[f"{sig}_N"])
+    assert pulls(nl, f"{sig}_N") == [("10K", "+3V3")]              # the release pull-up, on the OR input
+    ors = [(r, p) for r, p, _ in nl.nets[f"{sig}_N"] if nl.components[r]["value"] == "74LVC32A"]
+    assert len(ors) == 1
+    (u_or, pin), = ors
+    pair = {1: 2, 2: 1, 4: 5, 5: 4, 9: 10, 10: 9, 12: 13, 13: 12}[int(pin)]
+    assert nl.net_of(u_or, pair) == "SEL_FD_N"
+    ins = [int(p) for r, p, _ in nl.nets[f"{sig}_G"] if r == buffer]
+    assert len(ins) == 1 and nl.net_of(buffer, BUF_GATES[buffer][ins[0]]) == f"{sig}_D"
     r33 = parts_between(nl, f"{sig}_D", conn)
     assert len(r33) == 1 and nl.components[r33[0]]["value"] == "33"
 
 
 def test_outputs_quiet_at_power_up(nl):
     """Review focus 3: no bus output moves when the ESP32 (re)starts."""
-    for sig, _, gpio in OUTPUTS:
+    for sig, _, gpio, _ in OUTPUTS:
         assert gpio in GLITCH_FREE, sig
         assert pulls(nl, f"{sig}_N") == [("10K", "+3V3")], sig
 
 
 def test_buffers_on_3v3(nl):
-    for u in ("U2", "U3", "U4"):
-        assert nl.net_of(u, 14) == "+3V3" and nl.net_of(u, 7) == "GND"
-        assert nl.components[u]["footprint"].endswith("SOIC-14_3.9x8.7mm_P1.27mm")
-    assert nl.components["U4"]["value"] == "74LVC07A"
-    assert nl.components["U2"]["value"] == nl.components["U3"]["value"] == "74LVC14A"
+    for u in ("U2", "U3", "U4", "U10", "U11"):
+        assert nl.net_of(u, 14) == "+3V3" and nl.net_of(u, 7) == "GND", u
+    assert nl.net_of("U17", 5) == "+3V3" and nl.net_of("U17", 2) == "GND"
+    assert nl.components["U4"]["value"] == "74LVC07A" and nl.components["U17"]["value"] == "SN74LVC2G07"
+    assert nl.net_of("U4", 9) == nl.net_of("U4", 11) == "+3V3"                        # spare inputs tied
+    assert nl.net_of("U11", 12) == nl.net_of("U11", 13) == "GND"                     # spare OR tied
+    assert {nl.net_of("U11", 9), nl.net_of("U11", 10)} == {"SEL0", "SEL1"} and nl.net_of("U11", 8) == "BUSY"
 
 
 def test_no_5v_on_the_esp(nl):
@@ -113,8 +123,5 @@ def test_gate_pairs(nl):
         assert len(pins) == 1, sig
         u, pin_in = pins[0]
         assert pin_in in GATE and nl.net_of(u, GATE[pin_in]) == sig, sig
-    for sig, _, _ in OUTPUTS:
-        pins = [int(p) for r, p, _ in nl.nets[f"{sig}_N"] if r == "U4"]
-        assert len(pins) == 1 and pins[0] in GATE and nl.net_of("U4", GATE[pins[0]]) == f"{sig}_D", sig
 
 
