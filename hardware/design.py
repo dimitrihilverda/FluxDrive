@@ -7,8 +7,8 @@ BLOCKS = ["A. Floppy connector and bus inputs", "B. Bus outputs", "C. Power", "D
           "E. USB-C", "F. Headers, buttons, LED, test pads, mechanics", "G. Drive pass-through and DF0/DF1 swap"]
 R0402 = "Resistor_SMD:R_0402_1005Metric"
 R0603, C0603 = "Resistor_SMD:R_0603_1608Metric", "Capacitor_SMD:C_0603_1608Metric"   # unfitted: hand-solderable
-RES_LCSC = {"22": "C25092", "33": "C25105", "100": "C25076", "470": "C25117", "1K": "C11702", "1K5": "C25867",
-            "2K2": "C25879",
+RES_LCSC = {"22": "C25092", "33": "C25105", "100": "C25076", "470": "C25117", "1K": "C11702",
+            "1K37": "C423239", "1K5": "C25867", "2K2": "C25879",
             "4K7": "C25900", "5K1": "C25905", "10K": "C25744", "15K": "C25756", "22K": "C25768", "100K": "C25741"}
 CAPS = {"100nF": ("Capacitor_SMD:C_0402_1005Metric", "C1525"), "1uF": ("Capacitor_SMD:C_0402_1005Metric", "C52923"),
         "22nF": ("Capacitor_SMD:C_0402_1005Metric", "C1532"), "10uF": ("Capacitor_SMD:C_0603_1608Metric", "C19702"),
@@ -115,7 +115,7 @@ for u in ("U10", "U11"):
 
 # --- C: power ------------------------------------------------------------------------------------------------
 part("J2", "FluxDrive:171825-4", "Floppy power", "FluxDrive:171825-4",          # vertical (spec 8)
-     {"1": "+5V_IN", "2": "GND", "3": "GND", "4": None}, P, lcsc="C210162")
+     {"1": "+5V_IN", "2": "GND", "3": "GND", "4": "+12V"}, P, lcsc="C210162")
 part("D4", "Diode:SMAJ13A", "SMAJ13A", "Diode_SMD:D_SMA", {"1": "+5V_IN", "2": "GND"}, P, dnp=True,
      in_bom=False)                          # unfitted: 13 V standoff, for hot-plug ringing (review SPWR-3)
 part("U5", "FluxDrive:TPS259531", "TPS259531", "Package_SON:Texas_DSG0008A_WSON-8-1EP_2x2mm_P0.5mm_EP0.9x1.6mm",
@@ -126,6 +126,16 @@ C("22nF", "EFUSE_DVDT", "GND", P)
 R("10K", "+5V_IN", "EFUSE_EN", P)           # UVLO 1.2 V x 14.7/4.7 = 3.75 V; EN 3.8 V with 12 V on IN
 R("4K7", "EFUSE_EN", "GND", P)
 R("2K2", "EFUSE_ILM", "GND", P)             # current limit about 0.95 A
+part("U9", "FluxDrive:TPS259531", "TPS259531", "Package_SON:Texas_DSG0008A_WSON-8-1EP_2x2mm_P0.5mm_EP0.9x1.6mm",
+     {"1": "DRV_DVDT", "2": "EFUSE_EN", "3": "+5V_IN", "4": "+5V_IN", "5": "+5V_DRIVE", "6": None,
+      "7": "DRV_ILM", "8": "GND", "9": "GND"}, P, lcsc="C2155674")     # the real drive's eFuse (rev B §6)
+C("1uF", "+5V_IN", "GND", P)                   # U9's own C_IN (TI SLVSE57C Figure 58, section 11.1)
+C("22nF", "DRV_DVDT", "GND", P)
+R("1K37", "DRV_ILM", "GND", P)                 # 2000/1370 + 0.04 = 1.50 A (rev B §6); R9 may change it
+C("22uF", "+5V_DRIVE", "GND", P)
+C("100nF", "+5V_DRIVE", "GND", P)
+part("J8", "FluxDrive:171825-4", "Drive power", "FluxDrive:171825-4",
+     {"1": "+5V_DRIVE", "2": "GND", "3": "GND", "4": "+12V"}, P, lcsc="C210162")
 C("47uF", "+5V_A", "GND", P)               # 10 V parts: the clamp is 5.7 V (review SPCB-2)
 C("47uF", "+5V_A", "GND", P)
 C("100nF", "+5V_A", "GND", P)
@@ -194,7 +204,8 @@ part("J5", "Connector_Generic:Conn_01x04", "Spare / OLED", HDR4,              # 
 R("1K", "LED", "LED_A", F)
 part("D3", "Device:LED", "LED red", "LED_SMD:LED_0603_1608Metric", {"1": "GND", "2": "LED_A"}, F, lcsc="C2286")
 for net in ("_DKRD", "DKRD_N", "_INDEX", "INDEX_N", "_SEL0", "SEL0", "_STEP", "STEP", "_MTR0", "MTR0",
-            "+5V_A", "V5SYS", "VBUS", "+3V3", "ESP_EN", "GND"):
+            "+5V_A", "V5SYS", "VBUS", "+3V3", "ESP_EN", "GND",
+            "SEL_FD", "REAL_SEL", "REAL_MTR", "DF0_STATE", "DF1_STATE", "MODE_CLK"):
     part(f"TP{next(_n['TP'])}", "Connector:TestPoint", net, "TestPoint:TestPoint_Pad_D1.0mm", {"1": net}, F,
          in_bom=False)
 for i in (1, 2):

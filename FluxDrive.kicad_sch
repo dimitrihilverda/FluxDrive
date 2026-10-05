@@ -18935,9 +18935,15 @@
 		)
 		(uuid "98f6e400-3d92-5ff9-881a-3a8e9ebb1796")
 	)
-	(no_connect
-		(at 30.48 334.01)
-		(uuid "68c279ba-4199-50a3-8a4a-3fdd7ac448b5")
+	(label "+12V"
+		(at 30.48 334.01 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "ca500a08-5d87-5a70-92c8-f74517c9fae1")
 	)
 	(symbol
 		(lib_id "Diode:SMAJ13A")
@@ -19639,8 +19645,182 @@
 		(uuid "4035f4e4-feb9-51cc-806b-37f08036d64f")
 	)
 	(symbol
+		(lib_id "FluxDrive:TPS259531")
+		(at 312.42 330.2 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "75978618-0cb4-5a18-9c21-479448827e18")
+		(property "Reference" "U9"
+			(at 312.42 325.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TPS259531"
+			(at 312.42 335.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_SON:Texas_DSG0008A_WSON-8-1EP_2x2mm_P0.5mm_EP0.9x1.6mm"
+			(at 312.42 330.2 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 312.42 330.2 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C2155674"
+			(at 312.42 330.2 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "1e92802b-3225-5110-9276-41ec41f4e8d9")
+		)
+		(pin "2"
+			(uuid "145b25b9-9f98-516c-82ae-81e99d97e49c")
+		)
+		(pin "3"
+			(uuid "2e33ad01-69e2-56ec-9726-360ee2cdeb5d")
+		)
+		(pin "4"
+			(uuid "afcaacb0-9330-58d8-a783-3918f16cacb8")
+		)
+		(pin "5"
+			(uuid "7102f546-1ce2-5f1e-a732-e5140177e25f")
+		)
+		(pin "6"
+			(uuid "7c53bd68-08ff-5f60-9e6e-9d6993ca873b")
+		)
+		(pin "7"
+			(uuid "11fa2a46-e429-5373-8265-ce7a88cb8dca")
+		)
+		(pin "8"
+			(uuid "8c7d9308-5561-569d-8da9-ea9448d01942")
+		)
+		(pin "9"
+			(uuid "976237e0-b486-53a0-ab5f-86b5e4f3a486")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "U9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "+5V_IN"
+		(at 302.26 326.39 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "afcbda4c-766b-53b3-8f3f-cdad7efd4d70")
+	)
+	(label "+5V_IN"
+		(at 302.26 328.93 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "4978a8c2-c54e-5152-845a-c40b118b1822")
+	)
+	(label "EFUSE_EN"
+		(at 302.26 331.47 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "821a46b1-6d76-558a-92e2-480950e81e1d")
+	)
+	(label "DRV_DVDT"
+		(at 302.26 334.01 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "1413576e-1e95-54b0-be8d-932b8a31114d")
+	)
+	(label "+5V_DRIVE"
+		(at 322.58 326.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4f89683b-b9f0-55e6-875d-6ddd0e41af3c")
+	)
+	(no_connect
+		(at 322.58 328.93)
+		(uuid "57caa137-1c27-5b32-83ab-116f42814b0c")
+	)
+	(label "DRV_ILM"
+		(at 322.58 331.47 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f8ff7d35-94b3-5808-8320-402ab571df83")
+	)
+	(label "GND"
+		(at 311.15 340.36 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "927e437d-fb91-565a-aa89-7dbb2c1654c6")
+	)
+	(label "GND"
+		(at 313.69 340.36 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "9805ea20-b88c-5cba-8233-695647f84d70")
+	)
+	(symbol
 		(lib_id "Device:C")
-		(at 303.53 326.39 90)
+		(at 355.6 326.39 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -19650,23 +19830,23 @@
 		(dnp no)
 		(uuid "d9bb219a-6dac-5399-baf6-e24b5a16c7c3")
 		(property "Reference" "C13"
-			(at 303.53 321.31 90)
+			(at 355.6 321.31 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "47uF"
-			(at 303.53 331.47 90)
+		(property "Value" "1uF"
+			(at 355.6 331.47 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
-			(at 303.53 326.39 0)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 355.6 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -19675,7 +19855,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 303.53 326.39 0)
+			(at 355.6 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -19683,8 +19863,8 @@
 				)
 			)
 		)
-		(property "LCSC" "C96123"
-			(at 303.53 326.39 0)
+		(property "LCSC" "C52923"
+			(at 355.6 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -19707,8 +19887,8 @@
 			)
 		)
 	)
-	(label "+5V_A"
-		(at 299.72 326.39 180)
+	(label "+5V_IN"
+		(at 351.79 326.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -19718,7 +19898,7 @@
 		(uuid "629d6198-7bd2-50d1-8eb9-f85faaaf8967")
 	)
 	(label "GND"
-		(at 307.34 326.39 0)
+		(at 359.41 326.39 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -19729,7 +19909,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 334.01 326.39 90)
+		(at 388.62 326.39 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -19739,23 +19919,23 @@
 		(dnp no)
 		(uuid "2bd33f0e-2a45-508b-81a2-5af6334d95bb")
 		(property "Reference" "C14"
-			(at 334.01 321.31 90)
+			(at 388.62 321.31 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "47uF"
-			(at 334.01 331.47 90)
+		(property "Value" "22nF"
+			(at 388.62 331.47 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
-			(at 334.01 326.39 0)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 388.62 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -19764,7 +19944,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 334.01 326.39 0)
+			(at 388.62 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -19772,8 +19952,8 @@
 				)
 			)
 		)
-		(property "LCSC" "C96123"
-			(at 334.01 326.39 0)
+		(property "LCSC" "C1532"
+			(at 388.62 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -19796,8 +19976,8 @@
 			)
 		)
 	)
-	(label "+5V_A"
-		(at 330.2 326.39 180)
+	(label "DRV_DVDT"
+		(at 384.81 326.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -19807,7 +19987,7 @@
 		(uuid "92544fd4-4db9-5714-9d27-7ba6efd7cb32")
 	)
 	(label "GND"
-		(at 337.82 326.39 0)
+		(at 392.43 326.39 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -19817,8 +19997,97 @@
 		(uuid "21965532-1660-57e8-9859-6684cd889756")
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 420.37 326.39 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "04d96a26-10ca-5ef0-bdd4-61ffeff8ba3f")
+		(property "Reference" "R49"
+			(at 420.37 321.31 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1K37"
+			(at 420.37 331.47 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 420.37 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 420.37 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C423239"
+			(at 420.37 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "db476b3d-d7f8-5f72-8aeb-73cd63e89136")
+		)
+		(pin "2"
+			(uuid "f16fbed5-a600-5650-84fe-0dbbfe795391")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "R49")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "DRV_ILM"
+		(at 416.56 326.39 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "48df9fc4-5343-56da-bc63-c8077a609f1a")
+	)
+	(label "GND"
+		(at 424.18 326.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "35543355-6768-533c-a132-4ae966dd6188")
+	)
+	(symbol
 		(lib_id "Device:C")
-		(at 363.22 326.39 90)
+		(at 454.66 326.39 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -19828,23 +20097,23 @@
 		(dnp no)
 		(uuid "506f1775-c183-5abb-8088-7be9113fd2ae")
 		(property "Reference" "C15"
-			(at 363.22 321.31 90)
+			(at 454.66 321.31 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "100nF"
-			(at 363.22 331.47 90)
+		(property "Value" "22uF"
+			(at 454.66 331.47 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 363.22 326.39 0)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 454.66 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -19853,7 +20122,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 363.22 326.39 0)
+			(at 454.66 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -19861,8 +20130,8 @@
 				)
 			)
 		)
-		(property "LCSC" "C1525"
-			(at 363.22 326.39 0)
+		(property "LCSC" "C45783"
+			(at 454.66 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -19885,8 +20154,8 @@
 			)
 		)
 	)
-	(label "+5V_A"
-		(at 359.41 326.39 180)
+	(label "+5V_DRIVE"
+		(at 450.85 326.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -19896,7 +20165,7 @@
 		(uuid "2bf94740-f50a-5284-88bb-739fa5b8b79d")
 	)
 	(label "GND"
-		(at 367.03 326.39 0)
+		(at 458.47 326.39 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -19906,8 +20175,479 @@
 		(uuid "59ae1e7d-59b2-545d-815c-d005bef03afb")
 	)
 	(symbol
+		(lib_id "Device:C")
+		(at 487.68 326.39 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "90bb43d9-8345-584b-b658-51108061a14e")
+		(property "Reference" "C16"
+			(at 487.68 321.31 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100nF"
+			(at 487.68 331.47 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 487.68 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 487.68 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C1525"
+			(at 487.68 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "18f1fa1c-63cd-5094-a9bb-bed548571c3f")
+		)
+		(pin "2"
+			(uuid "32b3d30d-43a9-5236-b47b-1929af3be33d")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "C16")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "+5V_DRIVE"
+		(at 483.87 326.39 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "0eeef416-8b62-54b9-ab7a-3e6d98ef9089")
+	)
+	(label "GND"
+		(at 491.49 326.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "198d8792-bd41-5958-a827-249f2c100194")
+	)
+	(symbol
+		(lib_id "FluxDrive:171825-4")
+		(at 515.62 326.39 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "acc27d2f-08c9-54a0-a77a-ce591010a080")
+		(property "Reference" "J8"
+			(at 515.62 321.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Drive power"
+			(at 515.62 331.47 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "FluxDrive:171825-4"
+			(at 515.62 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 515.62 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C210162"
+			(at 515.62 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "9e6e40d8-ea57-5a57-b766-22a342af9fb1")
+		)
+		(pin "2"
+			(uuid "c459325c-7dc1-5002-962e-d79ee2138057")
+		)
+		(pin "3"
+			(uuid "6c5f9512-2278-5800-84dc-0904c19ab371")
+		)
+		(pin "4"
+			(uuid "cf75252a-85b5-54ac-b9cb-a1ab5bb2b462")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "J8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "+5V_DRIVE"
+		(at 518.16 326.39 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "697b4d33-1d9e-5d4a-bbb2-452960b29788")
+	)
+	(label "GND"
+		(at 518.16 328.93 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "943bd910-dede-5a50-a3b5-00cf6e4cbb96")
+	)
+	(label "GND"
+		(at 518.16 331.47 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "38deb0a5-9894-5d37-9941-145ea70ffb09")
+	)
+	(label "+12V"
+		(at 518.16 334.01 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "54990a9a-d2ca-5915-b164-a027b713b4e1")
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 539.75 326.39 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "91ffab5a-6a9f-5e44-9f2b-23d9fb1d6c13")
+		(property "Reference" "C17"
+			(at 539.75 321.31 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "47uF"
+			(at 539.75 331.47 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
+			(at 539.75 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 539.75 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C96123"
+			(at 539.75 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "87861f9a-03b2-53de-b4f4-c0825e803b5b")
+		)
+		(pin "2"
+			(uuid "e68ffb8a-beee-5d34-aa8e-a92a26c0b81b")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "C17")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "+5V_A"
+		(at 535.94 326.39 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "1f836d7d-95a0-5b95-9e3c-66fef3789fc7")
+	)
+	(label "GND"
+		(at 543.56 326.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c782140b-3938-5aca-8264-81d3917d6d90")
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 568.96 326.39 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "5ee6d6cf-aa9a-5a23-9cb4-83dfc6883002")
+		(property "Reference" "C18"
+			(at 568.96 321.31 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "47uF"
+			(at 568.96 331.47 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
+			(at 568.96 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 568.96 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C96123"
+			(at 568.96 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "1b32a5dd-0278-53c2-b4cf-e2a181836d3d")
+		)
+		(pin "2"
+			(uuid "b4815881-f80c-5b33-a4bf-9f4c88a164b3")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "C18")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "+5V_A"
+		(at 565.15 326.39 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "fdb87dbe-f023-5ec9-9120-a57e4de01ac3")
+	)
+	(label "GND"
+		(at 572.77 326.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d28637b6-ad24-5f0b-a840-8c845bf34cf2")
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 598.17 326.39 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "b1fc3b07-0b4e-5939-92cf-f88f2b952558")
+		(property "Reference" "C19"
+			(at 598.17 321.31 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100nF"
+			(at 598.17 331.47 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 598.17 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 598.17 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C1525"
+			(at 598.17 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "5b9ec7dd-e3a8-550f-a947-23c4472faeb5")
+		)
+		(pin "2"
+			(uuid "8c28c710-623d-5e52-b776-a29d3ffe3642")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "C19")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "+5V_A"
+		(at 594.36 326.39 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "8882045f-20f9-5044-beea-71c33b23a764")
+	)
+	(label "GND"
+		(at 601.98 326.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e61d785f-7409-53ea-8c52-e8a73cef6741")
+	)
+	(symbol
 		(lib_id "Diode:SS34")
-		(at 392.43 326.39 0)
+		(at 628.65 326.39 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -19917,7 +20657,7 @@
 		(dnp no)
 		(uuid "3517bcf2-227d-52e1-899f-771256797d5e")
 		(property "Reference" "D1"
-			(at 392.43 321.31 0)
+			(at 628.65 321.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19925,7 +20665,7 @@
 			)
 		)
 		(property "Value" "SS34"
-			(at 392.43 331.47 0)
+			(at 628.65 331.47 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19933,7 +20673,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SMA"
-			(at 392.43 326.39 0)
+			(at 628.65 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -19942,7 +20682,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 392.43 326.39 0)
+			(at 628.65 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -19951,7 +20691,7 @@
 			)
 		)
 		(property "LCSC" "C8678"
-			(at 392.43 326.39 0)
+			(at 628.65 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -19975,7 +20715,7 @@
 		)
 	)
 	(label "V5SYS"
-		(at 388.62 326.39 180)
+		(at 624.84 326.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -19985,7 +20725,7 @@
 		(uuid "6199c649-1a68-5902-9c48-3127684771ce")
 	)
 	(label "+5V_A"
-		(at 396.24 326.39 0)
+		(at 632.46 326.39 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -19996,7 +20736,7 @@
 	)
 	(symbol
 		(lib_id "Diode:SS34")
-		(at 424.18 326.39 0)
+		(at 660.4 326.39 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -20006,7 +20746,7 @@
 		(dnp no)
 		(uuid "4b356303-c261-5e21-b78a-19e080d86b4f")
 		(property "Reference" "D2"
-			(at 424.18 321.31 0)
+			(at 660.4 321.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20014,7 +20754,7 @@
 			)
 		)
 		(property "Value" "SS34"
-			(at 424.18 331.47 0)
+			(at 660.4 331.47 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20022,7 +20762,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SMA"
-			(at 424.18 326.39 0)
+			(at 660.4 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20031,7 +20771,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 424.18 326.39 0)
+			(at 660.4 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20040,7 +20780,7 @@
 			)
 		)
 		(property "LCSC" "C8678"
-			(at 424.18 326.39 0)
+			(at 660.4 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20064,7 +20804,7 @@
 		)
 	)
 	(label "V5SYS"
-		(at 420.37 326.39 180)
+		(at 656.59 326.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -20074,7 +20814,7 @@
 		(uuid "7457be54-63d2-5580-98d7-c90908761759")
 	)
 	(label "VBUS"
-		(at 427.99 326.39 0)
+		(at 664.21 326.39 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -20085,7 +20825,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 455.93 326.39 90)
+		(at 690.88 326.39 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -20093,9 +20833,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "90bb43d9-8345-584b-b658-51108061a14e")
-		(property "Reference" "C16"
-			(at 455.93 321.31 90)
+		(uuid "ddc6f709-236a-5ae7-be84-f9444b6560c0")
+		(property "Reference" "C20"
+			(at 690.88 321.31 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20103,7 +20843,7 @@
 			)
 		)
 		(property "Value" "10uF"
-			(at 455.93 331.47 90)
+			(at 690.88 331.47 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20111,7 +20851,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
-			(at 455.93 326.39 0)
+			(at 690.88 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20120,7 +20860,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 455.93 326.39 0)
+			(at 690.88 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20129,7 +20869,7 @@
 			)
 		)
 		(property "LCSC" "C19702"
-			(at 455.93 326.39 0)
+			(at 690.88 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20138,43 +20878,43 @@
 			)
 		)
 		(pin "1"
-			(uuid "18f1fa1c-63cd-5094-a9bb-bed548571c3f")
+			(uuid "0d3aaa57-28ff-514c-a6c5-e65d7aa53bae")
 		)
 		(pin "2"
-			(uuid "32b3d30d-43a9-5236-b47b-1929af3be33d")
+			(uuid "1449ffb8-fb46-5104-aa2c-9352082c7f20")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C16")
+					(reference "C20")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(label "V5SYS"
-		(at 452.12 326.39 180)
+		(at 687.07 326.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "0eeef416-8b62-54b9-ab7a-3e6d98ef9089")
+		(uuid "d261d536-cad2-50a4-81af-b1709e936102")
 	)
 	(label "GND"
-		(at 459.74 326.39 0)
+		(at 694.69 326.39 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "198d8792-bd41-5958-a827-249f2c100194")
+		(uuid "5b70782c-d9c2-50d2-b1f1-1093c930ce32")
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 485.14 326.39 90)
+		(at 721.36 326.39 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -20182,9 +20922,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "91ffab5a-6a9f-5e44-9f2b-23d9fb1d6c13")
-		(property "Reference" "C17"
-			(at 485.14 321.31 90)
+		(uuid "4edf4fe4-40d7-5747-a56c-86fad6debc31")
+		(property "Reference" "C21"
+			(at 721.36 321.31 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20192,7 +20932,7 @@
 			)
 		)
 		(property "Value" "100nF"
-			(at 485.14 331.47 90)
+			(at 721.36 331.47 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20200,7 +20940,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 485.14 326.39 0)
+			(at 721.36 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20209,7 +20949,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 485.14 326.39 0)
+			(at 721.36 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20218,7 +20958,7 @@
 			)
 		)
 		(property "LCSC" "C1525"
-			(at 485.14 326.39 0)
+			(at 721.36 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20227,43 +20967,43 @@
 			)
 		)
 		(pin "1"
-			(uuid "87861f9a-03b2-53de-b4f4-c0825e803b5b")
+			(uuid "58683907-b8ad-5491-84f2-65a61c2af7f9")
 		)
 		(pin "2"
-			(uuid "e68ffb8a-beee-5d34-aa8e-a92a26c0b81b")
+			(uuid "5328380b-306e-5b1a-bea0-e25e3cc16f4f")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C17")
+					(reference "C21")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(label "V5SYS"
-		(at 481.33 326.39 180)
+		(at 717.55 326.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "1f836d7d-95a0-5b95-9e3c-66fef3789fc7")
+		(uuid "fa376285-57aa-566a-95d1-e2762e017500")
 	)
 	(label "GND"
-		(at 488.95 326.39 0)
+		(at 725.17 326.39 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "c782140b-3938-5aca-8264-81d3917d6d90")
+		(uuid "58a2bd36-a3c2-50ce-b2d1-3ee9577ea0f6")
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 515.62 326.39 90)
+		(at 750.57 326.39 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -20271,9 +21011,9 @@
 		(on_board yes)
 		(in_pos_files no)
 		(dnp yes)
-		(uuid "04d96a26-10ca-5ef0-bdd4-61ffeff8ba3f")
-		(property "Reference" "R49"
-			(at 515.62 321.31 90)
+		(uuid "2fe7f830-fe68-58cd-b7c7-3ff2a024985f")
+		(property "Reference" "R50"
+			(at 750.57 321.31 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20281,7 +21021,7 @@
 			)
 		)
 		(property "Value" "1R"
-			(at 515.62 331.47 90)
+			(at 750.57 331.47 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20289,7 +21029,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
-			(at 515.62 326.39 0)
+			(at 750.57 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20298,7 +21038,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 515.62 326.39 0)
+			(at 750.57 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20307,43 +21047,43 @@
 			)
 		)
 		(pin "1"
-			(uuid "db476b3d-d7f8-5f72-8aeb-73cd63e89136")
+			(uuid "3c4be07a-c448-5a42-80e8-174e9956bf47")
 		)
 		(pin "2"
-			(uuid "f16fbed5-a600-5650-84fe-0dbbfe795391")
+			(uuid "61a29af6-926e-5754-8cb4-3677ef5d8597")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R49")
+					(reference "R50")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(label "V5SYS"
-		(at 511.81 326.39 180)
+		(at 746.76 326.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "48df9fc4-5343-56da-bc63-c8077a609f1a")
+		(uuid "f7e99e21-6ab8-59b4-a43f-5a6cb797059f")
 	)
 	(label "V5SYS_DAMP"
-		(at 519.43 326.39 0)
+		(at 754.38 326.39 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "35543355-6768-533c-a132-4ae966dd6188")
+		(uuid "29b73c77-6794-509d-938a-1267e7623289")
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 557.53 326.39 90)
+		(at 792.48 326.39 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -20351,9 +21091,9 @@
 		(on_board yes)
 		(in_pos_files no)
 		(dnp yes)
-		(uuid "5ee6d6cf-aa9a-5a23-9cb4-83dfc6883002")
-		(property "Reference" "C18"
-			(at 557.53 321.31 90)
+		(uuid "02d2bfa9-37b9-5b20-bbe1-4a21066af934")
+		(property "Reference" "C22"
+			(at 792.48 321.31 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20361,7 +21101,7 @@
 			)
 		)
 		(property "Value" "4.7uF"
-			(at 557.53 331.47 90)
+			(at 792.48 331.47 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20369,7 +21109,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
-			(at 557.53 326.39 0)
+			(at 792.48 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20378,7 +21118,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 557.53 326.39 0)
+			(at 792.48 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20387,43 +21127,43 @@
 			)
 		)
 		(pin "1"
-			(uuid "1b32a5dd-0278-53c2-b4cf-e2a181836d3d")
+			(uuid "8deef0d6-c149-582d-8fc2-16232a05d097")
 		)
 		(pin "2"
-			(uuid "b4815881-f80c-5b33-a4bf-9f4c88a164b3")
+			(uuid "df735b32-490a-55b0-ae6d-a99340e86934")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C18")
+					(reference "C22")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(label "V5SYS_DAMP"
-		(at 553.72 326.39 180)
+		(at 788.67 326.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "fdb87dbe-f023-5ec9-9120-a57e4de01ac3")
+		(uuid "f4cda648-012d-54c7-a319-bd7c15d73d96")
 	)
 	(label "GND"
-		(at 561.34 326.39 0)
+		(at 796.29 326.39 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "d28637b6-ad24-5f0b-a840-8c845bf34cf2")
+		(uuid "30a8e752-400d-58ea-9519-8b052cdd0fe0")
 	)
 	(symbol
 		(lib_id "Regulator_Switching:TLV62569DBV")
-		(at 590.55 328.93 0)
+		(at 825.5 328.93 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -20433,7 +21173,7 @@
 		(dnp no)
 		(uuid "d1ed6eff-69c2-5690-8d50-70a90cedf07a")
 		(property "Reference" "U6"
-			(at 590.55 323.85 0)
+			(at 825.5 323.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20441,7 +21181,7 @@
 			)
 		)
 		(property "Value" "TLV62569DBVR"
-			(at 590.55 334.01 0)
+			(at 825.5 334.01 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20449,7 +21189,7 @@
 			)
 		)
 		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5"
-			(at 590.55 328.93 0)
+			(at 825.5 328.93 0)
 			(hide yes)
 			(effects
 				(font
@@ -20458,7 +21198,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 590.55 328.93 0)
+			(at 825.5 328.93 0)
 			(hide yes)
 			(effects
 				(font
@@ -20467,7 +21207,7 @@
 			)
 		)
 		(property "LCSC" "C141836"
-			(at 590.55 328.93 0)
+			(at 825.5 328.93 0)
 			(hide yes)
 			(effects
 				(font
@@ -20500,7 +21240,7 @@
 		)
 	)
 	(label "V5SYS"
-		(at 582.93 328.93 180)
+		(at 817.88 328.93 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -20510,7 +21250,7 @@
 		(uuid "89638ffe-1422-5d47-bada-bb525ab5f1d2")
 	)
 	(label "GND"
-		(at 590.55 336.55 270)
+		(at 825.5 336.55 270)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -20520,7 +21260,7 @@
 		(uuid "af10790b-1ccf-532f-a7b3-6d5935d839fb")
 	)
 	(label "BUCK_SW"
-		(at 598.17 326.39 0)
+		(at 833.12 326.39 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -20530,7 +21270,7 @@
 		(uuid "72c33f6b-d501-5dbe-aa55-742cd56fc10d")
 	)
 	(label "V5SYS"
-		(at 582.93 326.39 180)
+		(at 817.88 326.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -20540,7 +21280,7 @@
 		(uuid "1a28ba33-7418-57d3-a415-48670771ed5a")
 	)
 	(label "BUCK_FB"
-		(at 598.17 328.93 0)
+		(at 833.12 328.93 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -20551,7 +21291,7 @@
 	)
 	(symbol
 		(lib_id "Device:L")
-		(at 617.22 339.09 0)
+		(at 853.44 339.09 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -20561,7 +21301,7 @@
 		(dnp no)
 		(uuid "6649d1d6-ca98-5128-814b-0446d1814252")
 		(property "Reference" "L1"
-			(at 617.22 334.01 0)
+			(at 853.44 334.01 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20569,7 +21309,7 @@
 			)
 		)
 		(property "Value" "2.2uH"
-			(at 617.22 344.17 0)
+			(at 853.44 344.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20577,7 +21317,7 @@
 			)
 		)
 		(property "Footprint" "Inductor_SMD:L_Sunlord_SWPA4020S"
-			(at 617.22 339.09 0)
+			(at 853.44 339.09 0)
 			(hide yes)
 			(effects
 				(font
@@ -20586,7 +21326,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 617.22 339.09 0)
+			(at 853.44 339.09 0)
 			(hide yes)
 			(effects
 				(font
@@ -20595,7 +21335,7 @@
 			)
 		)
 		(property "LCSC" "C83423"
-			(at 617.22 339.09 0)
+			(at 853.44 339.09 0)
 			(hide yes)
 			(effects
 				(font
@@ -20619,7 +21359,7 @@
 		)
 	)
 	(label "BUCK_SW"
-		(at 617.22 335.28 90)
+		(at 853.44 335.28 90)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -20629,7 +21369,7 @@
 		(uuid "ca861f23-d6ce-5487-bc2e-610923ca94bc")
 	)
 	(label "+3V3"
-		(at 617.22 342.9 270)
+		(at 853.44 342.9 270)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -20640,96 +21380,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 637.54 326.39 90)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "2fe7f830-fe68-58cd-b7c7-3ff2a024985f")
-		(property "Reference" "R50"
-			(at 637.54 321.31 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "100K"
-			(at 637.54 331.47 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 637.54 326.39 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 637.54 326.39 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C25741"
-			(at 637.54 326.39 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "3c4be07a-c448-5a42-80e8-174e9956bf47")
-		)
-		(pin "2"
-			(uuid "61a29af6-926e-5754-8cb4-3677ef5d8597")
-		)
-		(instances
-			(project "FluxDrive"
-				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R50")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(label "+3V3"
-		(at 633.73 326.39 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "f7e99e21-6ab8-59b4-a43f-5a6cb797059f")
-	)
-	(label "BUCK_FB"
-		(at 641.35 326.39 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "29b73c77-6794-509d-938a-1267e7623289")
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 673.1 326.39 90)
+		(at 872.49 326.39 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -20739,15 +21390,15 @@
 		(dnp no)
 		(uuid "9807fd16-de35-5827-adb7-00756c2eb62b")
 		(property "Reference" "R51"
-			(at 673.1 321.31 90)
+			(at 872.49 321.31 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "22K"
-			(at 673.1 331.47 90)
+		(property "Value" "100K"
+			(at 872.49 331.47 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20755,7 +21406,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 673.1 326.39 0)
+			(at 872.49 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20764,7 +21415,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 673.1 326.39 0)
+			(at 872.49 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20772,8 +21423,8 @@
 				)
 			)
 		)
-		(property "LCSC" "C25768"
-			(at 673.1 326.39 0)
+		(property "LCSC" "C25741"
+			(at 872.49 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -20796,8 +21447,8 @@
 			)
 		)
 	)
-	(label "BUCK_FB"
-		(at 669.29 326.39 180)
+	(label "+3V3"
+		(at 868.68 326.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -20806,8 +21457,8 @@
 		)
 		(uuid "4d005e41-ca3f-5a8e-ae58-6d2b8ba21f2e")
 	)
-	(label "GND"
-		(at 676.91 326.39 0)
+	(label "BUCK_FB"
+		(at 876.3 326.39 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -20817,177 +21468,8 @@
 		(uuid "e98e0d31-af38-5da5-8f3e-634193de7498")
 	)
 	(symbol
-		(lib_id "Device:C")
-		(at 702.31 326.39 90)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(in_pos_files no)
-		(dnp yes)
-		(uuid "b1fc3b07-0b4e-5939-92cf-f88f2b952558")
-		(property "Reference" "C19"
-			(at 702.31 321.31 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "15pF"
-			(at 702.31 331.47 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
-			(at 702.31 326.39 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 702.31 326.39 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "5b9ec7dd-e3a8-550f-a947-23c4472faeb5")
-		)
-		(pin "2"
-			(uuid "8c28c710-623d-5e52-b776-a29d3ffe3642")
-		)
-		(instances
-			(project "FluxDrive"
-				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C19")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(label "+3V3"
-		(at 698.5 326.39 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "8882045f-20f9-5044-beea-71c33b23a764")
-	)
-	(label "BUCK_FB"
-		(at 706.12 326.39 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e61d785f-7409-53ea-8c52-e8a73cef6741")
-	)
-	(symbol
-		(lib_id "Device:C")
-		(at 734.06 326.39 90)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "ddc6f709-236a-5ae7-be84-f9444b6560c0")
-		(property "Reference" "C20"
-			(at 734.06 321.31 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "22uF"
-			(at 734.06 331.47 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
-			(at 734.06 326.39 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 734.06 326.39 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C45783"
-			(at 734.06 326.39 0)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "0d3aaa57-28ff-514c-a6c5-e65d7aa53bae")
-		)
-		(pin "2"
-			(uuid "1449ffb8-fb46-5104-aa2c-9352082c7f20")
-		)
-		(instances
-			(project "FluxDrive"
-				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C20")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(label "+3V3"
-		(at 730.25 326.39 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "d261d536-cad2-50a4-81af-b1709e936102")
-	)
-	(label "GND"
-		(at 737.87 326.39 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "5b70782c-d9c2-50d2-b1f1-1093c930ce32")
-	)
-	(symbol
 		(lib_id "Device:R")
-		(at 764.54 326.39 90)
+		(at 908.05 326.39 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -20997,15 +21479,15 @@
 		(dnp no)
 		(uuid "3e19b68e-0282-58ae-8a6e-b3349152003f")
 		(property "Reference" "R52"
-			(at 764.54 321.31 90)
+			(at 908.05 321.31 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "1K"
-			(at 764.54 331.47 90)
+		(property "Value" "22K"
+			(at 908.05 331.47 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21013,7 +21495,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 764.54 326.39 0)
+			(at 908.05 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -21022,7 +21504,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 764.54 326.39 0)
+			(at 908.05 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -21030,8 +21512,8 @@
 				)
 			)
 		)
-		(property "LCSC" "C11702"
-			(at 764.54 326.39 0)
+		(property "LCSC" "C25768"
+			(at 908.05 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -21054,8 +21536,8 @@
 			)
 		)
 	)
-	(label "+5V_A"
-		(at 760.73 326.39 180)
+	(label "BUCK_FB"
+		(at 904.24 326.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -21064,8 +21546,8 @@
 		)
 		(uuid "40ece05c-e6d5-5514-80a7-427097a0324d")
 	)
-	(label "AMIGA_PWR"
-		(at 768.35 326.39 0)
+	(label "GND"
+		(at 911.86 326.39 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -21075,8 +21557,177 @@
 		(uuid "0219719e-2ff7-5800-a50f-d825da0fcc52")
 	)
 	(symbol
+		(lib_id "Device:C")
+		(at 937.26 326.39 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp yes)
+		(uuid "ffefeffe-f51c-53c8-9009-c0cb07d040fd")
+		(property "Reference" "C23"
+			(at 937.26 321.31 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "15pF"
+			(at 937.26 331.47 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+			(at 937.26 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 937.26 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "33f52b84-1b10-5de3-84c0-bfc4f399c7f5")
+		)
+		(pin "2"
+			(uuid "1c5283d9-4abf-562d-8507-a93c5edf7314")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "C23")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "+3V3"
+		(at 933.45 326.39 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "21d7903f-a8f3-5b76-a5b6-2336dd9f73ab")
+	)
+	(label "BUCK_FB"
+		(at 941.07 326.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "5ec0c48e-dd72-552e-862a-2359bb70304a")
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 970.28 326.39 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "2995f068-dcf8-5985-b937-e9b4771837d4")
+		(property "Reference" "C24"
+			(at 970.28 321.31 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "22uF"
+			(at 970.28 331.47 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 970.28 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 970.28 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C45783"
+			(at 970.28 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "0600aa6f-45f4-5a9b-8bed-8ef8c511d77d")
+		)
+		(pin "2"
+			(uuid "1a934160-6fe4-575c-9794-cb1ca898bd1c")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "C24")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "+3V3"
+		(at 966.47 326.39 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "49427fb4-1f62-5834-abe7-0ee9ff12bbaf")
+	)
+	(label "GND"
+		(at 974.09 326.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "bb1d89df-5145-543f-bbea-872f10c4489b")
+	)
+	(symbol
 		(lib_id "Device:R")
-		(at 803.91 326.39 90)
+		(at 999.49 326.39 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -21086,15 +21737,15 @@
 		(dnp no)
 		(uuid "7551648d-78bb-50d0-8fde-1fdcd1cc49e2")
 		(property "Reference" "R53"
-			(at 803.91 321.31 90)
+			(at 999.49 321.31 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "1K5"
-			(at 803.91 331.47 90)
+		(property "Value" "1K"
+			(at 999.49 331.47 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21102,7 +21753,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 803.91 326.39 0)
+			(at 999.49 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -21111,7 +21762,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 803.91 326.39 0)
+			(at 999.49 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -21119,8 +21770,8 @@
 				)
 			)
 		)
-		(property "LCSC" "C25867"
-			(at 803.91 326.39 0)
+		(property "LCSC" "C11702"
+			(at 999.49 326.39 0)
 			(hide yes)
 			(effects
 				(font
@@ -21143,8 +21794,8 @@
 			)
 		)
 	)
-	(label "AMIGA_PWR"
-		(at 800.1 326.39 180)
+	(label "+5V_A"
+		(at 995.68 326.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -21153,8 +21804,8 @@
 		)
 		(uuid "1bbd9e57-169c-58ca-b29e-cebe72b44a2c")
 	)
-	(label "GND"
-		(at 807.72 326.39 0)
+	(label "AMIGA_PWR"
+		(at 1003.3 326.39 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -21162,6 +21813,95 @@
 			(justify left bottom)
 		)
 		(uuid "84f8c166-37a8-5d17-acb2-167b289b499a")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 1040.13 326.39 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "492e6a12-929b-53f7-98f0-2a1b756b7548")
+		(property "Reference" "R54"
+			(at 1040.13 321.31 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1K5"
+			(at 1040.13 331.47 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 1040.13 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 1040.13 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C25867"
+			(at 1040.13 326.39 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "c7dd2b9f-4fa8-5710-a361-72bfa8fe422c")
+		)
+		(pin "2"
+			(uuid "93fe90ac-937f-50bd-bdf8-18cf72f9d640")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "R54")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "AMIGA_PWR"
+		(at 1036.32 326.39 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "df26a55b-621c-52f9-8f69-909e223f89f9")
+	)
+	(label "GND"
+		(at 1043.94 326.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "58840f15-ff1c-522c-b99f-0f230e2f8b9e")
 	)
 	(text "D. ESP32-S3 module"
 		(exclude_from_sim no)
@@ -21750,8 +22490,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "4edf4fe4-40d7-5747-a56c-86fad6debc31")
-		(property "Reference" "C21"
+		(uuid "5236ff7a-619e-5b8f-a4a7-e055ccfe2102")
+		(property "Reference" "C25"
 			(at 99.06 389.89 90)
 			(effects
 				(font
@@ -21795,15 +22535,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "58683907-b8ad-5491-84f2-65a61c2af7f9")
+			(uuid "acb5a3cc-38a6-54ee-b80c-bf78f0dcc97b")
 		)
 		(pin "2"
-			(uuid "5328380b-306e-5b1a-bea0-e25e3cc16f4f")
+			(uuid "ca5d71a4-966c-5ccb-9a78-025496c5b60d")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C21")
+					(reference "C25")
 					(unit 1)
 				)
 			)
@@ -21817,7 +22557,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "fa376285-57aa-566a-95d1-e2762e017500")
+		(uuid "1956b9c9-e8e9-5b22-95e8-306e71e14d42")
 	)
 	(label "GND"
 		(at 102.87 394.97 0)
@@ -21827,7 +22567,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "58a2bd36-a3c2-50ce-b2d1-3ee9577ea0f6")
+		(uuid "8b080f42-050d-55b1-a7f8-6bc80b0439ca")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -21839,8 +22579,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "02d2bfa9-37b9-5b20-bbe1-4a21066af934")
-		(property "Reference" "C22"
+		(uuid "4a26d31d-d189-56de-9508-2bb049af575e")
+		(property "Reference" "C26"
 			(at 128.27 389.89 90)
 			(effects
 				(font
@@ -21884,15 +22624,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "8deef0d6-c149-582d-8fc2-16232a05d097")
+			(uuid "e583976c-8e0e-5a09-94a6-efebc30300b9")
 		)
 		(pin "2"
-			(uuid "df735b32-490a-55b0-ae6d-a99340e86934")
+			(uuid "2617395a-17e4-5290-b6f9-18910eca2c34")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C22")
+					(reference "C26")
 					(unit 1)
 				)
 			)
@@ -21906,7 +22646,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "f4cda648-012d-54c7-a319-bd7c15d73d96")
+		(uuid "9e3e4221-d3f6-543a-a301-40b80fdacdab")
 	)
 	(label "GND"
 		(at 132.08 394.97 0)
@@ -21916,7 +22656,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "30a8e752-400d-58ea-9519-8b052cdd0fe0")
+		(uuid "657b8e88-1d87-5b6d-8f09-5577c78642ce")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -21928,8 +22668,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "492e6a12-929b-53f7-98f0-2a1b756b7548")
-		(property "Reference" "R54"
+		(uuid "dc359d23-86e6-5112-ac27-cf82636d03dc")
+		(property "Reference" "R55"
 			(at 156.21 389.89 90)
 			(effects
 				(font
@@ -21973,15 +22713,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "c7dd2b9f-4fa8-5710-a361-72bfa8fe422c")
+			(uuid "c1f133de-9724-5467-aa06-c53ce828ed63")
 		)
 		(pin "2"
-			(uuid "93fe90ac-937f-50bd-bdf8-18cf72f9d640")
+			(uuid "8107d5bc-3256-5a5f-b669-bad1d371e95f")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R54")
+					(reference "R55")
 					(unit 1)
 				)
 			)
@@ -21995,7 +22735,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "df26a55b-621c-52f9-8f69-909e223f89f9")
+		(uuid "64f8c99c-5aa3-5b94-a82c-c6e6b6d2e205")
 	)
 	(label "ESP_EN"
 		(at 160.02 394.97 0)
@@ -22005,7 +22745,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "58840f15-ff1c-522c-b99f-0f230e2f8b9e")
+		(uuid "dd75b3a1-d0d8-56d7-9fad-01364c1ee5da")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -22017,8 +22757,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "ffefeffe-f51c-53c8-9009-c0cb07d040fd")
-		(property "Reference" "C23"
+		(uuid "af9cfd67-5092-5159-bf8f-b5eb963b0122")
+		(property "Reference" "C27"
 			(at 190.5 389.89 90)
 			(effects
 				(font
@@ -22062,15 +22802,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "33f52b84-1b10-5de3-84c0-bfc4f399c7f5")
+			(uuid "ce726ba5-d946-5ee0-bd55-122052c282da")
 		)
 		(pin "2"
-			(uuid "1c5283d9-4abf-562d-8507-a93c5edf7314")
+			(uuid "e985a02c-093d-529c-bc7e-7867ddf592ad")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C23")
+					(reference "C27")
 					(unit 1)
 				)
 			)
@@ -22084,7 +22824,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "21d7903f-a8f3-5b76-a5b6-2336dd9f73ab")
+		(uuid "f8688076-f3ec-5202-a06a-332ddabe2223")
 	)
 	(label "GND"
 		(at 194.31 394.97 0)
@@ -22094,7 +22834,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "5ec0c48e-dd72-552e-862a-2359bb70304a")
+		(uuid "52b05b90-c19e-5d9a-90ad-184cb1bd548b")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -22106,8 +22846,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "dc359d23-86e6-5112-ac27-cf82636d03dc")
-		(property "Reference" "R55"
+		(uuid "8f50fc95-4dc7-52b5-a225-2bf5cb0d87c8")
+		(property "Reference" "R56"
 			(at 219.71 389.89 90)
 			(effects
 				(font
@@ -22151,15 +22891,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "c1f133de-9724-5467-aa06-c53ce828ed63")
+			(uuid "c4b35319-58a2-5758-8cbc-401f9218efbb")
 		)
 		(pin "2"
-			(uuid "8107d5bc-3256-5a5f-b669-bad1d371e95f")
+			(uuid "c44caa2a-2e70-52ff-aaad-2905b92c73d9")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R55")
+					(reference "R56")
 					(unit 1)
 				)
 			)
@@ -22173,7 +22913,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "64f8c99c-5aa3-5b94-a82c-c6e6b6d2e205")
+		(uuid "29bc6d9c-03fe-5bc6-a6df-6933125631b6")
 	)
 	(label "BOOT"
 		(at 223.52 394.97 0)
@@ -22183,7 +22923,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "dd75b3a1-d0d8-56d7-9fad-01364c1ee5da")
+		(uuid "16ec229c-610d-563c-a646-0efc65a75fbb")
 	)
 	(symbol
 		(lib_id "Switch:SW_Push")
@@ -22643,8 +23383,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "8f50fc95-4dc7-52b5-a225-2bf5cb0d87c8")
-		(property "Reference" "R56"
+		(uuid "3f0a0da1-088b-552e-b136-32deab30d5ef")
+		(property "Reference" "R57"
 			(at 69.85 501.65 90)
 			(effects
 				(font
@@ -22688,15 +23428,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "c4b35319-58a2-5758-8cbc-401f9218efbb")
+			(uuid "682436b0-e597-5e7d-be61-0d36f2dcb96c")
 		)
 		(pin "2"
-			(uuid "c44caa2a-2e70-52ff-aaad-2905b92c73d9")
+			(uuid "edfee8eb-ff18-5c7d-a381-23d8e612c9df")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R56")
+					(reference "R57")
 					(unit 1)
 				)
 			)
@@ -22710,7 +23450,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "29bc6d9c-03fe-5bc6-a6df-6933125631b6")
+		(uuid "e43e065d-aff6-5ebb-b3e1-25f88f076b07")
 	)
 	(label "GND"
 		(at 73.66 506.73 0)
@@ -22720,7 +23460,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "16ec229c-610d-563c-a646-0efc65a75fbb")
+		(uuid "479d3365-f09d-5761-b602-d140596c9acf")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -22732,8 +23472,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "3f0a0da1-088b-552e-b136-32deab30d5ef")
-		(property "Reference" "R57"
+		(uuid "e687aabd-12a9-5552-8a79-522853ac18f3")
+		(property "Reference" "R58"
 			(at 101.6 501.65 90)
 			(effects
 				(font
@@ -22777,15 +23517,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "682436b0-e597-5e7d-be61-0d36f2dcb96c")
+			(uuid "e04cfbe9-2c21-5e3d-a426-989c269adeb9")
 		)
 		(pin "2"
-			(uuid "edfee8eb-ff18-5c7d-a381-23d8e612c9df")
+			(uuid "4d89510c-526b-590a-b64d-ca810acb083d")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R57")
+					(reference "R58")
 					(unit 1)
 				)
 			)
@@ -22799,7 +23539,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "e43e065d-aff6-5ebb-b3e1-25f88f076b07")
+		(uuid "ac6b6684-764a-5bed-b51a-aa98dca2a984")
 	)
 	(label "GND"
 		(at 105.41 506.73 0)
@@ -22809,7 +23549,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "479d3365-f09d-5761-b602-d140596c9acf")
+		(uuid "bb844c80-c3cd-5db6-99f7-252214f420ba")
 	)
 	(symbol
 		(lib_id "Power_Protection:USBLC6-2SC6")
@@ -22962,8 +23702,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "e687aabd-12a9-5552-8a79-522853ac18f3")
-		(property "Reference" "R58"
+		(uuid "59315d5a-a574-535f-a0a5-d810ef416032")
+		(property "Reference" "R59"
 			(at 170.18 501.65 90)
 			(effects
 				(font
@@ -23007,15 +23747,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "e04cfbe9-2c21-5e3d-a426-989c269adeb9")
+			(uuid "2ba53c86-fd42-584a-a5ba-a99b6b0e2470")
 		)
 		(pin "2"
-			(uuid "4d89510c-526b-590a-b64d-ca810acb083d")
+			(uuid "1a507487-5d5f-5f40-b963-8de99990d28e")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R58")
+					(reference "R59")
 					(unit 1)
 				)
 			)
@@ -23029,7 +23769,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "ac6b6684-764a-5bed-b51a-aa98dca2a984")
+		(uuid "d9a62086-cbd1-507e-ad35-dcab0ce6bb1a")
 	)
 	(label "GND"
 		(at 173.99 506.73 0)
@@ -23039,7 +23779,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "bb844c80-c3cd-5db6-99f7-252214f420ba")
+		(uuid "02e861f2-9d6f-583f-81ea-a866c8bfbc58")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -23051,8 +23791,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "59315d5a-a574-535f-a0a5-d810ef416032")
-		(property "Reference" "R59"
+		(uuid "62dd49bf-4246-5444-b567-1f5a176a401d")
+		(property "Reference" "R60"
 			(at 203.2 501.65 90)
 			(effects
 				(font
@@ -23096,15 +23836,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "2ba53c86-fd42-584a-a5ba-a99b6b0e2470")
+			(uuid "9e6f500f-4406-599d-abe4-68b616f125ba")
 		)
 		(pin "2"
-			(uuid "1a507487-5d5f-5f40-b963-8de99990d28e")
+			(uuid "b238744e-7f84-5517-8407-e9c5c7b1bb4f")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R59")
+					(reference "R60")
 					(unit 1)
 				)
 			)
@@ -23118,7 +23858,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "d9a62086-cbd1-507e-ad35-dcab0ce6bb1a")
+		(uuid "66b37264-0f1d-538b-976c-be104c3b59a2")
 	)
 	(label "USB_DP"
 		(at 207.01 506.73 0)
@@ -23128,7 +23868,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "02e861f2-9d6f-583f-81ea-a866c8bfbc58")
+		(uuid "4f4db7ac-0a65-57ae-b67a-4df49d470350")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -23140,8 +23880,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "62dd49bf-4246-5444-b567-1f5a176a401d")
-		(property "Reference" "R60"
+		(uuid "88e6980b-a892-540a-b6f3-447705ee28f5")
+		(property "Reference" "R61"
 			(at 238.76 501.65 90)
 			(effects
 				(font
@@ -23185,15 +23925,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "9e6f500f-4406-599d-abe4-68b616f125ba")
+			(uuid "aac982af-0191-5b21-ac4c-92f738fa2a8e")
 		)
 		(pin "2"
-			(uuid "b238744e-7f84-5517-8407-e9c5c7b1bb4f")
+			(uuid "a4de78dc-4da1-57f2-b741-aa5aa26f8d3b")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R60")
+					(reference "R61")
 					(unit 1)
 				)
 			)
@@ -23207,7 +23947,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "66b37264-0f1d-538b-976c-be104c3b59a2")
+		(uuid "daf507f6-e3ba-5013-9b46-5ca5abaf83f2")
 	)
 	(label "USB_DN"
 		(at 242.57 506.73 0)
@@ -23217,7 +23957,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "4f4db7ac-0a65-57ae-b67a-4df49d470350")
+		(uuid "e7794237-263a-55bd-966a-3fc0e9aa258e")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -23229,8 +23969,8 @@
 		(on_board yes)
 		(in_pos_files no)
 		(dnp yes)
-		(uuid "2995f068-dcf8-5985-b937-e9b4771837d4")
-		(property "Reference" "C24"
+		(uuid "4a28afb5-e9f6-5fcd-ab0e-39efda851db6")
+		(property "Reference" "C28"
 			(at 273.05 501.65 90)
 			(effects
 				(font
@@ -23265,15 +24005,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "0600aa6f-45f4-5a9b-8bed-8ef8c511d77d")
+			(uuid "adf10f20-fe7a-5695-9c7e-02b65dbd52ca")
 		)
 		(pin "2"
-			(uuid "1a934160-6fe4-575c-9794-cb1ca898bd1c")
+			(uuid "c43ee387-289e-5612-81db-13a5be5536a5")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C24")
+					(reference "C28")
 					(unit 1)
 				)
 			)
@@ -23287,7 +24027,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "49427fb4-1f62-5834-abe7-0ee9ff12bbaf")
+		(uuid "6764d160-fb6d-5b32-9bf9-d31bd370c753")
 	)
 	(label "GND"
 		(at 276.86 506.73 0)
@@ -23297,7 +24037,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "bb1d89df-5145-543f-bbea-872f10c4489b")
+		(uuid "59e8dae8-82a7-5485-b65b-7954bef9c661")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -23309,8 +24049,8 @@
 		(on_board yes)
 		(in_pos_files no)
 		(dnp yes)
-		(uuid "5236ff7a-619e-5b8f-a4a7-e055ccfe2102")
-		(property "Reference" "C25"
+		(uuid "8c58e213-36e7-5fe8-8c71-fe49c91ddef3")
+		(property "Reference" "C29"
 			(at 303.53 501.65 90)
 			(effects
 				(font
@@ -23345,15 +24085,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "acb5a3cc-38a6-54ee-b80c-bf78f0dcc97b")
+			(uuid "b76a6598-ac34-5c6f-b227-fdfdfafa968f")
 		)
 		(pin "2"
-			(uuid "ca5d71a4-966c-5ccb-9a78-025496c5b60d")
+			(uuid "60ae420e-e7f3-5153-b5c0-b09c15ccbaf2")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C25")
+					(reference "C29")
 					(unit 1)
 				)
 			)
@@ -23367,7 +24107,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "1956b9c9-e8e9-5b22-95e8-306e71e14d42")
+		(uuid "74055c5d-7fcf-5faa-9b08-ebcd70c1c9c8")
 	)
 	(label "GND"
 		(at 307.34 506.73 0)
@@ -23377,7 +24117,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "8b080f42-050d-55b1-a7f8-6bc80b0439ca")
+		(uuid "59cc8e78-623d-5ea4-85e5-da34053b5eef")
 	)
 	(text "F. Headers, buttons, LED, test pads, mechanics"
 		(exclude_from_sim no)
@@ -23400,8 +24140,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "88e6980b-a892-540a-b6f3-447705ee28f5")
-		(property "Reference" "R61"
+		(uuid "00039248-2e81-5f59-9678-8512aaeef2b2")
+		(property "Reference" "R62"
 			(at 36.83 577.85 90)
 			(effects
 				(font
@@ -23445,15 +24185,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "aac982af-0191-5b21-ac4c-92f738fa2a8e")
+			(uuid "e9d36ca5-51c1-50a8-b920-b232a97d1d98")
 		)
 		(pin "2"
-			(uuid "a4de78dc-4da1-57f2-b741-aa5aa26f8d3b")
+			(uuid "60115db6-3b0a-5a6d-a2de-3fe881ef5848")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R61")
+					(reference "R62")
 					(unit 1)
 				)
 			)
@@ -23467,7 +24207,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "daf507f6-e3ba-5013-9b46-5ca5abaf83f2")
+		(uuid "a95615d9-75a1-5b0e-b6c2-1192423e50c1")
 	)
 	(label "UART_TX"
 		(at 40.64 582.93 0)
@@ -23477,7 +24217,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "e7794237-263a-55bd-966a-3fc0e9aa258e")
+		(uuid "593a1725-2610-5950-9ad9-bd1a2bf9c1f9")
 	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x06")
@@ -23727,8 +24467,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "00039248-2e81-5f59-9678-8512aaeef2b2")
-		(property "Reference" "R62"
+		(uuid "d0ec2cb6-ff05-5ee0-9fe3-ba8f01041928")
+		(property "Reference" "R63"
 			(at 116.84 577.85 90)
 			(effects
 				(font
@@ -23772,15 +24512,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "e9d36ca5-51c1-50a8-b920-b232a97d1d98")
+			(uuid "663facdb-e816-5412-9029-daee8f04c41e")
 		)
 		(pin "2"
-			(uuid "60115db6-3b0a-5a6d-a2de-3fe881ef5848")
+			(uuid "88580e3c-954a-5f93-ba8e-838e66dbb9bc")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R62")
+					(reference "R63")
 					(unit 1)
 				)
 			)
@@ -23794,7 +24534,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "a95615d9-75a1-5b0e-b6c2-1192423e50c1")
+		(uuid "3e98be8e-23f1-5154-ac9d-a5ad1bfafef3")
 	)
 	(label "LED_A"
 		(at 120.65 582.93 0)
@@ -23804,7 +24544,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "593a1725-2610-5950-9ad9-bd1a2bf9c1f9")
+		(uuid "e3c4aa08-02bf-5a02-ba4d-3338bb58dca4")
 	)
 	(symbol
 		(lib_id "Device:LED")
@@ -24968,7 +25708,7 @@
 		(uuid "af09ede6-85fd-5fdc-8045-93b562450826")
 	)
 	(symbol
-		(lib_id "Mechanical:MountingHole")
+		(lib_id "Connector:TestPoint")
 		(at 330.2 582.93 0)
 		(unit 1)
 		(body_style 1)
@@ -24977,8 +25717,8 @@
 		(on_board yes)
 		(in_pos_files no)
 		(dnp no)
-		(uuid "d0292987-9692-5432-bb2a-e185bf0be4cd")
-		(property "Reference" "H1"
+		(uuid "3186b9ad-8833-5e02-8c80-c74489885259")
+		(property "Reference" "TP17"
 			(at 330.2 577.85 0)
 			(effects
 				(font
@@ -24986,7 +25726,7 @@
 				)
 			)
 		)
-		(property "Value" "3.2mm"
+		(property "Value" "SEL_FD"
 			(at 330.2 588.01 0)
 			(effects
 				(font
@@ -24994,7 +25734,7 @@
 				)
 			)
 		)
-		(property "Footprint" "MountingHole:MountingHole_3.2mm_M3"
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 330.2 582.93 0)
 			(hide yes)
 			(effects
@@ -25005,6 +25745,408 @@
 		)
 		(property "Datasheet" ""
 			(at 330.2 582.93 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "b2936f64-67b0-5ae9-a1b6-ab505d4237e8")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "TP17")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "SEL_FD"
+		(at 330.2 582.93 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "54041809-c706-5141-94d0-8da72f2444b2")
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 340.36 582.93 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "c961b6b4-87b4-5568-9dd2-59d42262f832")
+		(property "Reference" "TP18"
+			(at 340.36 577.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "REAL_SEL"
+			(at 340.36 588.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 340.36 582.93 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 340.36 582.93 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "2425ca57-6cd3-5a05-bc4a-a32ee3e3afcc")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "TP18")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "REAL_SEL"
+		(at 340.36 582.93 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "aae2325b-7e2f-5658-b794-c592dedfaa8e")
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 350.52 582.93 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "94a6c87d-7e0a-55f9-ba5f-ec7592284819")
+		(property "Reference" "TP19"
+			(at 350.52 577.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "REAL_MTR"
+			(at 350.52 588.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 350.52 582.93 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 350.52 582.93 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "15fe8e6d-d281-557f-8258-6adb1c157c81")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "TP19")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "REAL_MTR"
+		(at 350.52 582.93 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "a8812811-fe54-54fe-9d4b-e766026f0fd8")
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 360.68 582.93 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "f32ce271-314e-564a-afc5-18ba63c3d6e6")
+		(property "Reference" "TP20"
+			(at 360.68 577.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "DF0_STATE"
+			(at 360.68 588.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 360.68 582.93 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 360.68 582.93 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "f9c4337c-4b46-5ef4-8f3a-2d811bfc8e07")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "TP20")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "DF0_STATE"
+		(at 360.68 582.93 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "09388552-3cc7-502d-9aeb-79a2736b4ab2")
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 370.84 582.93 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "90fff727-975c-5f7f-aab3-a2fb2d3f7e1f")
+		(property "Reference" "TP21"
+			(at 370.84 577.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "DF1_STATE"
+			(at 370.84 588.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 370.84 582.93 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 370.84 582.93 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "40e2f0ec-02ba-594f-89f4-7ed864ea3d12")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "TP21")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "DF1_STATE"
+		(at 370.84 582.93 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "d73abcfd-1efc-5ac2-8640-464662455f30")
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 381 582.93 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "ad45bcb7-c4a8-5fde-b5ed-3d2739ec6c08")
+		(property "Reference" "TP22"
+			(at 381 577.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MODE_CLK"
+			(at 381 588.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 381 582.93 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 381 582.93 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "064f1593-5c02-59c9-9af0-0193cc38f42d")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "TP22")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "MODE_CLK"
+		(at 381 582.93 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "346818ee-2216-59ea-858c-7a96cc7113e1")
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole")
+		(at 391.16 582.93 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "d0292987-9692-5432-bb2a-e185bf0be4cd")
+		(property "Reference" "H1"
+			(at 391.16 577.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "3.2mm"
+			(at 391.16 588.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "MountingHole:MountingHole_3.2mm_M3"
+			(at 391.16 582.93 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 391.16 582.93 0)
 			(hide yes)
 			(effects
 				(font
@@ -25023,7 +26165,7 @@
 	)
 	(symbol
 		(lib_id "Mechanical:MountingHole")
-		(at 340.36 582.93 0)
+		(at 401.32 582.93 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -25033,7 +26175,7 @@
 		(dnp no)
 		(uuid "a6069b5a-85ab-5d31-832f-a6ce3e5e748c")
 		(property "Reference" "H2"
-			(at 340.36 577.85 0)
+			(at 401.32 577.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -25041,7 +26183,7 @@
 			)
 		)
 		(property "Value" "3.2mm"
-			(at 340.36 588.01 0)
+			(at 401.32 588.01 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -25049,7 +26191,7 @@
 			)
 		)
 		(property "Footprint" "MountingHole:MountingHole_3.2mm_M3"
-			(at 340.36 582.93 0)
+			(at 401.32 582.93 0)
 			(hide yes)
 			(effects
 				(font
@@ -25058,7 +26200,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 340.36 582.93 0)
+			(at 401.32 582.93 0)
 			(hide yes)
 			(effects
 				(font
@@ -25077,7 +26219,7 @@
 	)
 	(symbol
 		(lib_id "Mechanical:Fiducial")
-		(at 350.52 582.93 0)
+		(at 411.48 582.93 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -25087,7 +26229,7 @@
 		(dnp no)
 		(uuid "e538b7fe-0638-580a-a423-20ec4ecbcfbb")
 		(property "Reference" "FID1"
-			(at 350.52 577.85 0)
+			(at 411.48 577.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -25095,7 +26237,7 @@
 			)
 		)
 		(property "Value" "Fiducial"
-			(at 350.52 588.01 0)
+			(at 411.48 588.01 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -25103,7 +26245,7 @@
 			)
 		)
 		(property "Footprint" "Fiducial:Fiducial_1mm_Mask2mm"
-			(at 350.52 582.93 0)
+			(at 411.48 582.93 0)
 			(hide yes)
 			(effects
 				(font
@@ -25112,7 +26254,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 350.52 582.93 0)
+			(at 411.48 582.93 0)
 			(hide yes)
 			(effects
 				(font
@@ -25131,7 +26273,7 @@
 	)
 	(symbol
 		(lib_id "Mechanical:Fiducial")
-		(at 360.68 582.93 0)
+		(at 421.64 582.93 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -25141,7 +26283,7 @@
 		(dnp no)
 		(uuid "c0749fc3-1c27-51ff-89aa-635b737d39a8")
 		(property "Reference" "FID2"
-			(at 360.68 577.85 0)
+			(at 421.64 577.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -25149,7 +26291,7 @@
 			)
 		)
 		(property "Value" "Fiducial"
-			(at 360.68 588.01 0)
+			(at 421.64 588.01 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -25157,7 +26299,7 @@
 			)
 		)
 		(property "Footprint" "Fiducial:Fiducial_1mm_Mask2mm"
-			(at 360.68 582.93 0)
+			(at 421.64 582.93 0)
 			(hide yes)
 			(effects
 				(font
@@ -25166,7 +26308,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 360.68 582.93 0)
+			(at 421.64 582.93 0)
 			(hide yes)
 			(effects
 				(font
@@ -25185,7 +26327,7 @@
 	)
 	(symbol
 		(lib_id "Mechanical:Fiducial")
-		(at 370.84 582.93 0)
+		(at 431.8 582.93 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -25195,7 +26337,7 @@
 		(dnp no)
 		(uuid "9ecf2d89-73c3-5e74-80ac-9104142445fd")
 		(property "Reference" "FID3"
-			(at 370.84 577.85 0)
+			(at 431.8 577.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -25203,7 +26345,7 @@
 			)
 		)
 		(property "Value" "Fiducial"
-			(at 370.84 588.01 0)
+			(at 431.8 588.01 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -25211,7 +26353,7 @@
 			)
 		)
 		(property "Footprint" "Fiducial:Fiducial_1mm_Mask2mm"
-			(at 370.84 582.93 0)
+			(at 431.8 582.93 0)
 			(hide yes)
 			(effects
 				(font
@@ -25220,7 +26362,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 370.84 582.93 0)
+			(at 431.8 582.93 0)
 			(hide yes)
 			(effects
 				(font
@@ -25399,8 +26541,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "4a26d31d-d189-56de-9508-2bb049af575e")
-		(property "Reference" "C26"
+		(uuid "1b8e1614-9377-57c0-9863-1d8fc3bb73d5")
+		(property "Reference" "C30"
 			(at 74.93 636.27 90)
 			(effects
 				(font
@@ -25444,15 +26586,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "e583976c-8e0e-5a09-94a6-efebc30300b9")
+			(uuid "da6100f4-56ad-5544-a852-4f1c599ac658")
 		)
 		(pin "2"
-			(uuid "2617395a-17e4-5290-b6f9-18910eca2c34")
+			(uuid "334e2306-13fe-59fa-a5c5-af96fd6e737c")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C26")
+					(reference "C30")
 					(unit 1)
 				)
 			)
@@ -25466,7 +26608,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "9e3e4221-d3f6-543a-a301-40b80fdacdab")
+		(uuid "8087db50-69f7-541a-a589-ae3140ce42ea")
 	)
 	(label "GND"
 		(at 78.74 641.35 0)
@@ -25476,7 +26618,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "657b8e88-1d87-5b6d-8f09-5577c78642ce")
+		(uuid "14e2ec9a-5158-51c6-9af1-695f8ab34eb1")
 	)
 	(symbol
 		(lib_id "FluxDrive:74LVC1G157")
@@ -25629,8 +26771,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "af9cfd67-5092-5159-bf8f-b5eb963b0122")
-		(property "Reference" "C27"
+		(uuid "b9b3d0d7-5860-5d50-98ce-8f5a05582e0d")
+		(property "Reference" "C31"
 			(at 146.05 636.27 90)
 			(effects
 				(font
@@ -25674,15 +26816,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "ce726ba5-d946-5ee0-bd55-122052c282da")
+			(uuid "4ca92ee4-e1b9-531a-8447-2c40cca04811")
 		)
 		(pin "2"
-			(uuid "e985a02c-093d-529c-bc7e-7867ddf592ad")
+			(uuid "e48239e6-54a9-5d5f-9df3-fd46d1f0c5f3")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C27")
+					(reference "C31")
 					(unit 1)
 				)
 			)
@@ -25696,7 +26838,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "f8688076-f3ec-5202-a06a-332ddabe2223")
+		(uuid "bd3be7c1-4edc-577e-99d2-c9a124fd7b3a")
 	)
 	(label "GND"
 		(at 149.86 641.35 0)
@@ -25706,7 +26848,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "52b05b90-c19e-5d9a-90ad-184cb1bd548b")
+		(uuid "be172642-ed9d-54e1-9a6a-aaf38a546691")
 	)
 	(symbol
 		(lib_id "FluxDrive:74LVC1G157")
@@ -25859,8 +27001,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "4a28afb5-e9f6-5fcd-ab0e-39efda851db6")
-		(property "Reference" "C28"
+		(uuid "b19e630c-47b6-5f95-92d6-5d57c51548e3")
+		(property "Reference" "C32"
 			(at 223.52 636.27 90)
 			(effects
 				(font
@@ -25904,15 +27046,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "adf10f20-fe7a-5695-9c7e-02b65dbd52ca")
+			(uuid "c7cf9e49-f80d-5cd9-bccf-8ea03150c18d")
 		)
 		(pin "2"
-			(uuid "c43ee387-289e-5612-81db-13a5be5536a5")
+			(uuid "3ae8179b-f404-52f4-a970-24cd78c7d5e5")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C28")
+					(reference "C32")
 					(unit 1)
 				)
 			)
@@ -25926,7 +27068,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "6764d160-fb6d-5b32-9bf9-d31bd370c753")
+		(uuid "f35d78d2-bd48-53ad-9460-8cdac2ba00b5")
 	)
 	(label "GND"
 		(at 227.33 641.35 0)
@@ -25936,7 +27078,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "59e8dae8-82a7-5485-b65b-7954bef9c661")
+		(uuid "644f3889-c56b-5903-bb3b-05ed99f1330b")
 	)
 	(symbol
 		(lib_id "74xx:74LS74")
@@ -26307,8 +27449,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "8c58e213-36e7-5fe8-8c71-fe49c91ddef3")
-		(property "Reference" "C29"
+		(uuid "9eaf8fb4-b9e7-56e4-9a85-364fcee672c1")
+		(property "Reference" "C33"
 			(at 349.25 636.27 90)
 			(effects
 				(font
@@ -26352,15 +27494,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "b76a6598-ac34-5c6f-b227-fdfdfafa968f")
+			(uuid "03bb8f2e-8e3c-534b-b996-0e9d049297d7")
 		)
 		(pin "2"
-			(uuid "60ae420e-e7f3-5153-b5c0-b09c15ccbaf2")
+			(uuid "3de3c92f-08fb-507d-8147-49b082034d0f")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C29")
+					(reference "C33")
 					(unit 1)
 				)
 			)
@@ -26374,7 +27516,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "74055c5d-7fcf-5faa-9b08-ebcd70c1c9c8")
+		(uuid "615224d6-0d60-5fe1-b5d4-a05d2ffbd9c0")
 	)
 	(label "GND"
 		(at 353.06 641.35 0)
@@ -26384,7 +27526,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "59cc8e78-623d-5ea4-85e5-da34053b5eef")
+		(uuid "7fe9ff71-bb51-579b-b3d8-3b8d1a5ab481")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -26396,8 +27538,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "d0ec2cb6-ff05-5ee0-9fe3-ba8f01041928")
-		(property "Reference" "R63"
+		(uuid "4d1434ca-76f1-5f8b-ad7b-8408bdbf0d52")
+		(property "Reference" "R64"
 			(at 379.73 636.27 90)
 			(effects
 				(font
@@ -26441,15 +27583,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "663facdb-e816-5412-9029-daee8f04c41e")
+			(uuid "8d624278-6806-5a66-960e-d74d123ae944")
 		)
 		(pin "2"
-			(uuid "88580e3c-954a-5f93-ba8e-838e66dbb9bc")
+			(uuid "ac6361d2-95a8-5170-b9a6-aa4fc04157ac")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R63")
+					(reference "R64")
 					(unit 1)
 				)
 			)
@@ -26463,7 +27605,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "3e98be8e-23f1-5154-ac9d-a5ad1bfafef3")
+		(uuid "e3177497-2ba5-50c7-918a-6a9e31756146")
 	)
 	(label "+3V3"
 		(at 383.54 641.35 0)
@@ -26473,7 +27615,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "e3c4aa08-02bf-5a02-ba4d-3338bb58dca4")
+		(uuid "24a8545a-4869-513f-8ad0-7b5020d2b5f4")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -26485,8 +27627,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "4d1434ca-76f1-5f8b-ad7b-8408bdbf0d52")
-		(property "Reference" "R64"
+		(uuid "f3f0b1a8-738c-52a8-81b8-e4f74185a365")
+		(property "Reference" "R65"
 			(at 410.21 636.27 90)
 			(effects
 				(font
@@ -26530,15 +27672,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "8d624278-6806-5a66-960e-d74d123ae944")
+			(uuid "ba1ebe27-65fa-5684-9ffc-a1b51d6e6e74")
 		)
 		(pin "2"
-			(uuid "ac6361d2-95a8-5170-b9a6-aa4fc04157ac")
+			(uuid "c5aee672-0574-5d96-b371-b942e90a14d6")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R64")
+					(reference "R65")
 					(unit 1)
 				)
 			)
@@ -26552,7 +27694,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "e3177497-2ba5-50c7-918a-6a9e31756146")
+		(uuid "5b51ae53-bd75-57fd-84f1-a329d993e50b")
 	)
 	(label "+3V3"
 		(at 414.02 641.35 0)
@@ -26562,7 +27704,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "24a8545a-4869-513f-8ad0-7b5020d2b5f4")
+		(uuid "fd114c11-017a-54b6-a5a7-e6c75ed0aa96")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -26574,8 +27716,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "f3f0b1a8-738c-52a8-81b8-e4f74185a365")
-		(property "Reference" "R65"
+		(uuid "609df4b1-8c34-5c08-b247-9e39e487c2aa")
+		(property "Reference" "R66"
 			(at 440.69 636.27 90)
 			(effects
 				(font
@@ -26619,15 +27761,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "ba1ebe27-65fa-5684-9ffc-a1b51d6e6e74")
+			(uuid "42bdf522-4a31-5ffb-805e-e3ab20d5672f")
 		)
 		(pin "2"
-			(uuid "c5aee672-0574-5d96-b371-b942e90a14d6")
+			(uuid "07338187-e746-556d-a467-9eb70f2795fd")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R65")
+					(reference "R66")
 					(unit 1)
 				)
 			)
@@ -26641,7 +27783,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "5b51ae53-bd75-57fd-84f1-a329d993e50b")
+		(uuid "081cfae4-28d9-5df8-b505-c581d65d2876")
 	)
 	(label "+3V3"
 		(at 444.5 641.35 0)
@@ -26651,7 +27793,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "fd114c11-017a-54b6-a5a7-e6c75ed0aa96")
+		(uuid "7df5b40d-b915-52ad-8a2b-bbb93726aee7")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -26663,8 +27805,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "609df4b1-8c34-5c08-b247-9e39e487c2aa")
-		(property "Reference" "R66"
+		(uuid "7cc6c134-a23d-51ab-992b-50790f0fc617")
+		(property "Reference" "R67"
 			(at 472.44 636.27 90)
 			(effects
 				(font
@@ -26708,15 +27850,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "42bdf522-4a31-5ffb-805e-e3ab20d5672f")
+			(uuid "56a0af15-f9ad-534e-ac2d-d228d18124ef")
 		)
 		(pin "2"
-			(uuid "07338187-e746-556d-a467-9eb70f2795fd")
+			(uuid "beb6f7d4-89d6-58cb-af2b-65a7d5be8380")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R66")
+					(reference "R67")
 					(unit 1)
 				)
 			)
@@ -26730,7 +27872,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "081cfae4-28d9-5df8-b505-c581d65d2876")
+		(uuid "501d5ad5-5cf0-55a3-ad0f-42eadf5e1046")
 	)
 	(label "+3V3"
 		(at 476.25 641.35 0)
@@ -26740,7 +27882,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "7df5b40d-b915-52ad-8a2b-bbb93726aee7")
+		(uuid "3827727c-fed0-5c69-a0ef-d4c9f7dfb7be")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -26752,8 +27894,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "7cc6c134-a23d-51ab-992b-50790f0fc617")
-		(property "Reference" "R67"
+		(uuid "5fa4e8ca-a645-502e-9d2e-d8f856ac15dd")
+		(property "Reference" "R68"
 			(at 504.19 636.27 90)
 			(effects
 				(font
@@ -26797,15 +27939,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "56a0af15-f9ad-534e-ac2d-d228d18124ef")
+			(uuid "7a31b547-1354-50a0-a2ca-76f8f39f858c")
 		)
 		(pin "2"
-			(uuid "beb6f7d4-89d6-58cb-af2b-65a7d5be8380")
+			(uuid "9d6a49b8-8b81-5335-9b43-3e17eef06c2d")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R67")
+					(reference "R68")
 					(unit 1)
 				)
 			)
@@ -26819,7 +27961,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "501d5ad5-5cf0-55a3-ad0f-42eadf5e1046")
+		(uuid "17033811-2505-571b-9f71-926156f3a765")
 	)
 	(label "DF0_REQ"
 		(at 508 641.35 0)
@@ -26829,7 +27971,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "3827727c-fed0-5c69-a0ef-d4c9f7dfb7be")
+		(uuid "9fc10d41-c4a5-5788-ae43-809b6141bef7")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -26841,8 +27983,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "5fa4e8ca-a645-502e-9d2e-d8f856ac15dd")
-		(property "Reference" "R68"
+		(uuid "a571f5a4-56df-5de4-9816-715621974857")
+		(property "Reference" "R69"
 			(at 538.48 636.27 90)
 			(effects
 				(font
@@ -26886,15 +28028,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "7a31b547-1354-50a0-a2ca-76f8f39f858c")
+			(uuid "446c12db-7f94-528c-8f85-23567baf582b")
 		)
 		(pin "2"
-			(uuid "9d6a49b8-8b81-5335-9b43-3e17eef06c2d")
+			(uuid "d30ef926-d77a-5405-8aee-b8db9595efa7")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R68")
+					(reference "R69")
 					(unit 1)
 				)
 			)
@@ -26908,7 +28050,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "17033811-2505-571b-9f71-926156f3a765")
+		(uuid "b80a5726-6c7b-5d2f-b464-1ebbd8ee7920")
 	)
 	(label "DF1_REQ"
 		(at 542.29 641.35 0)
@@ -26918,7 +28060,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "9fc10d41-c4a5-5788-ae43-809b6141bef7")
+		(uuid "5fa815c0-023e-5c26-a60f-f10722a0df2a")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -26930,8 +28072,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "a571f5a4-56df-5de4-9816-715621974857")
-		(property "Reference" "R69"
+		(uuid "64664aa5-7d42-59d7-af87-ef662208ad1b")
+		(property "Reference" "R70"
 			(at 572.77 636.27 90)
 			(effects
 				(font
@@ -26975,15 +28117,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "446c12db-7f94-528c-8f85-23567baf582b")
+			(uuid "33abd27b-4197-5168-a598-3aee6f6e5638")
 		)
 		(pin "2"
-			(uuid "d30ef926-d77a-5405-8aee-b8db9595efa7")
+			(uuid "356a1967-416a-5875-bd73-4c3c3325a23b")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R69")
+					(reference "R70")
 					(unit 1)
 				)
 			)
@@ -26997,7 +28139,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "b80a5726-6c7b-5d2f-b464-1ebbd8ee7920")
+		(uuid "aa6a31bf-f59e-5abf-902e-d5fbe01418fd")
 	)
 	(label "DF0_STATE"
 		(at 576.58 641.35 0)
@@ -27007,7 +28149,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "5fa815c0-023e-5c26-a60f-f10722a0df2a")
+		(uuid "e6f9c3fb-a137-55dc-aa1e-66a13793b13f")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -27019,8 +28161,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "64664aa5-7d42-59d7-af87-ef662208ad1b")
-		(property "Reference" "R70"
+		(uuid "8663aeb1-eac9-548c-9c80-188ad343a885")
+		(property "Reference" "R71"
 			(at 609.6 636.27 90)
 			(effects
 				(font
@@ -27064,15 +28206,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "33abd27b-4197-5168-a598-3aee6f6e5638")
+			(uuid "5479ad35-2e8c-5302-bfef-d40585635fde")
 		)
 		(pin "2"
-			(uuid "356a1967-416a-5875-bd73-4c3c3325a23b")
+			(uuid "3fa3bee3-7884-5297-8c64-b281bc15239f")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R70")
+					(reference "R71")
 					(unit 1)
 				)
 			)
@@ -27086,7 +28228,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "aa6a31bf-f59e-5abf-902e-d5fbe01418fd")
+		(uuid "b77601c3-24b6-554c-9567-7db0fd14aac1")
 	)
 	(label "DF1_STATE"
 		(at 613.41 641.35 0)
@@ -27096,7 +28238,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "e6f9c3fb-a137-55dc-aa1e-66a13793b13f")
+		(uuid "9c8755ca-2c39-5f81-b766-5ad0ce29a3ba")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -27108,8 +28250,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "8663aeb1-eac9-548c-9c80-188ad343a885")
-		(property "Reference" "R71"
+		(uuid "89494416-591b-5737-85e9-d8d93ebd287e")
+		(property "Reference" "R72"
 			(at 652.78 636.27 90)
 			(effects
 				(font
@@ -27153,15 +28295,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "5479ad35-2e8c-5302-bfef-d40585635fde")
+			(uuid "a36c786b-aae5-5b13-9d69-2731af61d7a9")
 		)
 		(pin "2"
-			(uuid "3fa3bee3-7884-5297-8c64-b281bc15239f")
+			(uuid "0930ea6d-8894-5178-bdb1-84b378894a5e")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R71")
+					(reference "R72")
 					(unit 1)
 				)
 			)
@@ -27175,7 +28317,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "b77601c3-24b6-554c-9567-7db0fd14aac1")
+		(uuid "3e167cd8-7b0f-598a-a53d-c9281cda0daa")
 	)
 	(label "GND"
 		(at 656.59 641.35 0)
@@ -27185,7 +28327,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "9c8755ca-2c39-5f81-b766-5ad0ce29a3ba")
+		(uuid "bd531161-6537-58b1-9d02-d191724f5cf4")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -27197,8 +28339,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "89494416-591b-5737-85e9-d8d93ebd287e")
-		(property "Reference" "R72"
+		(uuid "4f0bb271-4702-507d-8c37-78ebaec3fbb8")
+		(property "Reference" "R73"
 			(at 685.8 636.27 90)
 			(effects
 				(font
@@ -27242,15 +28384,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "a36c786b-aae5-5b13-9d69-2731af61d7a9")
+			(uuid "0e38bd3f-5f02-561b-8058-1295620e969e")
 		)
 		(pin "2"
-			(uuid "0930ea6d-8894-5178-bdb1-84b378894a5e")
+			(uuid "3d9b3dfd-adcd-5844-aff6-acd991dc3e32")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R72")
+					(reference "R73")
 					(unit 1)
 				)
 			)
@@ -27264,7 +28406,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "3e167cd8-7b0f-598a-a53d-c9281cda0daa")
+		(uuid "257c47a7-84f5-5528-9eec-6153f61698b2")
 	)
 	(label "GND"
 		(at 689.61 641.35 0)
@@ -27274,7 +28416,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "bd531161-6537-58b1-9d02-d191724f5cf4")
+		(uuid "39e4fa37-99b9-596e-b44f-9b3c0b0a7eab")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -27286,8 +28428,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "1b8e1614-9377-57c0-9863-1d8fc3bb73d5")
-		(property "Reference" "C30"
+		(uuid "a368d9f2-673b-53db-beef-2f594453bfb5")
+		(property "Reference" "C34"
 			(at 715.01 636.27 90)
 			(effects
 				(font
@@ -27331,15 +28473,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "da6100f4-56ad-5544-a852-4f1c599ac658")
+			(uuid "baab58f7-548e-5364-9985-f228abf3703e")
 		)
 		(pin "2"
-			(uuid "334e2306-13fe-59fa-a5c5-af96fd6e737c")
+			(uuid "47f8aeaa-1b12-518d-880d-9c83e471b3c5")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C30")
+					(reference "C34")
 					(unit 1)
 				)
 			)
@@ -27353,7 +28495,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "8087db50-69f7-541a-a589-ae3140ce42ea")
+		(uuid "21ed6f60-cdef-5a31-a0c1-1948a15dcf31")
 	)
 	(label "GND"
 		(at 718.82 641.35 0)
@@ -27363,7 +28505,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "14e2ec9a-5158-51c6-9af1-695f8ab34eb1")
+		(uuid "fa5e161e-7abe-5b3a-98cf-0d97cff7689b")
 	)
 	(symbol
 		(lib_id "Device:D")
@@ -27464,8 +28606,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "b9b3d0d7-5860-5d50-98ce-8f5a05582e0d")
-		(property "Reference" "C31"
+		(uuid "b7e5d5c8-837e-58ba-a04a-94f084e7247a")
+		(property "Reference" "C35"
 			(at 775.97 636.27 90)
 			(effects
 				(font
@@ -27509,15 +28651,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "4ca92ee4-e1b9-531a-8447-2c40cca04811")
+			(uuid "73e4112e-8959-51b7-a046-8dbbc9340eca")
 		)
 		(pin "2"
-			(uuid "e48239e6-54a9-5d5f-9df3-fd46d1f0c5f3")
+			(uuid "dafec470-7e39-5671-a94f-c2d6ecd0143b")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C31")
+					(reference "C35")
 					(unit 1)
 				)
 			)
@@ -27531,7 +28673,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "bd3be7c1-4edc-577e-99d2-c9a124fd7b3a")
+		(uuid "54a33d16-e636-54a3-867b-56294e3a436d")
 	)
 	(label "GND"
 		(at 779.78 641.35 0)
@@ -27541,7 +28683,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "be172642-ed9d-54e1-9a6a-aaf38a546691")
+		(uuid "94bbe4a9-914b-5d04-9713-8262485d380d")
 	)
 	(symbol
 		(lib_id "Device:D")
@@ -27988,8 +29130,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "4f0bb271-4702-507d-8c37-78ebaec3fbb8")
-		(property "Reference" "R73"
+		(uuid "1d437edf-9121-5635-aaf2-22d2961001a0")
+		(property "Reference" "R74"
 			(at 960.12 636.27 90)
 			(effects
 				(font
@@ -28033,15 +29175,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "0e38bd3f-5f02-561b-8058-1295620e969e")
+			(uuid "4a43e46a-660a-5f94-97b7-f120a6ac6105")
 		)
 		(pin "2"
-			(uuid "3d9b3dfd-adcd-5844-aff6-acd991dc3e32")
+			(uuid "ce3d0fcf-1067-5ad7-834b-aa4ec9c50fa4")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R73")
+					(reference "R74")
 					(unit 1)
 				)
 			)
@@ -28055,7 +29197,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "257c47a7-84f5-5528-9eec-6153f61698b2")
+		(uuid "790472a2-6bbb-54e7-a886-60d1f3708fdc")
 	)
 	(label "PRE_A"
 		(at 963.93 641.35 0)
@@ -28065,7 +29207,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "39e4fa37-99b9-596e-b44f-9b3c0b0a7eab")
+		(uuid "a11a26bd-2630-576a-94d2-db54dd8c19c4")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -28077,8 +29219,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "1d437edf-9121-5635-aaf2-22d2961001a0")
-		(property "Reference" "R74"
+		(uuid "4170ac30-a048-5bed-a9f4-03db58ae8fd2")
+		(property "Reference" "R75"
 			(at 994.41 636.27 90)
 			(effects
 				(font
@@ -28122,15 +29264,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "4a43e46a-660a-5f94-97b7-f120a6ac6105")
+			(uuid "3aeef079-c0c1-53a5-aa94-baba7a290a0d")
 		)
 		(pin "2"
-			(uuid "ce3d0fcf-1067-5ad7-834b-aa4ec9c50fa4")
+			(uuid "cac573ae-4933-57db-8b75-2d9131e9526a")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R74")
+					(reference "R75")
 					(unit 1)
 				)
 			)
@@ -28144,7 +29286,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "790472a2-6bbb-54e7-a886-60d1f3708fdc")
+		(uuid "c3eb64a4-46cd-57de-8df2-9e9bf1d68c2f")
 	)
 	(label "CLR_A"
 		(at 998.22 641.35 0)
@@ -28154,7 +29296,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "a11a26bd-2630-576a-94d2-db54dd8c19c4")
+		(uuid "e8ffef58-6346-571e-b8c3-c8a62a0806ab")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -28166,8 +29308,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "b19e630c-47b6-5f95-92d6-5d57c51548e3")
-		(property "Reference" "C32"
+		(uuid "73e59195-aaa5-5ed5-8793-104887f56712")
+		(property "Reference" "C36"
 			(at 1026.16 636.27 90)
 			(effects
 				(font
@@ -28211,15 +29353,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "c7cf9e49-f80d-5cd9-bccf-8ea03150c18d")
+			(uuid "280f8503-8bd7-58f8-a966-5ea42a64ebca")
 		)
 		(pin "2"
-			(uuid "3ae8179b-f404-52f4-a970-24cd78c7d5e5")
+			(uuid "612c99ce-fb84-50d3-978a-b0cfdd4c33ae")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C32")
+					(reference "C36")
 					(unit 1)
 				)
 			)
@@ -28233,7 +29375,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "f35d78d2-bd48-53ad-9460-8cdac2ba00b5")
+		(uuid "b400492e-9ab2-5912-b62a-cbb6ee9d92d7")
 	)
 	(label "GND"
 		(at 1029.97 641.35 0)
@@ -28243,7 +29385,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "644f3889-c56b-5903-bb3b-05ed99f1330b")
+		(uuid "b54d51fe-24f3-53ec-8d7d-70cef94c027e")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -28255,8 +29397,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "9eaf8fb4-b9e7-56e4-9a85-364fcee672c1")
-		(property "Reference" "C33"
+		(uuid "d47afed0-eb73-5710-a9e4-cdd4a6fe80d5")
+		(property "Reference" "C37"
 			(at 1057.91 636.27 90)
 			(effects
 				(font
@@ -28300,15 +29442,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "03bb8f2e-8e3c-534b-b996-0e9d049297d7")
+			(uuid "32d946d9-1649-5963-b36e-6ece83cb4c65")
 		)
 		(pin "2"
-			(uuid "3de3c92f-08fb-507d-8147-49b082034d0f")
+			(uuid "ca7dfa13-1ef4-5822-9bf3-41690edf926e")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C33")
+					(reference "C37")
 					(unit 1)
 				)
 			)
@@ -28322,7 +29464,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "615224d6-0d60-5fe1-b5d4-a05d2ffbd9c0")
+		(uuid "183fe7ef-25e2-53ff-bde6-108dfb713606")
 	)
 	(label "GND"
 		(at 1061.72 641.35 0)
@@ -28332,7 +29474,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "7fe9ff71-bb51-579b-b3d8-3b8d1a5ab481")
+		(uuid "e61afd49-480b-5294-b0b2-16b49ba45a62")
 	)
 	(symbol
 		(lib_id "FluxDrive:74LVC1G157")
@@ -28485,8 +29627,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "a368d9f2-673b-53db-beef-2f594453bfb5")
-		(property "Reference" "C34"
+		(uuid "f5b80102-af85-5f13-ac73-518f638b7cd0")
+		(property "Reference" "C38"
 			(at 1130.3 636.27 90)
 			(effects
 				(font
@@ -28530,15 +29672,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "baab58f7-548e-5364-9985-f228abf3703e")
+			(uuid "1af17a71-2b6a-51f1-a53e-43ac5aba0d69")
 		)
 		(pin "2"
-			(uuid "47f8aeaa-1b12-518d-880d-9c83e471b3c5")
+			(uuid "1d488b5a-5506-5b1c-9bc1-525bacceabcc")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C34")
+					(reference "C38")
 					(unit 1)
 				)
 			)
@@ -28552,7 +29694,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "21ed6f60-cdef-5a31-a0c1-1948a15dcf31")
+		(uuid "5a57b6ff-38b0-5c62-b9cc-974ac7512299")
 	)
 	(label "GND"
 		(at 1134.11 641.35 0)
@@ -28562,7 +29704,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "fa5e161e-7abe-5b3a-98cf-0d97cff7689b")
+		(uuid "cf494e86-0d79-533c-94ec-b041875a40ba")
 	)
 	(symbol
 		(lib_id "FluxDrive:74LVC1G157")
@@ -28715,8 +29857,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "b7e5d5c8-837e-58ba-a04a-94f084e7247a")
-		(property "Reference" "C35"
+		(uuid "75cfab02-c6e9-52f8-abe0-98d29f1d8eb2")
+		(property "Reference" "C39"
 			(at 76.2 693.42 90)
 			(effects
 				(font
@@ -28760,15 +29902,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "73e4112e-8959-51b7-a046-8dbbc9340eca")
+			(uuid "517341f9-67cd-52f9-84a5-2adeb215be63")
 		)
 		(pin "2"
-			(uuid "dafec470-7e39-5671-a94f-c2d6ecd0143b")
+			(uuid "0545c95b-fc93-506c-b54a-c60e9379c7b5")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C35")
+					(reference "C39")
 					(unit 1)
 				)
 			)
@@ -28782,7 +29924,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "54a33d16-e636-54a3-867b-56294e3a436d")
+		(uuid "f4a6c0f6-0f14-566c-b42d-7d32c39259dd")
 	)
 	(label "GND"
 		(at 80.01 698.5 0)
@@ -28792,7 +29934,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "94bbe4a9-914b-5d04-9713-8262485d380d")
+		(uuid "57de7574-cbcb-5202-9ce7-46e157fc5be9")
 	)
 	(symbol
 		(lib_id "74xGxx:74LVC2G06")
@@ -29071,8 +30213,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "73e59195-aaa5-5ed5-8793-104887f56712")
-		(property "Reference" "C36"
+		(uuid "b85bedcb-b17f-5ebe-8e49-3ad0d41cf824")
+		(property "Reference" "C40"
 			(at 231.14 693.42 90)
 			(effects
 				(font
@@ -29116,15 +30258,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "280f8503-8bd7-58f8-a966-5ea42a64ebca")
+			(uuid "764b7bf3-6832-5574-8a37-2ca53c9c6464")
 		)
 		(pin "2"
-			(uuid "612c99ce-fb84-50d3-978a-b0cfdd4c33ae")
+			(uuid "13372a7a-658e-5f9c-870d-e46df6831242")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C36")
+					(reference "C40")
 					(unit 1)
 				)
 			)
@@ -29138,7 +30280,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "b400492e-9ab2-5912-b62a-cbb6ee9d92d7")
+		(uuid "65a9639b-b8e3-5248-bb47-b9d475f4b172")
 	)
 	(label "GND"
 		(at 234.95 698.5 0)
@@ -29148,7 +30290,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "b54d51fe-24f3-53ec-8d7d-70cef94c027e")
+		(uuid "97fdc55f-6607-5199-a51a-a7574d1545ab")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -29160,8 +30302,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "4170ac30-a048-5bed-a9f4-03db58ae8fd2")
-		(property "Reference" "R75"
+		(uuid "609d4631-fb8a-53cb-903c-45a99497c810")
+		(property "Reference" "R76"
 			(at 264.16 693.42 90)
 			(effects
 				(font
@@ -29205,15 +30347,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "3aeef079-c0c1-53a5-aa94-baba7a290a0d")
+			(uuid "1a724e39-d83b-5273-a462-98c4ab38571e")
 		)
 		(pin "2"
-			(uuid "cac573ae-4933-57db-8b75-2d9131e9526a")
+			(uuid "d5334c35-6004-55b0-adeb-5e326384e4e0")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R75")
+					(reference "R76")
 					(unit 1)
 				)
 			)
@@ -29227,7 +30369,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "c3eb64a4-46cd-57de-8df2-9e9bf1d68c2f")
+		(uuid "4541152a-fb4f-50e9-96cc-204a2ea2e5c9")
 	)
 	(label "+5V_A"
 		(at 267.97 698.5 0)
@@ -29237,7 +30379,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "e8ffef58-6346-571e-b8c3-c8a62a0806ab")
+		(uuid "f4e921c5-34b1-55f5-b2f5-5f90c970197a")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -29249,8 +30391,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "609d4631-fb8a-53cb-903c-45a99497c810")
-		(property "Reference" "R76"
+		(uuid "d097b3eb-d2ea-5f86-8ab4-6aed576fa86d")
+		(property "Reference" "R77"
 			(at 298.45 693.42 90)
 			(effects
 				(font
@@ -29294,15 +30436,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "1a724e39-d83b-5273-a462-98c4ab38571e")
+			(uuid "c48492d6-b956-521c-a91d-0cd8007ad60c")
 		)
 		(pin "2"
-			(uuid "d5334c35-6004-55b0-adeb-5e326384e4e0")
+			(uuid "0fdb8ea2-e765-56c9-a2af-f8435e1f9a10")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R76")
+					(reference "R77")
 					(unit 1)
 				)
 			)
@@ -29316,7 +30458,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "4541152a-fb4f-50e9-96cc-204a2ea2e5c9")
+		(uuid "84613f37-5a45-52e8-9047-53acbea9272d")
 	)
 	(label "+5V_A"
 		(at 302.26 698.5 0)
@@ -29326,7 +30468,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "f4e921c5-34b1-55f5-b2f5-5f90c970197a")
+		(uuid "570d3a40-04f8-5d59-b81a-b8a1fb2b0a95")
 	)
 	(symbol
 		(lib_id "Jumper:SolderJumper_3_Bridged12")
@@ -30209,8 +31351,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "d097b3eb-d2ea-5f86-8ab4-6aed576fa86d")
-		(property "Reference" "R77"
+		(uuid "ec896df9-c810-51ba-a358-bb2ab55eacb8")
+		(property "Reference" "R78"
 			(at 515.62 693.42 90)
 			(effects
 				(font
@@ -30254,15 +31396,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "c48492d6-b956-521c-a91d-0cd8007ad60c")
+			(uuid "4f26ca1c-304b-5f44-bc15-dbcc2b259ae8")
 		)
 		(pin "2"
-			(uuid "0fdb8ea2-e765-56c9-a2af-f8435e1f9a10")
+			(uuid "789f139d-761e-53a3-a979-1ee51e30b5b8")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R77")
+					(reference "R78")
 					(unit 1)
 				)
 			)
@@ -30276,7 +31418,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "84613f37-5a45-52e8-9047-53acbea9272d")
+		(uuid "e265f99b-5c2a-5bd8-a1ec-8f1eb0902dae")
 	)
 	(label "+5V_A"
 		(at 519.43 698.5 0)
@@ -30286,7 +31428,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "570d3a40-04f8-5d59-b81a-b8a1fb2b0a95")
+		(uuid "37d55a32-a427-591f-b73d-0c0a7437ee2d")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -30298,8 +31440,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "ec896df9-c810-51ba-a358-bb2ab55eacb8")
-		(property "Reference" "R78"
+		(uuid "0ace7972-7fcc-5fff-8632-c1b8aa698abe")
+		(property "Reference" "R79"
 			(at 549.91 693.42 90)
 			(effects
 				(font
@@ -30343,15 +31485,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "4f26ca1c-304b-5f44-bc15-dbcc2b259ae8")
+			(uuid "b259073f-fbc4-54d5-a4de-ccebe39aa263")
 		)
 		(pin "2"
-			(uuid "789f139d-761e-53a3-a979-1ee51e30b5b8")
+			(uuid "bdd0a541-d070-5f90-80b3-49fbc41a0b21")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R78")
+					(reference "R79")
 					(unit 1)
 				)
 			)
@@ -30365,7 +31507,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "e265f99b-5c2a-5bd8-a1ec-8f1eb0902dae")
+		(uuid "5b3a4193-42e2-57f5-b735-f11ae1bb6504")
 	)
 	(label "+5V_A"
 		(at 553.72 698.5 0)
@@ -30375,7 +31517,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "37d55a32-a427-591f-b73d-0c0a7437ee2d")
+		(uuid "639630e5-6816-5f52-a2c3-a1d80f08bd45")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -30387,8 +31529,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "0ace7972-7fcc-5fff-8632-c1b8aa698abe")
-		(property "Reference" "R79"
+		(uuid "ad1cf1e0-d7de-589f-ad42-2671c85b910d")
+		(property "Reference" "R80"
 			(at 585.47 693.42 90)
 			(effects
 				(font
@@ -30432,15 +31574,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "b259073f-fbc4-54d5-a4de-ccebe39aa263")
+			(uuid "3ea673b4-9fa7-5e63-baa2-06f879028d25")
 		)
 		(pin "2"
-			(uuid "bdd0a541-d070-5f90-80b3-49fbc41a0b21")
+			(uuid "272e09c4-93c0-5799-8372-0f1364dafffd")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R79")
+					(reference "R80")
 					(unit 1)
 				)
 			)
@@ -30454,7 +31596,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "5b3a4193-42e2-57f5-b735-f11ae1bb6504")
+		(uuid "27fb824d-b0ec-53ac-97cb-2482713967b7")
 	)
 	(label "+5V_A"
 		(at 589.28 698.5 0)
@@ -30464,7 +31606,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "639630e5-6816-5f52-a2c3-a1d80f08bd45")
+		(uuid "9f73e6a3-d46a-5e9e-922c-e564a9a9bd9c")
 	)
 	(symbol
 		(lib_id "74xGxx:74LVC1G38")
@@ -30604,8 +31746,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "d47afed0-eb73-5710-a9e4-cdd4a6fe80d5")
-		(property "Reference" "C37"
+		(uuid "5cd94e61-e6e6-575e-b0a1-6a1e3b698848")
+		(property "Reference" "C41"
 			(at 673.1 693.42 90)
 			(effects
 				(font
@@ -30649,15 +31791,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "32d946d9-1649-5963-b36e-6ece83cb4c65")
+			(uuid "5a231a76-aa5c-51fd-ae15-764784623928")
 		)
 		(pin "2"
-			(uuid "ca7dfa13-1ef4-5822-9bf3-41690edf926e")
+			(uuid "4d0a6aa3-8bce-5e7c-beee-8d010a971801")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C37")
+					(reference "C41")
 					(unit 1)
 				)
 			)
@@ -30671,7 +31813,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "183fe7ef-25e2-53ff-bde6-108dfb713606")
+		(uuid "9e69c13d-39b3-5a71-be93-f0488413ba7f")
 	)
 	(label "GND"
 		(at 676.91 698.5 0)
@@ -30681,7 +31823,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "e61afd49-480b-5294-b0b2-16b49ba45a62")
+		(uuid "869c3206-ee47-5a17-93ff-5f91df3ee066")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -30693,8 +31835,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "ad1cf1e0-d7de-589f-ad42-2671c85b910d")
-		(property "Reference" "R80"
+		(uuid "c4198203-226b-5a85-80a7-18e8e5af7040")
+		(property "Reference" "R81"
 			(at 704.85 693.42 90)
 			(effects
 				(font
@@ -30738,15 +31880,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "3ea673b4-9fa7-5e63-baa2-06f879028d25")
+			(uuid "2cf6b364-1acf-586d-9bfa-3a90f7fd4ca6")
 		)
 		(pin "2"
-			(uuid "272e09c4-93c0-5799-8372-0f1364dafffd")
+			(uuid "af7fde82-7e46-5651-b367-d2459c164f2d")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R80")
+					(reference "R81")
 					(unit 1)
 				)
 			)
@@ -30760,7 +31902,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "27fb824d-b0ec-53ac-97cb-2482713967b7")
+		(uuid "8a467636-d7ec-591c-b1c9-43c8a8b3c4be")
 	)
 	(label "_CHNG"
 		(at 708.66 698.5 0)
@@ -30770,7 +31912,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "9f73e6a3-d46a-5e9e-922c-e564a9a9bd9c")
+		(uuid "9059056e-3d97-500f-9040-00eca6f4bcaf")
 	)
 	(symbol
 		(lib_id "74xGxx:74LVC1G06")
@@ -30897,8 +32039,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "f5b80102-af85-5f13-ac73-518f638b7cd0")
-		(property "Reference" "C38"
+		(uuid "b0b92435-0683-58e3-b8c1-8e85b46bcf72")
+		(property "Reference" "C42"
 			(at 791.21 693.42 90)
 			(effects
 				(font
@@ -30942,15 +32084,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "1af17a71-2b6a-51f1-a53e-43ac5aba0d69")
+			(uuid "e51cae68-07a4-5987-94fb-66c8cdd30582")
 		)
 		(pin "2"
-			(uuid "1d488b5a-5506-5b1c-9bc1-525bacceabcc")
+			(uuid "1d9edeb0-58b3-5254-acd5-cc1f0c1ac350")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C38")
+					(reference "C42")
 					(unit 1)
 				)
 			)
@@ -30964,7 +32106,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "5a57b6ff-38b0-5c62-b9cc-974ac7512299")
+		(uuid "10387074-4c39-5c8a-a38f-4298bbefc4a1")
 	)
 	(label "GND"
 		(at 795.02 698.5 0)
@@ -30974,7 +32116,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "cf494e86-0d79-533c-94ec-b041875a40ba")
+		(uuid "9b12240b-6513-52a4-846d-cebae11d4662")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -30986,8 +32128,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "c4198203-226b-5a85-80a7-18e8e5af7040")
-		(property "Reference" "R81"
+		(uuid "d0399798-8d85-50ae-816d-b99ea1c5079b")
+		(property "Reference" "R82"
 			(at 822.96 693.42 90)
 			(effects
 				(font
@@ -31031,15 +32173,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "2cf6b364-1acf-586d-9bfa-3a90f7fd4ca6")
+			(uuid "5275e75e-b62f-55b1-a5d1-c78f45ea3033")
 		)
 		(pin "2"
-			(uuid "af7fde82-7e46-5651-b367-d2459c164f2d")
+			(uuid "268b8076-4e9a-56fd-a527-a1c024d40d52")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R81")
+					(reference "R82")
 					(unit 1)
 				)
 			)
@@ -31053,7 +32195,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "8a467636-d7ec-591c-b1c9-43c8a8b3c4be")
+		(uuid "5d5c261a-f06b-555c-908a-dd99aa326e9b")
 	)
 	(label "GND"
 		(at 826.77 698.5 0)
@@ -31063,7 +32205,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "9059056e-3d97-500f-9040-00eca6f4bcaf")
+		(uuid "a5dcac27-41a9-563b-99ae-ec46160fc004")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -31075,8 +32217,8 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "d0399798-8d85-50ae-816d-b99ea1c5079b")
-		(property "Reference" "R82"
+		(uuid "cd69fbd8-6665-5db7-b6c9-257167969298")
+		(property "Reference" "R83"
 			(at 854.71 693.42 90)
 			(effects
 				(font
@@ -31120,15 +32262,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "5275e75e-b62f-55b1-a5d1-c78f45ea3033")
+			(uuid "f6fc820e-4f76-57e0-82f2-7386bce1e500")
 		)
 		(pin "2"
-			(uuid "268b8076-4e9a-56fd-a527-a1c024d40d52")
+			(uuid "6b82efba-d7a1-53c7-88e9-b0ba60453057")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R82")
+					(reference "R83")
 					(unit 1)
 				)
 			)
@@ -31142,7 +32284,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "5d5c261a-f06b-555c-908a-dd99aa326e9b")
+		(uuid "b72f5291-ade8-522a-ad2b-8850136071e6")
 	)
 	(label "RST_ACT_IO"
 		(at 858.52 698.5 0)
@@ -31152,7 +32294,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "a5dcac27-41a9-563b-99ae-ec46160fc004")
+		(uuid "275718c9-3a37-5be1-b3e1-3131d94ed461")
 	)
 	(symbol
 		(lib_id "Connector:TestPoint")
@@ -31430,8 +32572,8 @@
 		(on_board yes)
 		(in_pos_files no)
 		(dnp yes)
-		(uuid "75cfab02-c6e9-52f8-abe0-98d29f1d8eb2")
-		(property "Reference" "C39"
+		(uuid "5b8971dd-7ada-5ebb-b9dc-5501be4e8910")
+		(property "Reference" "C43"
 			(at 955.04 693.42 90)
 			(effects
 				(font
@@ -31466,15 +32608,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "517341f9-67cd-52f9-84a5-2adeb215be63")
+			(uuid "8b1e2091-b158-5f6e-b25b-c25739fee16e")
 		)
 		(pin "2"
-			(uuid "0545c95b-fc93-506c-b54a-c60e9379c7b5")
+			(uuid "2e13059f-4a24-5826-b7e3-bd42bc29a955")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C39")
+					(reference "C43")
 					(unit 1)
 				)
 			)
@@ -31488,7 +32630,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "f4a6c0f6-0f14-566c-b42d-7d32c39259dd")
+		(uuid "4b90445a-cc6a-575d-b2a7-838cb48cf6a1")
 	)
 	(label "GND"
 		(at 958.85 698.5 0)
@@ -31498,7 +32640,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "57de7574-cbcb-5202-9ce7-46e157fc5be9")
+		(uuid "051a2481-96ec-596d-b971-90056a361dce")
 	)
 	(symbol
 		(lib_id "74xGxx:74LVC1G175")
@@ -31651,8 +32793,8 @@
 		(on_board yes)
 		(in_pos_files no)
 		(dnp yes)
-		(uuid "b85bedcb-b17f-5ebe-8e49-3ad0d41cf824")
-		(property "Reference" "C40"
+		(uuid "ba0b94f8-a1dc-5bd4-b516-d5498acf2f0f")
+		(property "Reference" "C44"
 			(at 1040.13 693.42 90)
 			(effects
 				(font
@@ -31687,15 +32829,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "764b7bf3-6832-5574-8a37-2ca53c9c6464")
+			(uuid "f1caf9fe-64bc-54f4-8dc0-31dc83cb3156")
 		)
 		(pin "2"
-			(uuid "13372a7a-658e-5f9c-870d-e46df6831242")
+			(uuid "92bc221b-2a96-5114-a933-8624f368df25")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C40")
+					(reference "C44")
 					(unit 1)
 				)
 			)
@@ -31709,7 +32851,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "65a9639b-b8e3-5248-bb47-b9d475f4b172")
+		(uuid "e6d4968b-03fb-5583-bc10-df90192f6fdb")
 	)
 	(label "GND"
 		(at 1043.94 698.5 0)
@@ -31719,7 +32861,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "97fdc55f-6607-5199-a51a-a7574d1545ab")
+		(uuid "e87684fe-305b-580a-94ef-fb611e35bec0")
 	)
 	(symbol
 		(lib_id "74xGxx:74LVC1G38")
@@ -31850,8 +32992,8 @@
 		(on_board yes)
 		(in_pos_files no)
 		(dnp yes)
-		(uuid "5cd94e61-e6e6-575e-b0a1-6a1e3b698848")
-		(property "Reference" "C41"
+		(uuid "50031e95-9568-5bb4-84e0-9559be5d0919")
+		(property "Reference" "C45"
 			(at 1122.68 693.42 90)
 			(effects
 				(font
@@ -31886,15 +33028,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "5a231a76-aa5c-51fd-ae15-764784623928")
+			(uuid "85f22681-300a-5cbf-a76d-79471accea2b")
 		)
 		(pin "2"
-			(uuid "4d0a6aa3-8bce-5e7c-beee-8d010a971801")
+			(uuid "ca6c329a-1517-54e7-b2b8-bd44130995d1")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "C41")
+					(reference "C45")
 					(unit 1)
 				)
 			)
@@ -31908,7 +33050,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "9e69c13d-39b3-5a71-be93-f0488413ba7f")
+		(uuid "38b92ec6-0dff-55c3-a9c7-840da21590bb")
 	)
 	(label "GND"
 		(at 1126.49 698.5 0)
@@ -31918,7 +33060,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "869c3206-ee47-5a17-93ff-5f91df3ee066")
+		(uuid "8e265964-8a6f-5c3e-a5af-2c7d0403fccd")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -31930,8 +33072,8 @@
 		(on_board yes)
 		(in_pos_files no)
 		(dnp yes)
-		(uuid "cd69fbd8-6665-5db7-b6c9-257167969298")
-		(property "Reference" "R83"
+		(uuid "db47bbe7-604f-5a94-82d3-68ef2ffea277")
+		(property "Reference" "R84"
 			(at 1151.89 693.42 90)
 			(effects
 				(font
@@ -31966,15 +33108,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "f6fc820e-4f76-57e0-82f2-7386bce1e500")
+			(uuid "28dff302-09e7-5764-ab9d-bcdb8ab1dace")
 		)
 		(pin "2"
-			(uuid "6b82efba-d7a1-53c7-88e9-b0ba60453057")
+			(uuid "0445c9e1-d472-593d-af0e-f54f5c36bf1d")
 		)
 		(instances
 			(project "FluxDrive"
 				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
-					(reference "R83")
+					(reference "R84")
 					(unit 1)
 				)
 			)
@@ -31988,7 +33130,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "b72f5291-ade8-522a-ad2b-8850136071e6")
+		(uuid "849664d5-82fa-512c-87ee-bb544f6eec0f")
 	)
 	(label "_RDY"
 		(at 1155.7 698.5 0)
@@ -31998,7 +33140,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "275718c9-3a37-5be1-b3e1-3131d94ed461")
+		(uuid "3573be1b-40ce-5958-8a19-cc68fbd19d4b")
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")

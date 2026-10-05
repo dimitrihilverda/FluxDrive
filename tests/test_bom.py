@@ -17,7 +17,8 @@ def test_resistor_values_parse(nl):
 def test_test_pads(nl):
     nets = {nl.net_of(r, 1) for r in nl.components if r.startswith("TP")}
     need = {"_DKRD", "DKRD_N", "_INDEX", "INDEX_N", "_SEL0", "SEL0", "_STEP", "STEP", "_MTR0", "MTR0",
-            "+5V_A", "V5SYS", "VBUS", "+3V3", "GND"}
+            "+5V_A", "V5SYS", "VBUS", "+3V3", "GND", "SEL_FD", "REAL_SEL", "REAL_MTR", "DF0_STATE", "DF1_STATE",
+            "MODE_CLK"}
     en = nl.net_of_function("U1", "EN")
     assert need | {en} <= nets
 

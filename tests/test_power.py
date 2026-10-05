@@ -15,11 +15,12 @@ def test_power_header_to_efuse(nl):
     assert nl.components["J2"]["footprint"] == "FluxDrive:171825-4"          # SPCB-1: vertical, spec 8
     assert nl.components["J2"]["fields"].get("LCSC") == "C210162"
     assert nl.net_of("J2", 1) == "+5V_IN" and nl.net_of("J2", 2) == nl.net_of("J2", 3) == "GND"
-    assert (nl.net_of("J2", 4) or "").startswith("unconnected-")          # +12 V not used
+    assert nl.net_of("J2", 4) == "+12V" and nl.net_of("J8", 4) == "+12V"                   # rev B §6
+    assert set(nl.refs_on("+12V")) == {"J2", "J8"}
     assert nl.net_of("U5", 3) == nl.net_of("U5", 4) == "+5V_IN"
     assert nl.net_of("U5", 5) == "+5V_A"
     assert nl.components["U5"]["value"] == "TPS259531"
-    assert {r_ for r_, _, _ in nl.nets["+5V_IN"]} <= {"J2", "U5", "D4", *parts_between(nl, "+5V_IN", "GND", "C"),
+    assert {r_ for r_, _, _ in nl.nets["+5V_IN"]} <= {"J2", "U5", "U9", "D4", *parts_between(nl, "+5V_IN", "GND", "C"),
                                                       *parts_between(nl, "+5V_IN", "EFUSE_EN")}
 
 
@@ -112,3 +113,16 @@ def test_protection_pads(nl):
     assert [nl.components[c]["value"] for c in dnp_between(nl, "V5SYS_DAMP", "GND", "C")] == ["4.7uF"]
     assert not nl.fitted("D4") and nl.components["D4"]["value"] == "SMAJ13A"
     assert nl.net_of("D4", 1) == "+5V_IN" and nl.net_of("D4", 2) == "GND"      # cathode on +5V_IN
+
+
+def test_drive_behind_its_own_efuse(nl):
+    """Rev B §6: the drive's +5 V never passes U5; U9 limits it at about 1.5 A and clamps a reversed J2."""
+    assert nl.components["U9"]["value"] == "TPS259531"
+    assert nl.net_of("U9", 3) == nl.net_of("U9", 4) == "+5V_IN" and nl.net_of("U9", 5) == "+5V_DRIVE"
+    assert nl.net_of("U9", 2) == nl.net_of("U5", 2) == "EFUSE_EN"                           # one UVLO divider
+    assert [nl.net_of("J8", p) for p in (1, 2, 3, 4)] == ["+5V_DRIVE", "GND", "GND", "+12V"]
+    ilim = 2000 / r(nl, "DRV_ILM", "GND") + 0.04                                            # TI SLVSE57C Eq. 4
+    assert 1.4 <= ilim <= 1.6, ilim                                                         # R9 may move it
+    caps = [nl.components[c]["value"] for c in parts_between(nl, "+5V_DRIVE", "GND", "C")]
+    assert sorted(caps) == ["100nF", "22uF"]
+    assert [nl.components[c]["value"] for c in parts_between(nl, "DRV_DVDT", "GND", "C")] == ["22nF"]
