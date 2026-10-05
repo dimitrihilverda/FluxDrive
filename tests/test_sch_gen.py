@@ -36,7 +36,7 @@ def test_missing_pin_is_an_error():
 
 
 def test_project_symbols_load():
-    for name in ("TPS259531", "TYPE-C16PIN", "171825-4"):
+    for name in ("TPS259531", "TYPE-C16PIN", "171825-4", "74LVC1G157"):
         sym = sch_gen.lib_symbol(f"FluxDrive:{name}")
         pins = [p for u in sch_gen.pins_of(sym).values() for p in u]
         assert pins, name
@@ -44,6 +44,8 @@ def test_project_symbols_load():
         assert fp.startswith(("FluxDrive:", "Package_")), (name, fp)                # SPCB-5
     pins = {n: name for n, name, *_ in sch_gen.pins_of(sch_gen.lib_symbol("FluxDrive:TPS259531"))[1]}
     assert pins["3"] == pins["4"] == "IN" and pins["5"] == "OUT" and pins["7"] == "ILM"
+    pins = {n: name for n, name, *_ in sch_gen.pins_of(sch_gen.lib_symbol("FluxDrive:74LVC1G157"))[1]}
+    assert pins == {"1": "I1", "2": "GND", "3": "I0", "4": "Y", "5": "VCC", "6": "S"}
 
 
 def test_generation_is_deterministic():
