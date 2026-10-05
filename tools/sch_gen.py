@@ -54,7 +54,9 @@ def lib_symbol(lib_id):
     while child(sym, "extends"):
         parent_name = child(sym, "extends")[1]
         parent = copy.deepcopy(syms[parent_name])
-        props = [c for c in sym[2:] if isinstance(c, list) and c[0] == "property"]
+        own = {c[1]: c for c in sym[2:] if isinstance(c, list) and c[0] == "property"}
+        inherited = [c for c in parent[2:] if isinstance(c, list) and c[0] == "property"]
+        props = [own.pop(c[1], c) for c in inherited] + list(own.values())    # SCODE-7: parent-only ones stay
         head = [c for c in parent[2:] if not (isinstance(c, list) and c[0] in ("property", "symbol", "extends"))]
         subs = [c for c in parent[2:] if isinstance(c, list) and c[0] == "symbol"]
         for s in subs:
@@ -200,7 +202,6 @@ def generate(title, blocks, parts, pwr_flags, project="FluxDrive"):
         units = pins_of(lib_syms[p["lib"]])
         allpins = [pin for u in units.values() for pin in u]
         p["_nets"] = resolve(p["ref"], p["pins"], allpins)
-        p["_numbers"] = sorted({n for n, *_ in allpins}, key=lambda s: (len(s), s))
         p["_units"] = {u: units.get(u, []) + units.get(0, []) for u in sorted(units) if u != 0} or {1: units.get(0, [])}
         for pins in p["_units"].values():
             first = {}

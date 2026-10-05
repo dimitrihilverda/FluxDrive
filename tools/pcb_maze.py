@@ -30,6 +30,10 @@ from PIL import Image, ImageDraw
 
 import pcbnew
 
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from tools.netclass import netclass_widths, width_of  # noqa: E402
+
 KICAD_CLI = r"C:/Program Files/KiCad/10.0/bin/kicad-cli.exe"
 G = 0.05                  # mm per grid cell: fine enough for one track between 2.54 mm header pins
 CLEARANCE = 0.2           # both netclasses: 0.2 mm apart (spec 8)
@@ -49,7 +53,7 @@ SOFT_STUB = 12            # the same, counted in cells, for an exact stub out of
 MAX_ROUNDS = 80            # each round is a fresh process with at most one rip-up
 LAYERS = (pcbnew.F_Cu, pcbnew.B_Cu)
 LAYER_COST = {}                                                  # per cell, times the normal cost
-POWER = {"/+5V_IN", "/+5V_A", "/V5SYS", "/VBUS", "/+3V3", "/GND", "/BUCK_SW"}   # the "Power" netclass: 0.3 mm
+WIDTHS = netclass_widths(ROOT / "FluxDrive.kicad_pro")      # LCODE-8: track widths from the netclasses
 STEPS = [(1, 0, 1.0), (-1, 0, 1.0), (0, 1, 1.0), (0, -1, 1.0),
          (1, 1, math.sqrt(2)), (1, -1, math.sqrt(2)), (-1, 1, math.sqrt(2)), (-1, -1, math.sqrt(2))]
 
@@ -166,7 +170,7 @@ class Obstacles:
                 continue
             nc = it.GetNetCode()
             other = is_other(it, netcode)
-            cost = (SOFT_POWER if it.GetNetname() in POWER else SOFT) + HISTORY * history[nc]
+            cost = (SOFT_POWER if width_of(it.GetNetname(), *WIDTHS) > WIDTHS[0]["Default"] else SOFT) + HISTORY * history[nc]
             for li, layer in enumerate(LAYERS):
                 if not it.IsOnLayer(layer):
                     continue
@@ -448,7 +452,7 @@ def route_one(board, ia, ib, history):
 
 def route_in_window(board, ia, ib, history, window):
     net = ia.GetNet()
-    w = 0.3 if net.GetNetname() in POWER else 0.2
+    w = width_of(net.GetNetname(), *WIDTHS)
     bb = ia.GetBoundingBox()
     bb.Merge(ib.GetBoundingBox())
     e = board.GetBoardEdgesBoundingBox()

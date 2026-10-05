@@ -17,6 +17,10 @@ def test_tiny_design_round_trips(tmp_path):
     assert nl.net_of("R1", 2) == "SIG" and nl.net_of("U1", 1) == "SIG"
     assert nl.net_of("U1", 2) == "OUT" and nl.net_of("R2", 1) == "OUT"
     assert nl.net_of("U1", 14) == "+3V3" and nl.net_of("U1", 7) == "GND"
+    assert not nl.fitted("R3") and nl.fitted("R1")                                   # SCODE-6: DNP comes through
+    assert (nl.net_of("R3", 1), nl.net_of("R3", 2)) == ("OUT", "GND")                # rotated 180
+    assert (nl.net_of("D1", 1), nl.net_of("D1", 2)) == ("+3V3", "SIG")               # pins by name, rotated 270
+    assert (nl.net_of("U1", 4) or "").startswith("unconnected-")                    # a pin left open
     erc = tmp_path / "erc.txt"
     r = subprocess.run([CLI, "sch", "erc", "--severity-error", "--exit-code-violations", "-o", str(erc), str(sch)])
     assert r.returncode == 0, erc.read_text()
@@ -26,7 +30,7 @@ def test_missing_pin_is_an_error():
     import copy
     import tests.fixtures.tiny_design as d
     parts = copy.deepcopy(d.PARTS)
-    del parts[1]["pins"]["12"]
+    del next(p for p in parts if p["ref"] == "U1")["pins"]["12"]
     with pytest.raises(ValueError, match="U1.*12"):
         sch_gen.generate("t", ["A. test"], parts, [])
 
@@ -65,7 +69,7 @@ def test_pin_assigned_twice_is_an_error():
     import copy
     import tests.fixtures.tiny_design as d
     parts = copy.deepcopy(d.PARTS)
-    parts[1]["pins"]["GND"] = "OTHER"                  # pin 7 is GND, and it is already in the design as "7"
+    next(p for p in parts if p["ref"] == "U1")["pins"]["GND"] = "OTHER"    # pin 7 is GND, and it is already in the design as "7"
     with pytest.raises(ValueError, match="U1.*7.*twice"):
         sch_gen.generate("t", ["A. test"], parts, [])
 
@@ -130,3 +134,17 @@ def test_real_schematic_erc(nl, tmp_path):
                    check=True, capture_output=True)
     kinds = re.findall(r"^\[(\w+)\]", rep.read_text(encoding="utf-8"), re.M)
     assert set(kinds) <= {"footprint_filter"}, sorted(set(kinds))
+
+
+def test_derived_symbol_matches_its_library(tmp_path):
+    """SCODE-7: lib_symbol keeps the properties a derived symbol takes from its parent (74HC74 extends 74LS74, which
+    alone has ki_locked); without them ERC reports lib_symbol_mismatch."""
+    pins = {"1": "+3V3", "2": "GND", "3": "GND", "4": "+3V3", "10": "+3V3", "11": "GND", "12": "GND", "13": "+3V3",
+            "5": None, "6": None, "8": None, "9": None, "7": "GND", "14": "+3V3"}
+    parts = [dict(ref="U1", lib="74xx:74HC74", value="74HC74", footprint="Package_SO:TSSOP-14_4.4x5mm_P0.65mm",
+                  pins=pins, block="A. test", rot=0)]
+    sch = tmp_path / "ff.kicad_sch"
+    sch.write_text(sch_gen.generate("t", ["A. test"], parts, ["+3V3", "GND"]), encoding="utf-8", newline="\n")
+    rep = tmp_path / "erc.txt"
+    subprocess.run([CLI, "sch", "erc", "--severity-all", "-o", str(rep), str(sch)], check=True, capture_output=True)
+    assert "lib_symbol_mismatch" not in rep.read_text(encoding="utf-8")

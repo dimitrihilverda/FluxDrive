@@ -18,7 +18,7 @@ def _parse_sexpr(text):
             done = stack.pop()
             stack[-1].append(done)
         elif tok.startswith('"'):
-            stack[-1].append(tok[1:-1].replace('\\"', '"'))
+            stack[-1].append(re.sub(r"\\(.)", r"\1", tok[1:-1]))
         else:
             stack[-1].append(tok)
     return stack[0][0]

@@ -22,29 +22,10 @@ import pcbnew
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 from tools.assembly import HAND_PLACED  # noqa: E402
-
-# footprint name regex -> degrees added to KiCad's rotation, first match wins
-ROTATION = [
-    (r"^LQFP-", 270),                 # U1 in Rev 1.2
-    (r"^SOT-23", 180),                # U3 (SOT-23-5) and Q1 (SOT-23) in Rev 1.2; also SOT-23-6
-    (r"^SOT-363", 180),               # SC-70-6: the same orientation as the SOT-23 family
-    (r"^TSSOP-", 0),                  # U2 in Rev 1.2
-    (r"^SOIC-", 0),                   # same pin-1 orientation as TSSOP in KiCad (check in JLC's preview)
-    (r"^(MSOP|VSSOP)-", 0),           # the same pin-1 orientation as TSSOP in KiCad
-    (r"^IDC-Header_2x", 270),         # CN3 in Rev 1.2
-    (r"^Pin(Header|Socket)_", 270),   # J1-J4 in Rev 1.2
-]
-
+from tools.jlc_rules import comment, correction  # noqa: E402
 
 # footprints whose pads do not surround the body centre: use the F.Fab outline instead
 BODY_CENTRE = r"^ESP32-"
-
-
-def correction(fp_name):
-    for pattern, deg in ROTATION:
-        if re.search(pattern, fp_name):
-            return deg
-    return 0
 
 
 def natural(ref):
@@ -89,7 +70,7 @@ def main(pcb_path, out_dir, check=None):
     rows = []
     for (lcsc, fp_name), ps in groups.items():
         refs = sorted((p["ref"] for p in ps), key=natural)
-        rows.append([ps[0]["value"] if len({p["value"] for p in ps}) == 1 else sorted(ps, key=lambda p: natural(p["ref"]))[0]["value"],
+        rows.append([comment([p["value"] for p in sorted(ps, key=lambda p: natural(p["ref"]))]),
                      ",".join(refs), fp_name, lcsc, len(refs)])
     rows.sort(key=lambda r: (r[0], r[1]))
     with open(out / f"BOM-{name}.csv", "w", newline="", encoding="utf-8") as f:

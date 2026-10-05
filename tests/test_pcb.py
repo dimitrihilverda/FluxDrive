@@ -73,19 +73,20 @@ def _pads(board, ref, net=None):
 
 
 def test_buck_away_from_dkrd_and_antenna(board):
-    """Spec 8: the buck (switch node: U6, L1) at least 15 mm from /DKRD and from the antenna."""
+    """Spec 8: the buck (switch node: U6, L1) at least 15 mm from /DKRD and from the antenna (its nearest point, not
+    the board edge: build-rulings minor)."""
     import math
     fps = pcb.footprints(board)
-    x0, y0, x1, y1 = pcb.board_extents(board)
-    ux = fps["U1"][0]
+    ux, uy = fps["U1"][0], fps["U1"][1]
+    top, base = uy - 12.8, uy - 6.75                        # the antenna: module body top to the antenna's base line
     sw = _pads(board, "U6", "/BUCK_SW") + _pads(board, "L1", "/BUCK_SW")
     dkrd = _pads(board, "J1", "/_DKRD") + _pads(board, "R35", "/_DKRD") + _pads(board, "R35", "/DKRD_D") \
         + _pads(board, "U4", "/DKRD_D")
     assert sw and len(dkrd) == 4
     for sx, sy in sw:
         assert min(math.dist((sx, sy), d) for d in dkrd) >= 15.0
-        ax = min(max(sx, ux - 9.0), ux + 9.0)                   # nearest point of the antenna edge (module top)
-        assert math.dist((sx, sy), (ax, y0)) >= 15.0
+        ax, ay = min(max(sx, ux - 9.0), ux + 9.0), min(max(sy, top), base)
+        assert math.dist((sx, sy), (ax, ay)) >= 15.0
 
 
 def _texts(board, layer):
@@ -99,7 +100,7 @@ def _texts(board, layer):
 
 
 def test_pin1_marked_both_sides(board):
-    """Review focus 4, LCODE-9: a "1" next to J1 pin 1 on both sides (within 4 mm of the pad)."""
+    """Review focus 4, LCODE-9: a "1" next to J1 pin 1 on both sides (within 6 mm of the pad)."""
     import math
     from tools.netlist import _child, _children
     (px, py), = [xy for xy in _pads(board, "J1") if xy == _pads(board, "J1")[0]]
@@ -256,8 +257,8 @@ def test_usb_data_pads_joined_on_top(board):
 
 
 def _production_mismatches(board, out_dir):
-    """What differs between the board and the BOM/CPL in out_dir: missing or extra designators, and passives
-    whose CPL position is not the footprint's (a CPL left from an earlier build)."""
+    """What differs between the board and the BOM/CPL in out_dir: missing or extra designators, and parts whose
+    CPL place or rotation is not the footprint's (a CPL left from an earlier build)."""
     import csv
     from tools.assembly import HAND_PLACED
     from tools.netlist import _child, _children
@@ -270,16 +271,27 @@ def _production_mismatches(board, out_dir):
             continue
         if smd and "dnp" not in attr and "exclude_from_pos_files" not in attr and props.get("LCSC", "").strip():
             at = _child(fp, "at")
-            want[props["Reference"]] = (float(at[1]), float(at[2]))
+            want[props["Reference"]] = (float(at[1]), float(at[2]), float(at[3]) if len(at) > 3 else 0.0,
+                                        fp[1].split(":")[-1])
     out = pathlib.Path(out_dir)
     cpl = {r["Designator"]: r for r in csv.DictReader(open(out / "CPL-FluxDrive.csv", encoding="utf-8"))}
     bom = [d for r in csv.DictReader(open(out / "BOM-FluxDrive.csv", encoding="utf-8")) for d in r["Designator"].split(",")]
     bad = sorted(set(want) ^ set(cpl)) + sorted(set(want) ^ set(bom)) + [d for d in bom if bom.count(d) > 1]
-    for ref, (x, y) in want.items():
-        r = cpl.get(ref)
-        if r and ref[0] in "RC" and (abs(float(r["Mid X"]) - x) > 0.01 or abs(float(r["Mid Y"]) + y) > 0.01):
-            bad.append(ref)
+    bad += [ref for ref, w in want.items() if ref in cpl and _placement_mismatch(ref, w, cpl[ref])]
     return bad
+
+
+def _placement_mismatch(ref, want, row):
+    """True if a CPL row does not put the part where the board has it. want = (x, y, rotation, footprint name):
+    the position within 0.01 mm for R and C (their pads surround the origin) and within 0.2 mm for the rest (the CPL
+    takes the pads' centre: J3's is 0.16 mm off its origin); the rotation is KiCad's plus tools/jlc_rules.py's
+    correction (build-rulings minor: rotations were not compared)."""
+    from tools.jlc_rules import correction
+    x, y, rot, name = want
+    tol = 0.01 if ref[0] in "RC" else 0.2
+    turn = (float(row["Rotation"]) - rot - correction(name)) % 360
+    return (abs(float(row["Mid X"]) - x) > tol or abs(float(row["Mid Y"]) + y) > tol
+            or min(turn, 360 - turn) > 0.01)
 
 
 def test_production_files_match_the_board(board):
@@ -300,3 +312,47 @@ def test_hand_placed_parts_have_no_paste(board):
             pasted = [_child(pad, "at")[1:3] for pad in _children(fp, "pad")
                       if any(str(layer).endswith(".Paste") for layer in (_child(pad, "layers") or [])[1:])]
             assert pasted == [], (ref, len(pasted))
+
+
+def test_production_check_sees_a_moved_or_turned_part():
+    """Build-rulings minor: the production check compares rotations too, and every part's position."""
+    row = {"Mid X": "120.0", "Mid Y": "-130.0", "Rotation": "90.0"}
+    soic = (120.0, 130.0, 90.0, "SOIC-14_3.9x8.7mm_P1.27mm")
+    assert not _placement_mismatch("U2", soic, row)
+    assert _placement_mismatch("U2", soic, {**row, "Rotation": "180.0"})
+    assert _placement_mismatch("U2", soic, {**row, "Mid X": "120.3"})
+    sot = (120.0, 130.0, 90.0, "SOT-23-6")
+    assert not _placement_mismatch("U7", sot, {**row, "Rotation": "270.0"})         # JLC adds 180 to a SOT-23
+    assert _placement_mismatch("R1", (120.0, 130.0, 90.0, "R_0402_1005Metric"), {**row, "Mid X": "120.05"})
+
+
+def test_rule_areas_cover_their_layers(board):
+    """Build-rulings minor: every rule area is checked by its layers and its track flag, not by its name only."""
+    from tools.netlist import _child, _children
+    want = {"J1 rows F": ["F.Cu"], "J1 rows B": ["B.Cu"], "antenna edge": ["F.Cu", "B.Cu"],
+            "module underside": ["F.Cu"], "USB-C body": ["F.Cu"], "buck F": ["F.Cu"], "buck B": ["B.Cu"]}
+    areas = [z for z in _children(board, "zone") if _child(z, "keepout") is not None]
+    for name, layers in want.items():
+        hits = [z for z in areas if (_child(z, "name") or [None, ""])[1].startswith(name)]
+        assert hits, name
+        for z in hits:
+            assert _child(_child(z, "keepout"), "tracks")[1] == "not_allowed", name
+            lay = _child(z, "layers") or _child(z, "layer")
+            assert list(lay[1:]) == layers, (name, lay)
+
+
+def test_antenna_area_copper_free_on_every_layer(board):
+    """Build-rulings minor: the antenna test also looks at zone fills and pads, not only at tracks and vias."""
+    from tools.netlist import _child, _children
+    fps = pcb.footprints(board)
+    ux, uy = fps["U1"][0], fps["U1"][1]
+    base = uy - 6.75
+    for z in _children(board, "zone"):
+        if _child(z, "keepout") is not None:
+            continue
+        for poly in _children(z, "filled_polygon"):
+            for xy in _children(_child(poly, "pts"), "xy"):
+                x, y = float(xy[1]), float(xy[2])
+                assert not (abs(x - ux) < 23.5 and y < base - 0.3), ((_child(z, "net") or ["", ""])[-1], x, y)
+    for ref, net, px, py, hw, hh, rot, smd in _pad_shapes(board):
+        assert not (abs(px - ux) < 24.0 and py < base), (ref, px, py)

@@ -9,5 +9,9 @@ PARTS = [
                "11": "GND", "10": None, "13": "GND", "12": None, "14": "+3V3", "7": "GND"}),
     dict(ref="R2", lib="Device:R", value="1K", footprint="Resistor_SMD:R_0402_1005Metric", lcsc="C11702",
          pins={"1": "OUT", "2": "GND"}, block="A. test", dnp=False, rot=90, in_bom=True),
+    dict(ref="R3", lib="Device:R", value="1K", footprint="Resistor_SMD:R_0603_1608Metric", lcsc="",
+         pins={"1": "OUT", "2": "GND"}, block="A. test", dnp=True, rot=180, in_bom=False),
+    dict(ref="D1", lib="Device:D", value="1N4148W", footprint="Diode_SMD:D_SOD-123", lcsc="C81598",
+         pins={"K": "+3V3", "A": "SIG"}, block="A. test", dnp=False, rot=270, in_bom=True),
 ]
 PWR_FLAGS = ["+3V3", "GND"]
