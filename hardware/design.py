@@ -148,12 +148,14 @@ PWR_FLAGS = ["GND", "+3V3", "+5V_IN", "V5SYS", "VBUS"]          # +5V_A is drive
 
 # --- D: ESP32-S3 module --------------------------------------------------------------------------------------
 esp = {"1": "GND", "40": "GND", "41": "GND", "3V3": "+3V3", "EN": "ESP_EN", "IO0": "BOOT", "IO1": "AMIGA_PWR",
-       "IO2": "LED", "USB_D-": "USB_DN", "USB_D+": "USB_DP", "TXD0": "ESP_TXD0", "RXD0": "ESP_RXD0",
-       "IO13": "GPIO13", "IO14": "GPIO14", "IO47": "GPIO47", "IO48": "GPIO48"}
+       "IO2": "LED", "USB_D-": "USB_DN", "USB_D+": "USB_DP", "TXD0": "ESP_TXD0", "RXD0": "ESP_RXD0"}
 for g in (3, 4, 8, 10, 12, 18, 35, 36, 37, 45, 46):
     esp[f"IO{g}"] = None
 for gpio, net in GPIO_NET.items():
     esp[f"IO{gpio}"] = net
+esp.update({"IO47": "MODE_CLK_REQ", "IO48": "DF0_REQ", "IO13": "DF1_REQ", "IO14": "CHNG_REQ",
+            "IO10": "RST_REQ", "IO12": "DF0_STATE", "IO8": "DF1_STATE", "IO4": "RST_ACT_IO", "IO18": "GPIO18",
+            "IO3": "GPIO3"})
 part("U1", "RF_Module:ESP32-S3-WROOM-1", "ESP32-S3-WROOM-1-N16R8", "FluxDrive:ESP32-S3-WROOM-1", esp, E,
      lcsc="C2913202")
 C("22uF", "+3V3", "GND", E)
@@ -186,8 +188,9 @@ HDR6 = "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical"
 R("470", "ESP_TXD0", "UART_TX", F)
 part("J4", "Connector_Generic:Conn_01x06", "UART / recovery", HDR6,
      {"1": "UART_TX", "2": "ESP_RXD0", "3": "ESP_EN", "4": "BOOT", "5": "+3V3", "6": "GND"}, F, in_bom=False)
-part("J5", "Connector_Generic:Conn_01x06", "Spare GPIO", HDR6,
-     {"1": "GPIO13", "2": "GPIO14", "3": "GPIO47", "4": "GPIO48", "5": "+3V3", "6": "GND"}, F, in_bom=False)
+HDR4 = "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical"
+part("J5", "Connector_Generic:Conn_01x04", "Spare / OLED", HDR4,              # rev B §7: GND 3V3 SCL SDA order
+     {"1": "GND", "2": "+3V3", "3": "GPIO18", "4": "GPIO3"}, F, in_bom=False)
 R("1K", "LED", "LED_A", F)
 part("D3", "Device:LED", "LED red", "LED_SMD:LED_0603_1608Metric", {"1": "GND", "2": "LED_A"}, F, lcsc="C2286")
 for net in ("_DKRD", "DKRD_N", "_INDEX", "INDEX_N", "_SEL0", "SEL0", "_STEP", "STEP", "_MTR0", "MTR0",
@@ -198,3 +201,46 @@ for i in (1, 2):
     part(f"H{i}", "Mechanical:MountingHole", "3.2mm", "MountingHole:MountingHole_3.2mm_M3", {}, F, in_bom=False)
 for i in (1, 2, 3):
     part(f"FID{i}", "Mechanical:Fiducial", "Fiducial", "Fiducial:Fiducial_1mm_Mask2mm", {}, F, in_bom=False)
+
+# --- G: drive pass-through and DF0/DF1 swap (rev B spec §3, §4) ------------------------------------------------
+G1157 = ("FluxDrive:74LVC1G157", "74LVC1G157", "Package_TO_SOT_SMD:SOT-363_SC-70-6")
+
+
+def mux(ref, s, i0, i1, y, dnp=False):
+    part(ref, G1157[0], G1157[1], G1157[2], {"6": s, "3": i0, "1": i1, "4": y, "2": "GND", "5": "+3V3"}, G,
+         lcsc="" if dnp else "C135822", dnp=dnp, in_bom=not dnp)
+    C("100nF", "+3V3", "GND", G, dnp=dnp)
+
+
+mux("U12", "DF1_EN", "GND", "SEL1", "SEL1_EN")                 # SEL1_EN = SEL1 AND DF1_EN
+mux("U13", "DF0_FD", "SEL1_EN", "SEL0", "SEL_FD")              # FluxDrive's own select
+mux("U16", "BUSY", "MODE_CLK_REQ", "GND", "MODE_CLK")          # the clock only while both selects are idle
+part("U8", "74xx:74LS74", "74LVC74A", TSSOP14,                 # the base symbol: 74HC74 only extends it
+     {"1": "CLR_A", "2": "DF0_REQ", "3": "MODE_CLK", "4": "PRE_A", "5": "DF0_FD", "6": None,
+      "13": "CLR_B", "12": "DF1_REQ", "11": "MODE_CLK", "10": "PRE_B", "9": "DF1_EN", "8": None,
+      "7": "GND", "14": "+3V3"}, G, lcsc="C6100")
+C("100nF", "+3V3", "GND", G)
+for net in ("CLR_A", "PRE_A", "CLR_B", "PRE_B"):
+    R("10K", net, "+3V3", G)
+R("100K", "DF0_FD", "DF0_REQ", G)                              # an undriven D holds the present state (§4.1)
+R("100K", "DF1_EN", "DF1_REQ", G)
+R("1K", "DF0_FD", "DF0_STATE", G)
+R("1K", "DF1_EN", "DF1_STATE", G)
+R("10K", "MODE_CLK_REQ", "GND", G)
+R("10K", "CHNG_REQ", "GND", G)
+DIODE = ("Device:D", "1N4148W", "Diode_SMD:D_SOD-123", "C81598")
+C("1uF", "CLR_B", "GND", G)                                   # power-on: DF1 off (§4.6)
+part("D5", DIODE[0], DIODE[1], DIODE[2], {"1": "+3V3", "2": "CLR_B"}, G, lcsc=DIODE[3])
+C("1uF", "POR_A", "GND", G)                                   # power-on: real drive DF0 via JP5 1-2
+part("D6", DIODE[0], DIODE[1], DIODE[2], {"1": "+3V3", "2": "POR_A"}, G, lcsc=DIODE[3])
+JP3B = ("Jumper:SolderJumper_3_Bridged12", "Bridged12", "Jumper:SolderJumper-3_P1.3mm_Bridged12_RoundedPad1.0x1.5mm")
+JP2O = ("Jumper:SolderJumper_2_Open", "Open", "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm")
+part("JP5", JP3B[0], "DF0 at power-on", JP3B[2], {"1": "CLR_A", "2": "POR_A", "3": "PRE_A"}, G, in_bom=False)
+part("JP6", JP2O[0], "REAL clear", JP2O[2], {"1": "CLR_A", "2": "GND"}, G, in_bom=False)
+part("JP7", JP2O[0], "REAL preset", JP2O[2], {"1": "PRE_A", "2": "+3V3"}, G, in_bom=False)
+part("J7", "Connector_Generic:Conn_01x03", "DF0 switch", "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical",
+     {"1": "J7_FD", "2": "GND", "3": "J7_REAL"}, G, in_bom=False)
+R("1K", "J7_FD", "PRE_A", G)
+R("1K", "J7_REAL", "CLR_A", G)
+C("100nF", "J7_FD", "GND", G)
+C("100nF", "J7_REAL", "GND", G)

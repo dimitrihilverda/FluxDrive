@@ -48,6 +48,4 @@ def test_led_uart_spare(nl):
     assert len(tx) == 1 and nl.components[tx[0]]["value"] == "470"
     en = nl.net_of_function("U1", "EN")
     assert [nl.net_of("J4", p) for p in range(1, 7)] == ["UART_TX", "ESP_RXD0", en, "BOOT", "+3V3", "GND"]
-    assert [nl.net_of("J5", p) for p in range(1, 7)] == ["GPIO13", "GPIO14", "GPIO47", "GPIO48", "+3V3", "GND"]
-    for g in (13, 14, 47, 48):
-        assert esp_net(nl, g) == f"GPIO{g}"
+    assert [nl.net_of("J5", p) for p in range(1, 5)] == ["GND", "+3V3", "GPIO18", "GPIO3"]
