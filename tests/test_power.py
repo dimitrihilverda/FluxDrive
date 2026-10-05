@@ -1,8 +1,8 @@
 from tools.netlist import parse_ohms
 from tests.fd import between, parts_between
 
-BUS_NETS = {"_STEP", "_DIR", "_SIDE", "_SEL0", "_SEL1", "_MTR0", "_MTR0_P4", "_DKWD", "_DKWE", "_CHNG",
-            "_INDEX", "_TRK0", "_WPROT", "_DKRD", "_RDY", "FD_PIN6", "FD_PIN14"}
+BUS_NETS = {"_STEP", "_DIR", "_SIDE", "_SEL0", "_SEL1", "_MTR0", "_DKWD", "_DKWE", "_CHNG", "_INDEX", "_TRK0",
+            "_WPROT", "_DKRD", "_RDY"}
 
 
 def r(nl, a, b):
@@ -76,7 +76,7 @@ def test_pullups_on_amiga_side_only(nl):
 
 def test_no_backfeed_paths(nl):
     """Review focus 2: on USB alone nothing reaches +5V_A or the bus except a reverse-biased diode or >= 100k."""
-    amiga_nets = BUS_NETS - {"FD_PIN6", "FD_PIN14"}      # pins 6 and 14 are NC on the A500 (spec 2.1, 4.2)
+    amiga_nets = BUS_NETS
     for ref, a, b, ohms in nl.resistors():
         pair = {a, b}
         if pair & {"VBUS", "V5SYS", "+3V3"} and pair & (amiga_nets | {"+5V_A"}):
@@ -93,7 +93,7 @@ def test_usb_alone_leaves_everything_defined(nl):
     from tests.fd import solve
     v = solve(nl, {"+3V3": 3.3, "GND": 0.0})
     assert v["AMIGA_PWR"] < 0.8, v["AMIGA_PWR"]
-    for sig in ("STEP", "DIR", "SIDE", "SEL0", "SEL1", "MTR0", "DKWD", "DKWE", "MTR0_P4", "PIN6", "PIN14"):
+    for sig in ("STEP", "DIR", "SIDE", "SEL0", "SEL1", "MTR0", "DKWD", "DKWE"):
         x = v[f"{sig}_B"]
         assert x < 0.8 or x > 2.0, (sig, x)
 

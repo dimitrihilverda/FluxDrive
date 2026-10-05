@@ -2,9 +2,9 @@
 The tests read the exported netlist, not this file. Refs are numbered in the order parts are added."""
 import itertools
 
-TITLE = "FluxDrive v1 rev A"
+TITLE = "FluxDrive v1 rev B"
 BLOCKS = ["A. Floppy connector and bus inputs", "B. Bus outputs", "C. Power", "D. ESP32-S3 module",
-          "E. USB-C", "F. Headers, buttons, LED, test pads, mechanics"]
+          "E. USB-C", "F. Headers, buttons, LED, test pads, mechanics", "G. Drive pass-through and DF0/DF1 swap"]
 R0402 = "Resistor_SMD:R_0402_1005Metric"
 R0603, C0603 = "Resistor_SMD:R_0603_1608Metric", "Capacitor_SMD:C_0603_1608Metric"   # unfitted: hand-solderable
 RES_LCSC = {"22": "C25092", "33": "C25105", "100": "C25076", "470": "C25117", "1K": "C11702", "1K5": "C25867",
@@ -34,36 +34,37 @@ def C(value, a, b, block, dnp=False):
          rot=90, in_bom=not dnp)
 
 
-A, B, P, E, U, F = BLOCKS
+A, B, P, E, U, F, G = BLOCKS
 
 # --- A: connector and inputs -----------------------------------------------------------------------------
-EVEN = {2: "_CHNG", 4: "_MTR0_P4", 6: "FD_PIN6", 8: "_INDEX", 10: "_SEL0", 12: "_SEL1", 14: "FD_PIN14",
+EVEN = {2: "_CHNG", 4: None, 6: None, 8: "_INDEX", 10: "_SEL0", 12: "_SEL1", 14: None,
         16: "_MTR0", 18: "_DIR", 20: "_STEP", 22: "_DKWD", 24: "_DKWE", 26: "_TRK0", 28: "_WPROT",
-        30: "_DKRD", 32: "_SIDE", 34: "_RDY"}
+        30: "_DKRD", 32: "_SIDE", 34: "_RDY"}          # rev B spec §7: pins 4, 6, 14 are not used on the A500
 j1 = {str(p): ("GND" if p != 3 else None) for p in range(1, 34, 2)}
 j1.update({str(p): n for p, n in EVEN.items()})
 part("J1", "Connector_Generic:Conn_02x17_Odd_Even", "Amiga floppy 34", "Connector_IDC:IDC-Header_2x17_P2.54mm_Vertical",
      j1, A, lcsc="C601943")
 
-# signal, connector net, pull-up (value, rail) or None, GPIO, buffer, input pin, output pin, optional C pad.
-# U3 (west) takes the lines on J1 pins 4-16, U2 (east) the ones on pins 18-32, each in the connector's
-# west-to-east order over the gates (input pins 1, 13, 3, 11, 5, 9 with the SOIC turned 90 degrees on the
-# board), so the lines from the connector to the buffers do not cross (layout review LBUS-3).
+# signal, connector net, pull-up, GPIO, buffer, input pin, output pin, C pad, 1 kOhm to the GPIO (rev B §4.1).
+# U3 (west) takes the lines on J1 pins 10-16, U2 (east) the ones on pins 18-32, each in the connector's west-to-east
+# order over the gates (input pins 1, 13, 3, 11, 5, 9 with the SOIC turned 90 degrees; layout review LBUS-3).
 INPUTS = [
-    ("STEP", "_STEP", ("1K", "+5V_A"), 6, "U2", 13, 12, True),        # J1 pin 20
-    ("DIR", "_DIR", ("1K", "+5V_A"), 7, "U2", 1, 2, False),           # 18
-    ("SIDE", "_SIDE", ("1K", "+5V_A"), 15, "U2", 5, 6, False),        # 32
-    ("SEL0", "_SEL0", ("1K", "+5V_A"), 17, "U3", 3, 4, True),         # 10
-    ("SEL1", "_SEL1", ("10K", "+5V_A"), 9, "U3", 11, 10, True),       # 12
-    ("MTR0", "_MTR0", None, 11, "U3", 9, 8, True),                    # 16
-    ("DKWD", "_DKWD", ("4K7", "+5V_A"), 5, "U2", 3, 4, False),        # 22
-    ("DKWE", "_DKWE", ("4K7", "+5V_A"), 16, "U2", 11, 10, False),     # 24
-    ("MTR0_P4", "_MTR0_P4", None, 4, "U3", 1, 2, False),              # 4
-    ("PIN6", "FD_PIN6", ("10K", "+3V3"), 8, "U3", 13, 12, False),     # 6
-    ("PIN14", "FD_PIN14", ("10K", "+3V3"), 10, "U3", 5, 6, False),    # 14
+    ("STEP", "_STEP", ("4K7", "+5V_A"), 6, "U2", 13, 12, True, False),      # J1 pin 20
+    ("DIR", "_DIR", ("4K7", "+5V_A"), 7, "U2", 1, 2, False, False),         # 18
+    ("SIDE", "_SIDE", ("4K7", "+5V_A"), 15, "U2", 5, 6, False, False),      # 32
+    ("SEL0", "_SEL0", ("1K", "+5V_A"), 17, "U3", 3, 4, True, True),         # 10
+    ("SEL1", "_SEL1", ("1K", "+5V_A"), 9, "U3", 11, 10, True, True),        # 12
+    ("MTR0", "_MTR0", None, 11, "U3", 9, 8, True, True),                    # 16
+    ("DKWD", "_DKWD", ("4K7", "+5V_A"), 5, "U2", 3, 4, False, False),       # 22
+    ("DKWE", "_DKWE", ("4K7", "+5V_A"), 16, "U2", 11, 10, False, False),    # 24
 ]
-buf = {"U2": {"14": "+3V3", "7": "GND", "9": "GND", "8": None}, "U3": {"14": "+3V3", "7": "GND"}}
-for sig, conn, pull, gpio, u, pin_in, pin_out, cpad in INPUTS:
+GPIO_NET = {}
+buf = {"U2": {"14": "+3V3", "7": "GND", "9": "SEL_FD", "8": "SEL_FD_N"},   # U2's spare makes SEL_FD_N (§4.2)
+       "U3": {"14": "+3V3", "7": "GND",
+              "1": "RST_B", "2": "RST_ACT",              # rev A's J1 pin 4 gate: the reset wire (§4.8)
+              "5": "MTRX_B", "6": "M4_MOTOR",            # rev A's pin 14 gate: mode 4's motor line (§4.7)
+              "13": "M4_MTR_Q", "12": "M4_MTR_N"}}       # rev A's pin 6 gate: NOT M4_MTR for the DF1 ID (§4.7)
+for sig, conn, pull, gpio, u, pin_in, pin_out, cpad, iso in INPUTS:
     if pull:
         R(pull[0], conn, pull[1], A)
     else:
@@ -72,7 +73,16 @@ for sig, conn, pull, gpio, u, pin_in, pin_out, cpad in INPUTS:
     R("100K", f"{sig}_B", "+3V3", A)
     if cpad:
         C("220pF", f"{sig}_B", "GND", A, dnp=True)
+    if iso:
+        R("1K", sig, f"{sig}_IO", A)
+    GPIO_NET[gpio] = f"{sig}_IO" if iso else sig
     buf[u].update({str(pin_in): f"{sig}_B", str(pin_out): sig})
+R("100", "KBRESET", "RST_B", A)                               # the reset wire's input (§4.8)
+R("100K", "RST_B", "+3V3", A)
+R("4K7", "MTRX", "+5V_A", A, dnp=True)                        # mode 4's motor wire (§4.7)
+R("100", "MTRX", "MTRX_B", A, dnp=True)
+R("100K", "MTRX_B", "+3V3", A)
+R("100K", "M4_MTR_Q", "GND", A)
 for u in ("U2", "U3"):
     part(u, "74xx:74HC14", "74LVC14A", SOIC14, buf[u], A, lcsc="C133541")
     C("100nF", "+3V3", "GND", A)
@@ -128,10 +138,10 @@ PWR_FLAGS = ["GND", "+3V3", "+5V_IN", "V5SYS", "VBUS"]          # +5V_A is drive
 esp = {"1": "GND", "40": "GND", "41": "GND", "3V3": "+3V3", "EN": "ESP_EN", "IO0": "BOOT", "IO1": "AMIGA_PWR",
        "IO2": "LED", "USB_D-": "USB_DN", "USB_D+": "USB_DP", "TXD0": "ESP_TXD0", "RXD0": "ESP_RXD0",
        "IO13": "GPIO13", "IO14": "GPIO14", "IO47": "GPIO47", "IO48": "GPIO48"}
-for g in (3, 12, 18, 35, 36, 37, 45, 46):
+for g in (3, 4, 8, 10, 12, 18, 35, 36, 37, 45, 46):
     esp[f"IO{g}"] = None
-for sig, _, _, gpio, *_ in INPUTS:
-    esp[f"IO{gpio}"] = sig
+for gpio, net in GPIO_NET.items():
+    esp[f"IO{gpio}"] = net
 for sig, _, gpio, *_ in OUTPUTS:
     esp[f"IO{gpio}"] = f"{sig}_N"
 part("U1", "RF_Module:ESP32-S3-WROOM-1", "ESP32-S3-WROOM-1-N16R8", "FluxDrive:ESP32-S3-WROOM-1", esp, E,

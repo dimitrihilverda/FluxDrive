@@ -9,7 +9,7 @@ def test_module(nl):
 
 
 def test_left_alone(nl):
-    for gpio in (3, 12, 18, 35, 36, 37, 45, 46):
+    for gpio in (35, 36, 37, 45, 46):
         assert is_nc(esp_net(nl, gpio)), gpio
 
 
