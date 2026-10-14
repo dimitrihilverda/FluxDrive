@@ -359,17 +359,24 @@ def test_switch_moved_during_an_access(nl):
     assert (b.v["DF0_FD"], b.v["DF1_EN"]) == (0, 1)
 
 
+def assert_idle(v, stored, sel0, when):
+    """Review focus 4's idle set: no /CHNG, no reset, no clock, /RDY high, J6.4/16 off, and J6.10 only following
+    /SEL0 while the real drive is DF0."""
+    assert v["_CHNG"] == 1 and v["KBRESET"] == 1 and v["MODE_CLK"] == 0 and v["_RDY"] == 1, (when, stored, sel0)
+    assert v["J6_SEL"] == (0 if sel0 and not stored[0] else 1) and v["J6_MTR"] == 1, (when, stored, sel0)
+
+
 def test_esp32_reset_changes_nothing(nl):
     """Review focus 4: control GPIOs undriven, with their internal pull-ups on: no clock, no /CHNG, no reset, and
-    /RDY and the J6 lines idle."""
+    /RDY and the J6 lines idle, checked during an access (where /CHNG and J6.10 could show it) and after it."""
     for stored in ((0, 0), (1, 0), (0, 1)):
         b = Board(nl, stored=stored)
-        b.set(_SEL0=(0, OD))
-        b.set(**{n: (1, WEAK) for n in ("MODE_CLK_REQ", "DF0_REQ", "DF1_REQ", "CHNG_REQ", "RST_REQ")})
+        assert_idle(b.set(_SEL0=(0, OD)), stored, 1, "access, GPIOs undriven")
+        assert_idle(b.set(**{n: (1, WEAK) for n in ("MODE_CLK_REQ", "DF0_REQ", "DF1_REQ", "CHNG_REQ", "RST_REQ")}),
+                    stored, 1, "access, internal pull-ups on")
         b.set(_SEL0=None)
         assert (b.v["DF0_FD"], b.v["DF1_EN"]) == stored
-        assert b.v["_CHNG"] == 1 and b.v["KBRESET"] == 1 and b.v["MODE_CLK"] == 0
-        assert b.v["_RDY"] == 1 and b.v["J6_SEL"] == 1 and b.v["J6_MTR"] == 1
+        assert_idle(b.v, stored, 0, "after the access")
 
 
 def test_esp32_glitch_changes_nothing(nl):
@@ -381,11 +388,10 @@ def test_esp32_glitch_changes_nothing(nl):
         for sel0 in (0, 1):
             b = Board(nl, stored=stored)
             b.set(_SEL0=(0, OD) if sel0 else None)
-            b.set(**{n: (0, STRONG) for n in glitch})
+            assert_idle(b.set(**{n: (0, STRONG) for n in glitch}), stored, sel0, "during the glitch")
             b.set(**{n: None for n in glitch})
             assert (b.v["DF0_FD"], b.v["DF1_EN"]) == stored
-            assert b.v["_CHNG"] == 1 and b.v["KBRESET"] == 1 and b.v["MODE_CLK"] == 0 and b.v["_RDY"] == 1
-            assert b.v["J6_SEL"] == (0 if sel0 and not stored[0] else 1) and b.v["J6_MTR"] == 1
+            assert_idle(b.v, stored, sel0, "after the glitch")
 
 
 def test_mode1_with_mode4_fitted_keeps_the_real_drive_still(nl):
@@ -403,7 +409,7 @@ def test_power_on_defaults(nl):
     """Rev B §3, §4.6: the power-on RCs give DF1 off and the real drive as DF0, or FluxDrive with JP5 on 2-3."""
     for jp5, want in ((None, 0), ([("2", "3")], 1)):
         bridged = {"JP5": jp5} if jp5 else {}
-        b = Board(nl, stored=(1, 1), bridged=bridged)
+        b = Board(nl, stored=(1 - want, 1), bridged=bridged)   # from the other state, so the preset path must act
         b.set(POR_A=(0, OD), CLR_B=(0, OD))                # capacitors still discharged
         b.set(POR_A=None, CLR_B=None)
         assert b.v["DF1_EN"] == 0 and b.v["DF0_FD"] == want
