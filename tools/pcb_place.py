@@ -1,122 +1,36 @@
-"""FluxDrive v1 placement: board outline, planes and pours, rule areas and the position of every footprint.
+"""FluxDrive v1 rev B placement: board outline, planes and pours, rule areas and the position of every footprint.
 
     "/c/Program Files/KiCad/10.0/bin/python.exe" tools/pcb_place.py FluxDrive.kicad_pcb
     "/c/Program Files/KiCad/10.0/bin/python.exe" tools/pcb_place.py --check FluxDrive.kicad_pcb
 
-Coordinates are KiCad board mm (x right = east, y down = south); the board is x 100..160, y 93.5..148,
-4 layers (In1 GND plane, In2 +3V3 plane). South edge: the 34-way connector J1, even (signal) row inward.
-North edge: the module, its antenna 0.5 mm inside the edge over the module's own copper keep-out (O10). West: power header next to J1, TVS pad, bulk capacitors, diodes, eFuse, buck, USB-C.
-East: recovery and spare headers, buttons, LED, the output buffer at the pin 26-34 end of J1.
-Between the module and J1: the input buffers, row B (100 kOhm / 10 kOhm at the buffers) and row A
-(pull-ups, 100 Ohm and 33 Ohm at the connector pins).
+Coordinates are KiCad board mm (x right = east, y down = south); the board is x 100..160, y 73.5..145.6,
+4 layers (In1 GND plane, In2 +3V3 plane). South edge: J1 over CN11, even (signal) row inward; 17.78 mm north of
+it J6 for the real drive, same orientation; between them the J1-J6 band (the pass-through tracks, test pads, the
+builder's jumpers and pads). North edge: the module, its antenna 0.35 mm inside the edge. The table itself is
+tools/placement.py (no pcbnew, so the tests can read it); this script legalises and applies it.
 
 FIXED parts go exactly where the table says. Every other part starts at its table position and, if its
-courtyard would overlap one already placed, leave the board or enter the connector zone (spec 8: no SMD
-in the 54 x 10 mm band over J1), moves to the nearest free spot (spiral search, 0.1 mm steps, up to 4 mm;
-then the other orientation). The script prints every part it had to move.
+courtyard would overlap one already placed, leave the board or enter J1's or J6's connector zone (no SMD in the
+bands the box-header bodies and the iron need), or if one of its pads would reach into the strip of a J1-J6
+pass-through track in the band, moves to the nearest free spot (spiral search, 0.1 mm steps, up to 4 mm; then the
+other orientation). The script prints every part it had to move.
 Positions are footprint origins; rotation in degrees (KiCad: counter-clockwise).
 """
 import math
+import pathlib
 import sys
 
 import pcbnew
 
-X0, Y0, X1, Y1 = 100.0, 93.5, 160.0, 148.0          # y 93.5..100 carries the antenna, copper-free
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
+from tools.placement import (CONNECTOR_ZONE, J1_PIN1, J6_PIN1, J6_ZONE, SHIFT, X0, X1, Y0, Y1,  # noqa: E402
+                             corridors, pin_x, table)
+
 PLANE_MARGIN = 0.5
-J1_PIN1 = (113.68, 141.55)           # 2.4 mm strip south of its body for test pads and a fiducial
-ROW_A, ROW_B, ROW_B_0603 = 134.3, 130.2, 130.6
-SOUTH_STRIP = 146.6                  # y of the test pads and FID3 between J1's body and the south edge
-BUF_Y = 125.2                        # the three buffers; row B is 5 mm below, row A 4.1 mm below that
-CONNECTOR_ZONE = (107.0, J1_PIN1[1] - 6.27, 161.0, J1_PIN1[1] + 3.73)   # the test's band: pin field centre +-27 x +-5 mm
 MODULE_BOX = (-9.75, -13.5, 9.75, 13.47)            # U1 body courtyard (without its antenna keep-out)
 OVERHANG = {"J3"}                                   # may reach past the outline: the USB-C shell
-
-
-def pin_x(n):
-    """x of J1 pin n (both rows run east from pin 1/2)."""
-    return J1_PIN1[0] + ((n - 1) // 2) * 2.54
-
-
-FIXED = {
-    "J1": (J1_PIN1[0], J1_PIN1[1], 90),
-    "U1": (130.0, 106.75, 0),
-    "J2": (104.0, 136.5, 270),        # pin 1 (+5 V) north, pin 4 (+12 V, unused) south
-    "J3": (104.945, 112.5, 270),      # USB-C, opening to the west edge
-    "U3": (125.0, BUF_Y, 90),         # 74LVC14A: J1 pins 4-16 (MTR0_P4, PIN6, SEL0, SEL1, PIN14, MTR0)
-    "U2": (136.5, BUF_Y, 90),         # 74LVC14A: J1 pins 18-32 (DIR, STEP, DKWD, DKWE, SIDE), one spare
-    "U4": (150.0, BUF_Y, 90),         # 74LVC07A
-    "H1": (103.5, 103.5, 0),
-    "H2": (156.5, 103.5, 0),
-}
-# row A, at the connector: (J1 pin, ref, offset from the pin's x, rotation). Pull-ups and 100 ohm have
-# pad 1 (the connector net) south with rotation 90; the 33 ohm have pad 2 (the connector net) south: 270.
-ROW_A_PARTS = [
-    (2, "R43", 0.0, 270), (4, "R26", 0.55, 90), (6, "R28", -0.55, 90), (6, "R29", 0.55, 90),
-    (8, "R37", 0.0, 270), (10, "R10", -0.55, 90), (10, "R11", 0.55, 90), (12, "R13", -0.55, 90),
-    (12, "R14", 0.55, 90), (14, "R31", -0.55, 90), (14, "R32", 0.55, 90), (16, "R17", 0.55, 90),
-    (18, "R4", -0.55, 90), (18, "R5", 0.55, 90), (20, "R1", -0.55, 90), (20, "R2", 0.55, 90),
-    (22, "R19", -0.55, 90), (22, "R20", 0.55, 90), (24, "R22", -0.55, 90), (24, "R23", 0.55, 90),
-    (26, "R39", 0.0, 270), (28, "R41", 0.0, 270), (30, "R35", 0.0, 270), (32, "R7", -0.55, 90),
-    (32, "R8", 0.55, 90), (34, "R45", 0.0, 270),
-]
-for _pin, _ref, _dx, _rot in ROW_A_PARTS:
-    FIXED[_ref] = (round(pin_x(_pin) + _dx, 3), ROW_A, _rot)
-
-# every other part: its preferred spot, in the order they are legalised (the ones that matter most first)
-SOFT = [
-    # power column along the west edge, then eFuse, buck
-    ("D2", 104.0, 118.9, 0), ("D1", 104.0, 122.55, 0), ("C10", 104.0, 125.65, 0), ("C11", 104.0, 128.15, 0),
-    ("D4", 104.0, 131.25, 180),           # cathode east on the J2 -> eFuse path, anode on the west GND fill
-    ("U5", 111.2, 131.9, 0), ("C8", 110.8, 133.95, 0),    # input cap right at IN (pins 3/4) and the EP;
-    # U5 1 mm east of the divider column, so EN and +5V_IN both pass between them
-    ("R46", 108.1, 131.0, 270), ("R47", 108.1, 132.9, 270),  # EN/UVLO divider beside EN (pin 2): EN pads meet
-    ("C9", 110.0, 129.6, 0),              # dVdt, north of pin 1
-    ("R48", 113.4, 131.0, 90), ("C12", 108.8, 127.3, 0),
-    ("U6", 112.5, 121.3, 180), ("L1", 117.2, 121.5, 0),
-    ("C14", 109.6, 120.8, 270),           # + at VIN, - to the GND pour under U6: short loop
-    ("C13", 112.9, 117.9, 0),             # 10 uF bulk north of U6 (west of it runs VBUS from the bridge to D2)
-    ("C17", 117.6, 125.3, 180),           # + under L1 pin 2, - towards U6 GND
-    ("R50", 111.4, 124.9, 0), ("R51", 111.4, 126.2, 0),
-    ("C16", 109.3, 125.5, 90),            # feed-forward pad west of the divider, away from the switch node
-    ("R49", 113.5, 128.4, 0), ("C15", 116.6, 128.4, 0),
-    # USB
-    ("U7", 111.3, 112.5, 0), ("R56", 110.0, 109.2, 0), ("R57", 110.0, 115.8, 0), ("R58", 109.2, 117.6, 0),
-    ("R60", 114.4, 111.55, 0), ("R59", 114.4, 113.45, 0),    # 22 ohm in line with U7's pins 6 and 4
-    ("C22", 116.6, 110.9, 90), ("C21", 116.6, 114.1, 270),   # unfitted 10 pF, on the module side of the 22 ohm
-    # module support, west of its top-left pins
-    ("C18", 116.9, 101.5, 0), ("C19", 118.9, 103.2, 0), ("C20", 119.1, 104.35, 0), ("R54", 116.4, 104.6, 0),
-    # east
-    ("J4", 146.5, 102.2, 0), ("SW1", 155.9, 110.3, 0), ("SW2", 155.9, 116.0, 0),
-    ("J5", 157.4, 121.0, 0),              # spare GPIO east of U4: its pins meet the channel above the buffers
-    ("D3", 150.8, 102.0, 0), ("R62", 150.8, 104.2, 0), ("R52", 141.2, 102.4, 90), ("R53", 142.4, 102.4, 90),
-    ("R61", 142.4, 106.2, 90), ("R55", 141.2, 117.4, 90),
-    # decoupling at pin 14 (top-left) of each buffer, in the gap at its west end
-    ("C6", 119.8, BUF_Y - 1.4, 90), ("C5", 131.3, BUF_Y - 1.4, 90), ("C7", 144.8, BUF_Y - 1.4, 90),
-]
-# row B, at the buffers: 100 kOhm (pad 1 = the _B net, north), the unfitted 220 pF and /MTR0 pull-up pads
-# (0603, a little lower), the output pull-ups 10 kOhm at U4. A 1.3 mm pitch leaves one track between two.
-# Each 100 k / 10 k sits under the buffer input it serves (U3 and U2 inputs 1, 13, 3, 11, 5, 9 run west to east).
-for _ref, _x in (("R27", 121.2), ("R30", 122.5), ("R12", 123.8), ("R15", 125.1), ("R33", 126.4), ("R18", 127.7),
-                 ("R6", 132.7), ("R3", 134.0), ("R21", 135.3), ("R24", 136.6), ("R9", 137.9),
-                 ("R40", 146.2), ("R38", 147.5), ("R34", 148.8), ("R42", 150.1), ("R44", 151.4), ("R36", 152.7)):
-    SOFT.append((_ref, _x, ROW_B, 90))
-for _ref, _x in (("C4", 118.0), ("C2", 129.4), ("C3", 131.0), ("C1", 141.3)):
-    SOFT.append((_ref, _x, ROW_B_0603, 90))
-for _ref, _x in (("R25", 116.3), ("R16", 139.6)):     # the /MTR0 pull-up pads: +5V_A end south, on the rail
-    SOFT.append((_ref, _x, ROW_B_0603, 270))
-SOFT += [
-    # test pads: bus pairs near their parts, power ones in the west
-    # (none in the strip between the module and the buffers: that is the routing channel to the module)
-    ("TP10", 130.75, 127.2, 0), ("TP6", 142.6, 127.8, 0), ("TP8", 142.4, 119.6, 0), ("TP4", 142.4, 121.9, 0),
-    ("TP2", 142.6, 125.3, 0),
-    # connector side: in the strip south of J1, each between two odd (GND) pins, below its own pin
-    ("TP3", pin_x(8) + 1.27, SOUTH_STRIP, 0), ("TP5", pin_x(10) + 1.27, SOUTH_STRIP, 0),
-    ("TP9", pin_x(16) + 1.27, SOUTH_STRIP, 0), ("TP7", pin_x(20) + 1.27, SOUTH_STRIP, 0),
-    ("TP1", pin_x(30) + 1.27, SOUTH_STRIP, 0), ("TP16", pin_x(34) + 1.27, SOUTH_STRIP, 0),
-    ("TP11", 114.0, 126.4, 0), ("TP12", 114.6, 116.0, 0), ("TP13", 112.6, 117.4, 0), ("TP14", 113.9, 101.6, 0),
-    ("TP15", 113.9, 105.3, 0),
-    ("FID1", 102.6, 96.6, 0), ("FID2", 150.9, 106.4, 0), ("FID3", 158.3, SOUTH_STRIP, 0),
-]
+CORRIDORS = corridors()                             # the pass-through tracks' strips in the J1-J6 band
+assert abs(J6_PIN1[1] - (J1_PIN1[1] - SHIFT)) < 1e-9
 
 
 def boxes(fp):
@@ -132,6 +46,17 @@ def boxes(fp):
     return out
 
 
+def pad_boxes(fp):
+    """{rotation: [(x0, y0, x1, y1)]} of the footprint's pads (its copper) around the origin."""
+    out = {}
+    for rot in (0, 90, 180, 270):
+        fp.SetOrientationDegrees(rot)
+        fp.SetPosition(pcbnew.VECTOR2I_MM(0, 0))
+        out[rot] = [tuple(round(pcbnew.ToMM(v), 3) for v in (b.GetLeft(), b.GetTop(), b.GetRight(), b.GetBottom()))
+                    for b in (p.GetBoundingBox() for p in fp.Pads())]
+    return out
+
+
 def is_smd(fp):
     return any(p.GetAttribute() == pcbnew.PAD_ATTRIB_SMD for p in fp.Pads())
 
@@ -140,11 +65,13 @@ def overlaps(a, b):
     return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
 
 
-def legal(ref, box, smd, placed):
+def legal(ref, box, smd, placed, pads=()):
+    if any(overlaps(p, c) for p in pads for c in CORRIDORS):
+        return False
     if ref not in OVERHANG and not (X0 + 0.1 <= box[0] and box[2] <= X1 - 0.1 and Y0 + 0.1 <= box[1]
                                     and box[3] <= Y1 - 0.1):
         return False
-    if smd and overlaps(box, CONNECTOR_ZONE):
+    if smd and (overlaps(box, CONNECTOR_ZONE) or overlaps(box, J6_ZONE)):
         return False
     return not any(overlaps(box, b) for b in placed.values())
 
@@ -161,20 +88,23 @@ def spiral(max_r=4.0, step=0.1):
 
 
 def plan(fps):
-    """{ref: (x, y, rot)} for every footprint, and the list of parts that were moved (ref, distance)."""
+    """{ref: (x, y, rot)} for every footprint, and the list of parts that were moved (ref, distance, rot)."""
+    fixed, soft = table()
     shapes = {r: boxes(fp) for r, fp in fps.items()}
+    coppers = {r: pad_boxes(fp) for r, fp in fps.items()}
     shapes["U1"] = {0: MODULE_BOX}
     placed, where, moved = {}, {}, []
-    for ref, (x, y, rot) in FIXED.items():
+    for ref, (x, y, rot) in fixed.items():
         b = shapes[ref][rot]
         placed[ref] = (x + b[0], y + b[1], x + b[2], y + b[3])
         where[ref] = (x, y, rot)
-    for ref, x, y, rot in SOFT:
+    for ref, x, y, rot in soft:
         smd = is_smd(fps[ref])
         for r in (rot, (rot + 90) % 360):
-            b = shapes[ref][r]
+            b, c = shapes[ref][r], coppers[ref][r]
             spot = next(((x + dx, y + dy) for dx, dy in spiral()
-                         if legal(ref, (x + dx + b[0], y + dy + b[1], x + dx + b[2], y + dy + b[3]), smd, placed)),
+                         if legal(ref, (x + dx + b[0], y + dy + b[1], x + dx + b[2], y + dy + b[3]), smd, placed,
+                                  [(x + dx + q[0], y + dy + q[1], x + dx + q[2], y + dy + q[3]) for q in c])),
                         None)
             if spot:
                 break
@@ -236,28 +166,31 @@ def set_planes(board):
         board.Add(z)
 
 
+def rows_keepout(pin1_y):
+    """The rectangle over a 2x17 header's rows that keeps every track 0.8 mm from its GND row (rev B spec 9,
+    review M6): from the even pads' south edge to 1.75 mm south of the GND row, 1.75 mm past the end pins."""
+    even_y, odd_y = pin1_y - 2.54, pin1_y
+    return (pin_x(1) - 1.75, even_y + 0.85, pin_x(33) + 1.75, odd_y + 1.75)
+
+
 def keepout_areas(where):
-    """[(name, layers, rects, no_vias)]: the track keep-outs the layout review asked for, from the placement."""
+    """[(name, layers, rects, no_vias)]: the track keep-outs of the layout reviews, from the placement."""
     ux, uy, _ = where["U1"]
     lx, ly, _ = where["L1"]
     sx, sy, _ = where["U6"]
     jx, jy, _ = where["J3"]
-    even_y, odd_y = J1_PIN1[1] - 2.54, J1_PIN1[1]
-    rows = (pin_x(1) - 1.6, even_y + 0.85, pin_x(33) + 1.6, odd_y + 0.85)
-    # the connector-side test pads have their stubs cross the rows between two odd pins (TEST PADS in SOFT)
-    notches = sorted(pin_x(n) + 1.27 for n in (8, 10, 16, 20, 30))
-    f_rows, x = [], rows[0]
-    for n in notches:
-        f_rows.append((x, rows[1], n - 0.55, rows[3]))
-        x = n + 0.55
-    f_rows.append((x, rows[1], rows[2], rows[3]))
     return [
-        # LBUS-6: no track between the J1 rows or between its GND pins, where the plug-on socket is soldered;
-        # the test-pad stubs keep their notches on F.Cu
-        ("J1 rows F", (pcbnew.F_Cu,), f_rows, True),
-        ("J1 rows B", (pcbnew.B_Cu,), [rows], True),
+        # rev B spec 9: no track between J1's rows or within 0.8 mm of its GND row, on both layers (it is
+        # hand-soldered, on either side); J6 is a top box header soldered on B.Cu: J1's rule on B.Cu only
+        ("J1 rows F", (pcbnew.F_Cu,), [rows_keepout(J1_PIN1[1])], True),
+        ("J1 rows B", (pcbnew.B_Cu,), [rows_keepout(J1_PIN1[1])], True),
+        ("J6 rows B", (pcbnew.B_Cu,), [rows_keepout(J6_PIN1[1])], True),
         # LESP-1: nothing along the antenna's base line (the module keep-out covers the antenna itself)
         ("antenna edge", (pcbnew.F_Cu, pcbnew.B_Cu), [(ux - 26.0, uy - 6.75, ux + 26.0, uy - 5.85)], False),
+        # rev B spec 9: the lines 1 mm outside the keep-out's sides stay free of tracks for the GND stitching
+        # (tools/pcb_stitch.py places those vias after routing)
+        ("antenna sides", (pcbnew.F_Cu, pcbnew.B_Cu), [(ux - 25.5, Y0, ux - 24.5, uy - 6.75),
+                                                        (ux + 24.5, Y0, ux + 25.5, uy - 6.75)], False),
         # LPWR-3: nothing under the switch node and the inductor on B.Cu, nothing between L1 pads, and a strip
         # north of the switch node for the USB lines
         ("buck B", (pcbnew.B_Cu,), [(sx - 2.1, ly - 2.3, lx + 2.35, ly + 2.3)], False),

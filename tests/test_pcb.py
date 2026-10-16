@@ -12,12 +12,6 @@ def board():
     return pcb.load(ROOT / "FluxDrive.kicad_pcb")
 
 
-def test_outline(board):
-    """Spec 8: at least 56 mm along the connector. 60 x 48 mm plus the 6.5 mm the antenna rests on (O10)."""
-    x0, y0, x1, y1 = pcb.board_extents(board)
-    assert x1 - x0 >= 56.0 and 40.0 <= y1 - y0 <= 55.0
-
-
 def test_connector_along_south_edge(board):
     fps = pcb.footprints(board)
     x0, y0, x1, y1 = pcb.board_extents(board)
@@ -72,23 +66,6 @@ def _pads(board, ref, net=None):
     raise KeyError(ref)
 
 
-def test_buck_away_from_dkrd_and_antenna(board):
-    """Spec 8: the buck (switch node: U6, L1) at least 15 mm from /DKRD and from the antenna (its nearest point, not
-    the board edge: build-rulings minor)."""
-    import math
-    fps = pcb.footprints(board)
-    ux, uy = fps["U1"][0], fps["U1"][1]
-    top, base = uy - 12.8, uy - 6.75                        # the antenna: module body top to the antenna's base line
-    sw = _pads(board, "U6", "/BUCK_SW") + _pads(board, "L1", "/BUCK_SW")
-    dkrd = _pads(board, "J1", "/_DKRD") + _pads(board, "R35", "/_DKRD") + _pads(board, "R35", "/DKRD_D") \
-        + _pads(board, "U4", "/DKRD_D")
-    assert sw and len(dkrd) == 4
-    for sx, sy in sw:
-        assert min(math.dist((sx, sy), d) for d in dkrd) >= 15.0
-        ax, ay = min(max(sx, ux - 9.0), ux + 9.0), min(max(sy, top), base)
-        assert math.dist((sx, sy), (ax, ay)) >= 15.0
-
-
 def _texts(board, layer):
     from tools.netlist import _child, _children
     out = []
@@ -108,21 +85,6 @@ def test_pin1_marked_both_sides(board):
         near = [t for t in _children(board, "gr_text") if _child(t, "layer")[1] == layer and t[1].strip() == "1"
                 and math.dist((float(_child(t, "at")[1]), float(_child(t, "at")[2])), (px, py)) <= 6.0]
         assert near, layer
-
-
-def test_credit_and_revision(board):
-    texts = " ".join(_texts(board, "F.SilkS") + _texts(board, "B.SilkS"))
-    assert "FluxDrive v1 rev A" in texts and "Dimmy (Dimitri Hilverda)" in texts
-
-
-def test_connector_zone_free(board):
-    """Review focus 5: no SMD part in the 54 x 10 mm band the boxed header body and the iron need."""
-    fps = pcb.footprints(board)
-    jx, jy = fps["J1"][0] + 20.32, fps["J1"][1] - 1.27      # centre of the 2x17 pin field
-    for ref, (x, y, rot, layer) in fps.items():
-        if ref in ("J1", "J2") or ref.startswith(("H", "FID", "TP")) or layer != "F.Cu":
-            continue
-        assert not (abs(x - jx) < 27.0 and abs(y - jy) < 5.0), ref
 
 
 def _zones(board):
@@ -155,15 +117,6 @@ def _vias(board, net):
     from tools.netlist import _child, _children
     return [(float(_child(v, "at")[1]), float(_child(v, "at")[2])) for v in _children(board, "via")
             if _child(v, "net")[-1] == net]
-
-
-def test_decoupling_reaches_the_planes(board):
-    """LBUS-2, LPWR-2: every logic-IC ground pin and its 100 nF has its own via to the GND plane close by."""
-    import math
-    gnd = _vias(board, "/GND")
-    for ic, cap in (("U2", "C5"), ("U3", "C6"), ("U4", "C7")):
-        for x, y in _pads(board, ic, "/GND") + _pads(board, cap, "/GND"):
-            assert min(math.dist((x, y), v) for v in gnd) <= 1.6, (ic, cap, x, y)
 
 
 def test_rule_areas(board):
@@ -330,7 +283,8 @@ def test_rule_areas_cover_their_layers(board):
     """Build-rulings minor: every rule area is checked by its layers and its track flag, not by its name only."""
     from tools.netlist import _child, _children
     want = {"J1 rows F": ["F.Cu"], "J1 rows B": ["B.Cu"], "antenna edge": ["F.Cu", "B.Cu"],
-            "module underside": ["F.Cu"], "USB-C body": ["F.Cu"], "buck F": ["F.Cu"], "buck B": ["B.Cu"]}
+            "module underside": ["F.Cu"], "USB-C body": ["F.Cu"], "buck F": ["F.Cu"], "buck B": ["B.Cu"],
+            "J6 rows B": ["B.Cu"], "antenna sides": ["F.Cu", "B.Cu"]}
     areas = [z for z in _children(board, "zone") if _child(z, "keepout") is not None]
     for name, layers in want.items():
         hits = [z for z in areas if (_child(z, "name") or [None, ""])[1].startswith(name)]
@@ -356,3 +310,135 @@ def test_antenna_area_copper_free_on_every_layer(board):
                 assert not (abs(x - ux) < 23.5 and y < base - 0.3), ((_child(z, "net") or ["", ""])[-1], x, y)
     for ref, net, px, py, hw, hh, rot, smd in _pad_shapes(board):
         assert not (abs(px - ux) < 24.0 and py < base), (ref, px, py)
+
+
+REV_A = (100.0, 93.5, 160.0, 148.0)          # rev A's outline (tools/pcb_place.py at 26499dc)
+
+
+def _refs_between(board, net_a, net_b):
+    """Refs of the two-pad parts with one pad on each of the two nets."""
+    from tools.netlist import _child, _children
+    out = []
+    for fp in _children(board, "footprint"):
+        ref = [p[2] for p in _children(fp, "property") if len(p) > 2 and p[1] == "Reference"][0]
+        nets = sorted((_child(pad, "net") or [None, ""])[-1] for pad in _children(fp, "pad"))
+        if len(nets) == 2 and nets == sorted((net_a, net_b)):
+            out.append(ref)
+    return out
+
+
+def test_outline(board):
+    """Rev B spec 9: 60 mm wide; the south edge 2.4 mm north of rev A's (J1 stays over CN11), the north edge at
+    most 20 mm north of rev A's: at most 72.1 mm."""
+    x0, y0, x1, y1 = pcb.board_extents(board)
+    assert abs((x1 - x0) - 60.0) < 0.01
+    assert abs(y1 - (REV_A[3] - 2.4)) < 0.01
+    assert y0 >= REV_A[1] - 20.0 - 0.01 and y1 - y0 <= 72.1 + 0.01
+
+
+def test_j1_stays_and_j6_beside_it(board):
+    """Rev B spec 9: J1 at rev A's place over CN11; J6 17.78 mm north of it, same orientation and side."""
+    fps = pcb.footprints(board)
+    assert fps["J1"][:3] == (113.68, 141.55, 90.0) and fps["J1"][3] == "F.Cu"
+    jx, jy, rot, layer = fps["J6"]
+    assert (jx, rot, layer) == (113.68, 90.0, "F.Cu") and abs(jy - (141.55 - 17.78)) < 0.01
+
+
+def test_connector_zones_free(board):
+    """Review focus 5 of rev A, LCODE-9, rev B spec 9: no SMD pad in the bands J1's and J6's bodies and the iron
+    need (the pin field's centre +-27 x +-5 mm); test pads and jumpers are SMD and count too."""
+    fps = pcb.footprints(board)
+    for conn in ("J1", "J6"):
+        jx, jy = fps[conn][0] + 20.32, fps[conn][1] - 1.27
+        for ref, net, x, y, hw, hh, rot, smd in _pad_shapes(board):
+            if smd and ref not in ("J1", "J6"):
+                assert not (abs(x - jx) < 27.0 and abs(y - jy) < 5.0), (conn, ref, x, y)
+
+
+def test_filter_pads_beside_their_pull_ups(board):
+    """Rev B spec 9: each unfitted 220 pF pad sits on its net after the 100 ohm, within 3 mm of that net's own
+    100 kOhm pull-up (review F14: the resistor with its other pad on +3V3, not the 100 ohm)."""
+    import math
+    pads = _pad_shapes(board)
+    pull = {ref for ref, n, *_ in pads if n == "/+3V3"}
+    for sig in ("STEP", "SEL0", "SEL1", "MTR0"):
+        net = f"/{sig}_B"
+        caps = [(x, y) for ref, n, x, y, *_ in pads if n == net and ref.startswith("C")]
+        res = [(x, y) for ref, n, x, y, *_ in pads if n == net and ref.startswith("R") and ref in pull]
+        assert caps and res, sig
+        assert min(math.dist(c, r) for c in caps for r in res) <= 3.0, sig
+
+
+def test_placement_table_covers_the_design():
+    """Review F4: the placement table names every part of hardware/design.py exactly once, found by its nets (it
+    runs in the system Python: tools/placement.py has no pcbnew)."""
+    import collections
+    import hardware.design as D
+    from tools.placement import table
+    fixed, soft = table()
+    refs = list(fixed) + [r for r, *_ in soft]
+    assert [r for r, c in collections.Counter(refs).items() if c > 1] == []
+    assert set(refs) == {p["ref"] for p in D.PARTS}
+
+
+def test_placement_is_legal(board):
+    """LCODE-1: every footprint where the placement table puts it (a board built by an older table shows up).
+    Courtyards and parts off the board are Task 11 step 4's DRC and the legaliser's; this passes on rev A's
+    board with rev A's table too."""
+    import subprocess
+    r = subprocess.run([r"C:/Program Files/KiCad/10.0/bin/python.exe", str(ROOT / "tools" / "pcb_place.py"),
+                        "--check", str(ROOT / "FluxDrive.kicad_pcb")], capture_output=True, text=True)
+    assert r.returncode == 0 and "0 footprints differ" in r.stdout, r.stdout + r.stderr
+
+
+def test_connector_row_keepouts(board):
+    """Review M6, rev B spec 9: the row keep-outs reach 1.75 mm past the end pins and 1.75 mm south of the GND
+    row (a track centre there is 0.8 mm plus pad radius and half a track from the GND pads): J1 on both layers,
+    J6 on B.Cu; the antenna's side lines stay free for the border's stitching vias."""
+    from tools.placement import J1_PIN1, J6_PIN1, pin_x
+    zones = {name: (lays, bb) for lays, net, rule, name, bb in _zones(board) if rule}
+    for name, layer, pin1_y in (("J1 rows F 1", "F.Cu", J1_PIN1[1]), ("J1 rows B 1", "B.Cu", J1_PIN1[1]),
+                                ("J6 rows B 1", "B.Cu", J6_PIN1[1])):
+        lays, (x0, y0, x1, y1) = zones[name]
+        assert lays == [layer], name
+        want = (pin_x(1) - 1.75, pin1_y - 2.54 + 0.85, pin_x(33) + 1.75, pin1_y + 1.75)
+        assert all(abs(a - b) < 0.01 for a, b in zip((x0, y0, x1, y1), want)), (name, (x0, y0, x1, y1))
+    assert any(n.startswith("antenna sides") for n in zones)
+
+
+def test_buck_away_from_dkrd_and_antenna(board):
+    """Spec 8: the buck (switch node: U6, L1) at least 15 mm from /DKRD and from the antenna (its nearest point, not
+    the board edge: build-rulings minor). Task 1's test, with the 33 ohm found by its nets (refs are not stable in
+    rev B)."""
+    import math
+    fps = pcb.footprints(board)
+    ux, uy = fps["U1"][0], fps["U1"][1]
+    top, base = uy - 12.8, uy - 6.75                        # the antenna: module body top to the antenna's base line
+    sw = _pads(board, "U6", "/BUCK_SW") + _pads(board, "L1", "/BUCK_SW")
+    (r33,) = _refs_between(board, "/DKRD_D", "/_DKRD")
+    dkrd = _pads(board, "J1", "/_DKRD") + _pads(board, r33) + _pads(board, "U4", "/DKRD_D")
+    assert sw and len(dkrd) == 4
+    for sx, sy in sw:
+        assert min(math.dist((sx, sy), d) for d in dkrd) >= 15.0
+        ax, ay = min(max(sx, ux - 9.0), ux + 9.0), min(max(sy, top), base)
+        assert math.dist((sx, sy), (ax, ay)) >= 15.0
+
+
+def test_credit_and_revision(board):
+    texts = " ".join(_texts(board, "F.SilkS") + _texts(board, "B.SilkS"))
+    assert "FluxDrive v1 rev B" in texts and "Dimmy (Dimitri Hilverda)" in texts
+
+
+def test_decoupling_reaches_the_planes(board):
+    """LBUS-2, LPWR-2: every buffer's ground pin and its 100 nF (the capacitor whose +3V3 pad is nearest the
+    buffer's supply pin, found by net) have a via to the GND plane close by."""
+    import math
+    gnd = _vias(board, "/GND")
+    pads = _pad_shapes(board)
+    on = lambda ref, net: [(x, y) for r, n, x, y, *_ in pads if r == ref and n == net]
+    caps = {r for r, n, *_ in pads if r.startswith("C") and n == "/+3V3"} & {r for r, n, *_ in pads if n == "/GND"}
+    for ic in ("U2", "U3", "U4"):
+        vcc = on(ic, "/+3V3")
+        cap = min(caps, key=lambda c: min(math.dist(p, v) for p in on(c, "/+3V3") for v in vcc))
+        for x, y in on(ic, "/GND") + on(cap, "/GND"):
+            assert min(math.dist((x, y), v) for v in gnd) <= 1.6, (ic, cap, x, y)
