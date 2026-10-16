@@ -193,6 +193,11 @@ def generate(title, blocks, parts, pwr_flags, project="FluxDrive"):
     root_uuid = str(uid(f"root:{project}"))
     lib_syms, items = {}, []
     parts = copy.deepcopy(parts)
+    seen = set()
+    for p in parts:                                # a repeated ref merges two parts in the netlist (RCODE-1)
+        if p["ref"] in seen:
+            raise ValueError(f"{p['ref']}: ref used more than once")
+        seen.add(p["ref"])
     for i, net in enumerate(pwr_flags, 1):
         parts.append(dict(ref=f"#FLG{i:02d}", lib="power:PWR_FLAG", value="PWR_FLAG", pins={"1": net},
                           block=blocks[-1], in_bom=False, on_board=False, rot=0))

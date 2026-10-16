@@ -13,6 +13,9 @@ no logic level (None), as a divider between two rails has (AMIGA_PWR, EFUSE_EN, 
 what drives its far net apart from that resistor itself, so a net never holds its own level by its own echo through a
 series resistor (a released open-drain output does not keep its bus low). Capacitors and diodes are open (the settled
 state). Parts marked DNP are left out unless their ref is in `fit`.
+A live gate with an input of no level may drive its output either way, so its output gets no level at the gate's own
+strength (STRONG, or OD for an open-drain gate): a floating input shows downstream as None instead of reading as a
+released output or as the output's pull (Task 9 review RBUS-8).
 A Conflict is raised only if it is still there once the nets have settled: while the nets are settling, a net two
 drivers disagree on has no level for the gates and resistors it feeds, and the next round may resolve it.
 A name the netlist does not have (a source net, a bridged, fit or state ref) raises KeyError, so a misspelled name
@@ -122,6 +125,8 @@ def evaluate(nl, sources, state=None, bridged=None, fit=(), max_iter=80):
             return None, 0
         top = max(c[0] for c in cands)
         vals = {c[1] for c in cands if c[0] == top}
+        if None in vals:                                    # a strongest driver of no level: the net has none
+            return None, top
         if len(vals) > 1:
             return (None, 0) if top <= PULL else ("X", top)
         return vals.pop(), top
@@ -152,10 +157,10 @@ def evaluate(nl, sources, state=None, bridged=None, fit=(), max_iter=80):
                 if out not in p:
                     continue
                 iv = [val[find(p[i])] if i in p else None for i in ins]
-                if None in iv or "X" in iv:
-                    continue
                 o = find(p[out])
-                if kind == "inv":
+                if None in iv or "X" in iv:                 # it may drive either way: its output has no level
+                    drv[o].append((OD if kind.startswith("od") else STRONG, None, -1))
+                elif kind == "inv":
                     drv[o].append((STRONG, 1 - iv[0], -1))
                 elif kind == "or":
                     drv[o].append((STRONG, iv[0] | iv[1], -1))
@@ -179,7 +184,7 @@ def evaluate(nl, sources, state=None, bridged=None, fit=(), max_iter=80):
         new, news = {}, {}
         for k in val:
             new[k], news[k] = settle(drv.get(k, []))
-        drv = {k: sorted(v) for k, v in drv.items()}
+        drv = {k: sorted(v, key=lambda c: (c[0], c[1] is None, c[1] or 0, c[2])) for k, v in drv.items()}
         if new == val and news == stren and drv == prev:
             for k in val:
                 if val[k] == "X":

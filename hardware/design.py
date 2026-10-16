@@ -1,5 +1,8 @@
-"""FluxDrive v1: every part and every pin (spec v0.2). tools/sch_gen.py draws FluxDrive.kicad_sch from this.
-The tests read the exported netlist, not this file. Refs are numbered in the order parts are added."""
+"""FluxDrive v1 rev B: every part and every pin (rev B spec v0.4). tools/sch_gen.py draws FluxDrive.kicad_sch from
+this. Most tests read the netlist exported from that file; tests/conftest.py, tests/test_sch_gen.py and the layout's
+ref_of() import PARTS. R, C and TP refs are numbered in the order R(), C() and the test-pad loop add them, every other
+ref is written out, and the layout finds R, C and TP by their nets. Each IC's own supply capacitor is the next C()
+after its part() (for U5 and U9 their 1 uF C_IN; U6 and U7 have none), which ref_of(after=IC) relies on."""
 import itertools
 
 TITLE = "FluxDrive v1 rev B"
@@ -9,12 +12,12 @@ R0402 = "Resistor_SMD:R_0402_1005Metric"
 R0603, C0603 = "Resistor_SMD:R_0603_1608Metric", "Capacitor_SMD:C_0603_1608Metric"   # unfitted: hand-solderable
 RES_LCSC = {"22": "C25092", "33": "C25105", "100": "C25076", "470": "C25117", "1K": "C11702",
             "1K37": "C423239", "1K5": "C25867", "2K2": "C25879",
-            "4K7": "C25900", "5K1": "C25905", "10K": "C25744", "15K": "C25756", "22K": "C25768", "100K": "C25741"}
+            "4K7": "C25900", "5K1": "C25905", "10K": "C25744", "22K": "C25768", "100K": "C25741"}
 CAPS = {"100nF": ("Capacitor_SMD:C_0402_1005Metric", "C1525"), "1uF": ("Capacitor_SMD:C_0402_1005Metric", "C52923"),
         "22nF": ("Capacitor_SMD:C_0402_1005Metric", "C1532"), "10uF": ("Capacitor_SMD:C_0603_1608Metric", "C19702"),
         "22uF": ("Capacitor_SMD:C_0805_2012Metric", "C45783"), "47uF": ("Capacitor_SMD:C_1206_3216Metric", "C96123")}
 PARTS = []
-_n = {k: itertools.count(1) for k in ("R", "C", "D", "TP")}
+_n = {k: itertools.count(1) for k in ("R", "C", "TP")}
 SOIC14 = "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
 
 
@@ -104,7 +107,8 @@ for sig, conn, gpio, bufr, pin_in, pin_out, orc, (a, b, y) in OUTPUTS:
     pins_of[orc].update({str(a): f"{sig}_N", str(b): "SEL_FD_N", str(y): f"{sig}_G"})
     pins_of[bufr].update({str(pin_in): f"{sig}_G", str(pin_out): f"{sig}_D"})
     GPIO_NET[gpio] = f"{sig}_N"
-part("U4", "74xx:74LCX07", "74LVC07A", SOIC14, pins_of["U4"], B, lcsc="C6049")
+part("U4", "74xx:74LCX07", "74LVC07A", SOIC14, pins_of["U4"], B,      # Diodes 74LVC07AS14-13, SO-14
+     lcsc="C176925")                                                     # (C6049 had no stock, review RPCB-1)
 C("100nF", "+3V3", "GND", B)
 part("U17", "74xGxx:74LVC2G07", "SN74LVC2G07", "Package_TO_SOT_SMD:SOT-23-6", pins_of["U17"], B, lcsc="C37708")
 C("100nF", "+3V3", "GND", B)
@@ -131,7 +135,8 @@ part("U9", "FluxDrive:TPS259531", "TPS259531", "Package_SON:Texas_DSG0008A_WSON-
       "7": "DRV_ILM", "8": "GND", "9": "GND"}, P, lcsc="C2155674")     # the real drive's eFuse (rev B §6)
 C("1uF", "+5V_IN", "GND", P)                   # U9's own C_IN (TI SLVSE57C Figure 58, section 11.1)
 C("22nF", "DRV_DVDT", "GND", P)
-R("1K37", "DRV_ILM", "GND", P)                 # 2000/1370 + 0.04 = 1.50 A (rev B §6); R9 may change it
+R("1K37", "DRV_ILM", "GND", P)                 # 2000/1370 + 0.04 = 1.50 A (rev B §6); worst case 1.37 A. R9 may
+                                               # lower R_ILM (a higher limit), never raise it: >= 1.30 A (RPWR-1)
 C("22uF", "+5V_DRIVE", "GND", P)
 C("100nF", "+5V_DRIVE", "GND", P)
 part("J8", "FluxDrive:171825-4", "Drive power", "FluxDrive:171825-4",
@@ -205,7 +210,7 @@ R("1K", "LED", "LED_A", F)
 part("D3", "Device:LED", "LED red", "LED_SMD:LED_0603_1608Metric", {"1": "GND", "2": "LED_A"}, F, lcsc="C2286")
 for net in ("_DKRD", "DKRD_N", "_INDEX", "INDEX_N", "_SEL0", "SEL0", "_STEP", "STEP", "_MTR0", "MTR0",
             "+5V_A", "V5SYS", "VBUS", "+3V3", "ESP_EN", "GND",
-            "SEL_FD", "REAL_SEL", "REAL_MTR", "DF0_STATE", "DF1_STATE", "MODE_CLK"):
+            "SEL_FD", "REAL_SEL", "REAL_MTR", "DF0_FD", "DF1_EN", "MODE_CLK"):   # mode bits: latch side (RESP-1)
     part(f"TP{next(_n['TP'])}", "Connector:TestPoint", net, "TestPoint:TestPoint_Pad_D1.0mm", {"1": net}, F,
          in_bom=False)
 for i in (1, 2):
@@ -219,7 +224,7 @@ G1157 = ("FluxDrive:74LVC1G157", "74LVC1G157", "Package_TO_SOT_SMD:SOT-363_SC-70
 
 def mux(ref, s, i0, i1, y, dnp=False):
     part(ref, G1157[0], G1157[1], G1157[2], {"6": s, "3": i0, "1": i1, "4": y, "2": "GND", "5": "+3V3"}, G,
-         lcsc="" if dnp else "C135822", dnp=dnp, in_bom=not dnp)
+         lcsc="C135822", dnp=dnp, in_bom=not dnp)              # a DNP part keeps its number: the mode-4 kit list
     C("100nF", "+3V3", "GND", G, dnp=dnp)
 
 
@@ -291,6 +296,8 @@ part("U22", "74xGxx:74LVC1G175", "SN74LVC1G175", "Package_TO_SOT_SMD:SOT-23-6", 
      dnp=True, in_bom=False)
 C("100nF", "+3V3", "GND", G, dnp=True)
 part("U23", "74xGxx:74LVC1G38", "SN74LVC1G38", "Package_TO_SOT_SMD:SOT-23-5",
-     {"1": "M4_SEL_Q", "2": "M4_MTR_N", "4": "ID_D", "3": "GND", "5": "+3V3"}, G, dnp=True, in_bom=False)
+     {"1": "M4_SEL_Q", "2": "M4_MTR_N", "4": "ID_D", "3": "GND", "5": "+3V3"}, G, lcsc="C2867613", dnp=True,
+     in_bom=False)
 C("100nF", "+3V3", "GND", G, dnp=True)
 R("33", "ID_D", "_RDY", G, dnp=True)                            # the DD ID for the real drive as DF1
+R("100K", "M4_SEL_Q", "GND", G)               # fitted: U14 I1 keeps a level with JP3 on 2-3 and U21 missing (RBUS-1)

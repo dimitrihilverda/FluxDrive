@@ -109,7 +109,8 @@ def test_mode4_parts_prepared_not_fitted(nl):
     assert (nl.net_of("U21", 6), nl.net_of("U21", 3), nl.net_of("U21", 1), nl.net_of("U21", 4)) == \
         ("DF0_FD", "GND", "SEL1_EN", "M4_SEL_Q")
     assert value(nl, "U22") == "SN74LVC1G175"
-    assert nl.components["U22"]["fields"].get("LCSC") == "C128412"          # spec §4.9: the kit's number
+    lcsc = {u: nl.components[u]["fields"].get("LCSC") for u in ("U21", "U22", "U23")}
+    assert lcsc == {"U21": "C135822", "U22": "C128412", "U23": "C2867613"}  # the kit's numbers (review RPCB-6)
     assert [nl.net_of("U22", p) for p in (1, 3, 6, 4)] == ["SEL1", "M4_MOTOR", "DF1_EN", "M4_MTR_Q"]
     assert {nl.net_of("U23", 1), nl.net_of("U23", 2)} == {"M4_SEL_Q", "M4_MTR_N"} and nl.net_of("U23", 4) == "ID_D"
     from tests.fd import dnp_between
@@ -117,9 +118,18 @@ def test_mode4_parts_prepared_not_fitted(nl):
     assert nl.net_of("J10", 1) == "MTRX"
 
 
+def test_mode4_kit_values(nl):
+    """Spec §4.7 (Task 9 review RBUS-3): the ID gate's 33 Ω, the MTRX wire's 4k7 pull-up and its 100 Ω. The evaluator
+    takes any series resistor up to 1 kΩ as a path, so only these asserts see a wrong value."""
+    from tests.fd import dnp_between
+    for a, b, want in (("ID_D", "_RDY", "33"), ("MTRX", "+5V_A", "4K7"), ("MTRX", "MTRX_B", "100")):
+        assert [value(nl, r) for r in dnp_between(nl, a, b, "R")] == [want], (a, b)
+
+
 def test_reset_wire(nl):
     assert nl.net_of("J9", 1) == "KBRESET"
     assert not pulls(nl, "KBRESET")                              # no pull-up on the pad: RP501 on the motherboard
+    assert [value(nl, r) for r in parts_between(nl, "KBRESET", "RST_B")] == ["100"]      # into U3 pin 1 (§4.8)
     assert value(nl, "U19") == "SN74LVC1G06"
     assert (nl.net_of("U19", 2), nl.net_of("U19", 4)) == ("RST_REQ", "KBRESET")
     assert pulls(nl, "RST_REQ") == [("10K", "GND")]
@@ -266,6 +276,25 @@ def test_outputs_follow_the_firmware_only_when_selected(nl, pattern):
             assert v[conn] == (0 if pattern >> i & 1 and sel_fd else 1), (sig, df0, df1, sel0, sel1)
 
 
+def test_strap_pins_never_active(nl):
+    """Spec §4.4 (Task 9 review RBUS-7): J6.6, 12 and 14 stay inactive in every mode and bus state, not only at
+    power-on, so a drive strapped DS1-DS3 never answers next to FluxDrive."""
+    for df0, df1, sel0, sel1, mtr0 in itertools.product((0, 1), repeat=5):
+        v = evaluate(nl, amiga(sel0, sel1, mtr0), state={("U8", "A"): df0, ("U8", "B"): df1})
+        for net in ("J6_PIN6", "J6_PIN12", "J6_PIN14"):
+            assert v[net] == 1, (net, df0, df1, sel0, sel1, mtr0)
+
+
+def test_reset_wire_input(nl):
+    """Spec §4.8 (Task 9 review RBUS-4): RST_ACT is active while _KBRESET is low, and idles without the wire."""
+    for kbreset, want in (((0, OD), 1), ((1, PULL), 0), (None, 0)):          # None: no wire on J9
+        src = amiga(0, 0, 0)
+        src.pop("KBRESET")
+        if kbreset:
+            src["KBRESET"] = kbreset
+        assert evaluate(nl, src)["RST_ACT_IO"] == want, kbreset
+
+
 class Board:
     """Steps the flip-flops through events (rev B spec §10.1, second test). Their pins are read from the netlist:
     after each event a low preset sets Q, a low clear clears it, and otherwise a rising clock takes D as it was just
@@ -403,6 +432,39 @@ def test_mode1_with_mode4_fitted_keeps_the_real_drive_still(nl):
         assert b.v["J6_MTR"] == 1 and b.v["J6_SEL"] == 1 and b.v["_RDY"] == 1
         b.set(_SEL1=None)
         b.set(MTRX=None)
+
+
+def test_mode4_latch_sequence(nl):
+    """Spec §4.7 (Task 9 review RBUS-2): mode 4 latches the raw motor bit on the /SEL1 falling edge, keeps it between
+    accesses, shows the DD ID on /RDY only with the motor latched off, and J7 on REAL hands J6 back to /SEL0, /MTR0."""
+    b = Board(nl, m4=True, stored=(1, 1))
+    b.set(MTRX=(0, OD))                                    # a DF1 motor-on bit, then the select that latches it
+    b.set(_SEL1=(0, OD))
+    assert (b.v["J6_MTR"], b.v["J6_SEL"], b.v["_RDY"]) == (0, 0, 1)        # motor on, selected, no ID
+    b.set(_SEL1=None)
+    assert (b.v["J6_MTR"], b.v["J6_SEL"]) == (0, 1)                        # deselected, the motor runs on
+    b.set(_SEL1=(0, OD))
+    b.set(_SEL1=None)
+    assert b.v["J6_MTR"] == 0                                              # a second access keeps it on
+    b.set(MTRX=None)
+    assert b.v["J6_MTR"] == 0                                              # motor bit off, no edge yet: still on
+    b.set(_SEL1=(0, OD))
+    assert (b.v["J6_MTR"], b.v["J6_SEL"], b.v["_RDY"]) == (1, 0, 0)        # latched off: the DD ID on /RDY
+    b.set(_SEL1=None)
+    b.set(MTRX=(0, OD))
+    b.set(_SEL1=(0, OD))
+    b.throw("REAL")                                                        # mode 3: DF1_EN kept, DF0 the real drive
+    assert (b.v["DF0_FD"], b.v["DF1_EN"], b.v["J6_SEL"], b.v["J6_MTR"]) == (0, 1, 1, 1)
+
+
+def test_partial_mode4_fit_keeps_the_real_drive_off(nl):
+    """Task 9 review RBUS-1, spec §4.7: JP3/JP4 moved to the mode-4 side before U21 is fitted, or with U21's output not
+    soldered: M4_SEL_Q must not float, or the real drive answers DF0 next to FluxDrive (in mode 1 and with DF1 on)."""
+    fit = fit_mode4(nl) - {"U21"}
+    bridged = {"JP3": [("2", "3")], "JP4": [("2", "3")]}
+    for df1, sel0, sel1 in itertools.product((0, 1), repeat=3):
+        v = evaluate(nl, amiga(sel0, sel1, 0), state={("U8", "A"): 1, ("U8", "B"): df1}, bridged=bridged, fit=fit)
+        assert v["REAL_SEL"] == 0 and v["J6_SEL"] == 1, (df1, sel0, sel1)
 
 
 def test_power_on_defaults(nl):

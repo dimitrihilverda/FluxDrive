@@ -102,6 +102,8 @@ def test_buffers_on_3v3(nl):
         assert nl.net_of(u, 14) == "+3V3" and nl.net_of(u, 7) == "GND", u
     assert nl.net_of("U17", 5) == "+3V3" and nl.net_of("U17", 2) == "GND"
     assert nl.components["U4"]["value"] == "74LVC07A" and nl.components["U17"]["value"] == "SN74LVC2G07"
+    assert nl.components["U4"]["fields"].get("LCSC") == "C176925"          # Diodes 74LVC07AS14-13 (Task 9 RPCB-1)
+    assert nl.components["U4"]["footprint"] == "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
     assert nl.net_of("U4", 9) == nl.net_of("U4", 11) == "+3V3"                        # spare inputs tied
     assert nl.net_of("U11", 12) == nl.net_of("U11", 13) == "GND"                     # spare OR tied
     assert {nl.net_of("U11", 9), nl.net_of("U11", 10)} == {"SEL0", "SEL1"} and nl.net_of("U11", 8) == "BUSY"

@@ -16642,7 +16642,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C6049"
+		(property "LCSC" "C176925"
 			(at 429.26 181.61 0)
 			(hide yes)
 			(effects
@@ -16731,7 +16731,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C6049"
+		(property "LCSC" "C176925"
 			(at 472.44 181.61 0)
 			(hide yes)
 			(effects
@@ -16820,7 +16820,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C6049"
+		(property "LCSC" "C176925"
 			(at 511.81 181.61 0)
 			(hide yes)
 			(effects
@@ -16909,7 +16909,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C6049"
+		(property "LCSC" "C176925"
 			(at 551.18 181.61 0)
 			(hide yes)
 			(effects
@@ -16992,7 +16992,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C6049"
+		(property "LCSC" "C176925"
 			(at 584.2 181.61 0)
 			(hide yes)
 			(effects
@@ -17075,7 +17075,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C6049"
+		(property "LCSC" "C176925"
 			(at 619.76 181.61 0)
 			(hide yes)
 			(effects
@@ -17164,7 +17164,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C6049"
+		(property "LCSC" "C176925"
 			(at 645.16 200.66 0)
 			(hide yes)
 			(effects
@@ -25927,7 +25927,7 @@
 				)
 			)
 		)
-		(property "Value" "DF0_STATE"
+		(property "Value" "DF0_FD"
 			(at 360.68 588.01 0)
 			(effects
 				(font
@@ -25965,7 +25965,7 @@
 			)
 		)
 	)
-	(label "DF0_STATE"
+	(label "DF0_FD"
 		(at 360.68 582.93 270)
 		(effects
 			(font
@@ -25994,7 +25994,7 @@
 				)
 			)
 		)
-		(property "Value" "DF1_STATE"
+		(property "Value" "DF1_EN"
 			(at 370.84 588.01 0)
 			(effects
 				(font
@@ -26032,7 +26032,7 @@
 			)
 		)
 	)
-	(label "DF1_STATE"
+	(label "DF1_EN"
 		(at 370.84 582.93 270)
 		(effects
 			(font
@@ -32475,6 +32475,15 @@
 				)
 			)
 		)
+		(property "LCSC" "C135822"
+			(at 918.21 712.47 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "cd8d4167-ed54-5256-9686-deade3db703b")
 		)
@@ -32908,6 +32917,15 @@
 				)
 			)
 		)
+		(property "LCSC" "C2867613"
+			(at 1084.58 715.01 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "17b2fd03-4c64-54c5-b3b6-9dfaea7becc2")
 		)
@@ -33143,8 +33161,97 @@
 		(uuid "3573be1b-40ce-5958-8a19-cc68fbd19d4b")
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 36.83 764.54 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "28b9a090-242d-53e1-b3ff-170008a9ec68")
+		(property "Reference" "R85"
+			(at 36.83 759.46 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100K"
+			(at 36.83 769.62 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 36.83 764.54 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 36.83 764.54 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C25741"
+			(at 36.83 764.54 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "4a63bf5d-9b7a-5ab3-8bc2-b54e7db8be3a")
+		)
+		(pin "2"
+			(uuid "e30836ad-293e-5af7-93c2-858f24bfaf96")
+		)
+		(instances
+			(project "FluxDrive"
+				(path "/d01aa0ea-135a-52e5-ab1a-3ab06ba49a4e"
+					(reference "R85")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "M4_SEL_Q"
+		(at 33.02 764.54 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "4518e01a-a2f0-5f81-9574-1535c2d56588")
+	)
+	(label "GND"
+		(at 40.64 764.54 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8cca14c0-3840-525b-b0f1-05dec83fb894")
+	)
+	(symbol
 		(lib_id "power:PWR_FLAG")
-		(at 22.86 764.54 0)
+		(at 55.88 764.54 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -33154,7 +33261,7 @@
 		(dnp no)
 		(uuid "7e3db2e4-9e93-5f06-ab7b-09f9d0f5968f")
 		(property "Reference" "#FLG01"
-			(at 22.86 759.46 0)
+			(at 55.88 759.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -33162,7 +33269,7 @@
 			)
 		)
 		(property "Value" "PWR_FLAG"
-			(at 22.86 769.62 0)
+			(at 55.88 769.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -33170,7 +33277,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 22.86 764.54 0)
+			(at 55.88 764.54 0)
 			(hide yes)
 			(effects
 				(font
@@ -33179,7 +33286,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 22.86 764.54 0)
+			(at 55.88 764.54 0)
 			(hide yes)
 			(effects
 				(font
@@ -33200,7 +33307,7 @@
 		)
 	)
 	(label "GND"
-		(at 22.86 764.54 270)
+		(at 55.88 764.54 270)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -33211,7 +33318,7 @@
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
-		(at 33.02 764.54 0)
+		(at 66.04 764.54 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -33221,7 +33328,7 @@
 		(dnp no)
 		(uuid "facf845d-f0f2-543a-99b4-e5a80caf0ddc")
 		(property "Reference" "#FLG02"
-			(at 33.02 759.46 0)
+			(at 66.04 759.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -33229,7 +33336,7 @@
 			)
 		)
 		(property "Value" "PWR_FLAG"
-			(at 33.02 769.62 0)
+			(at 66.04 769.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -33237,7 +33344,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 33.02 764.54 0)
+			(at 66.04 764.54 0)
 			(hide yes)
 			(effects
 				(font
@@ -33246,7 +33353,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 33.02 764.54 0)
+			(at 66.04 764.54 0)
 			(hide yes)
 			(effects
 				(font
@@ -33267,7 +33374,7 @@
 		)
 	)
 	(label "+3V3"
-		(at 33.02 764.54 270)
+		(at 66.04 764.54 270)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -33278,7 +33385,7 @@
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
-		(at 43.18 764.54 0)
+		(at 76.2 764.54 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -33288,7 +33395,7 @@
 		(dnp no)
 		(uuid "5d5cb605-32f1-51d4-86d1-a1189b7ee9a0")
 		(property "Reference" "#FLG03"
-			(at 43.18 759.46 0)
+			(at 76.2 759.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -33296,7 +33403,7 @@
 			)
 		)
 		(property "Value" "PWR_FLAG"
-			(at 43.18 769.62 0)
+			(at 76.2 769.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -33304,7 +33411,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 43.18 764.54 0)
+			(at 76.2 764.54 0)
 			(hide yes)
 			(effects
 				(font
@@ -33313,7 +33420,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 43.18 764.54 0)
+			(at 76.2 764.54 0)
 			(hide yes)
 			(effects
 				(font
@@ -33334,7 +33441,7 @@
 		)
 	)
 	(label "+5V_IN"
-		(at 43.18 764.54 270)
+		(at 76.2 764.54 270)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -33345,7 +33452,7 @@
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
-		(at 53.34 764.54 0)
+		(at 86.36 764.54 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -33355,7 +33462,7 @@
 		(dnp no)
 		(uuid "8edac18c-1d73-56a3-bcc8-6019702b5c4a")
 		(property "Reference" "#FLG04"
-			(at 53.34 759.46 0)
+			(at 86.36 759.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -33363,7 +33470,7 @@
 			)
 		)
 		(property "Value" "PWR_FLAG"
-			(at 53.34 769.62 0)
+			(at 86.36 769.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -33371,7 +33478,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 53.34 764.54 0)
+			(at 86.36 764.54 0)
 			(hide yes)
 			(effects
 				(font
@@ -33380,7 +33487,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 53.34 764.54 0)
+			(at 86.36 764.54 0)
 			(hide yes)
 			(effects
 				(font
@@ -33401,7 +33508,7 @@
 		)
 	)
 	(label "V5SYS"
-		(at 53.34 764.54 270)
+		(at 86.36 764.54 270)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -33412,7 +33519,7 @@
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
-		(at 63.5 764.54 0)
+		(at 96.52 764.54 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -33422,7 +33529,7 @@
 		(dnp no)
 		(uuid "3e71781d-08b3-53bd-8a42-027e46f6f807")
 		(property "Reference" "#FLG05"
-			(at 63.5 759.46 0)
+			(at 96.52 759.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -33430,7 +33537,7 @@
 			)
 		)
 		(property "Value" "PWR_FLAG"
-			(at 63.5 769.62 0)
+			(at 96.52 769.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -33438,7 +33545,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 63.5 764.54 0)
+			(at 96.52 764.54 0)
 			(hide yes)
 			(effects
 				(font
@@ -33447,7 +33554,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 63.5 764.54 0)
+			(at 96.52 764.54 0)
 			(hide yes)
 			(effects
 				(font
@@ -33468,7 +33575,7 @@
 		)
 	)
 	(label "VBUS"
-		(at 63.5 764.54 270)
+		(at 96.52 764.54 270)
 		(effects
 			(font
 				(size 1.27 1.27)

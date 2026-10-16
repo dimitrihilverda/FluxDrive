@@ -121,8 +121,13 @@ def test_drive_behind_its_own_efuse(nl):
     assert nl.net_of("U9", 3) == nl.net_of("U9", 4) == "+5V_IN" and nl.net_of("U9", 5) == "+5V_DRIVE"
     assert nl.net_of("U9", 2) == nl.net_of("U5", 2) == "EFUSE_EN"                           # one UVLO divider
     assert [nl.net_of("J8", p) for p in (1, 2, 3, 4)] == ["+5V_DRIVE", "GND", "GND", "+12V"]
-    ilim = 2000 / r(nl, "DRV_ILM", "GND") + 0.04                                            # TI SLVSE57C Eq. 4
-    assert 1.4 <= ilim <= 1.6, ilim                                                         # R9 may move it
+    r_ilm = r(nl, "DRV_ILM", "GND")
+    ilim = 2000 / r_ilm + 0.04                                                              # TI SLVSE57C Eq. 4
+    worst = (2000 / (r_ilm * 1.01) + 0.04) * 0.925                                          # 1 % R, -7.5 % limit
+    assert worst >= 1.30, worst          # spindle start + seek of a +5 V-only drive: 1.25 A (TEAC §9.2(2), RPWR-1)
+    assert ilim <= 1.6, ilim             # R9 may raise the limit, never lower it; a higher one moves this bound
+    c_in = [nl.components[c]["value"] for c in parts_between(nl, "+5V_IN", "GND", "C")]
+    assert sorted(c_in) == ["1uF", "1uF"]                                   # U5's and U9's own C_IN (RPWR-6)
     caps = [nl.components[c]["value"] for c in parts_between(nl, "+5V_DRIVE", "GND", "C")]
     assert sorted(caps) == ["100nF", "22uF"]
     assert [nl.components[c]["value"] for c in parts_between(nl, "DRV_DVDT", "GND", "C")] == ["22nF"]

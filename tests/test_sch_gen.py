@@ -76,6 +76,16 @@ def test_pin_assigned_twice_is_an_error():
         sch_gen.generate("t", ["A. test"], parts, [])
 
 
+def test_duplicate_ref_is_an_error():
+    """RCODE-1: two parts with one ref merge into one component in the netlist, and ERC says nothing."""
+    import copy
+    import tests.fixtures.tiny_design as d
+    parts = copy.deepcopy(d.PARTS)
+    parts.append(dict(next(p for p in parts if p["ref"] == "R2"), ref="R1"))
+    with pytest.raises(ValueError, match="R1.*more than once"):
+        sch_gen.generate("t", ["A. test"], parts, [])
+
+
 TEST_LIB = """(kicad_symbol_lib
   (symbol "Dual" (property "Reference" "U" (at 0 0 0)) (property "Value" "Dual" (at 0 0 0))
     (property "Footprint" "" (at 0 0 0))

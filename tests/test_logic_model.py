@@ -77,6 +77,19 @@ def test_dnp_parts_are_open_unless_fitted():
     assert evaluate(nl, {}, fit={"R1"})["Y"] == 1
 
 
+def test_floating_gate_input_gives_no_level():
+    """RBUS-8: a gate whose input floats may drive its output either way, so the output has no level, and a check
+    downstream fails instead of reading an open-drain output as released (or a pull as the gate's answer)."""
+    nl = nl_of([("U1", "SN74LVC1G06", {"2": "IN", "4": "OUT", "3": "GND", "5": "+3V3"}, True),
+                ("R1", "4K7", {"1": "OUT", "2": "+5V_A"}, True)])
+    assert evaluate(nl, {})["OUT"] is None                                # input floats: not "released"
+    assert evaluate(nl, {"IN": (0, STRONG)})["OUT"] == 1
+    assert evaluate(nl, {"IN": (1, STRONG)})["OUT"] == 0
+    nl = nl_of([("U1", "74LVC14A", {"1": "A", "2": "Y", "7": "GND", "14": "+3V3"}, True),
+                ("R1", "10K", {"1": "Y", "2": "GND"}, True)])
+    assert evaluate(nl, {})["Y"] is None                                  # push-pull: the pull-down is not its answer
+
+
 def test_divider_between_rails_is_no_logic_level():
     """AMIGA_PWR, EFUSE_EN and BUCK_FB are dividers between two rails: an analog level (None), not a Conflict."""
     nl = nl_of([("R1", "1K", {"1": "+5V_A", "2": "MID"}, True), ("R2", "1K5", {"1": "MID", "2": "GND"}, True)])
