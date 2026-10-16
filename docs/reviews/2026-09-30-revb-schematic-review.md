@@ -68,7 +68,7 @@ design and fails on the named mutant ("coverage"; the mutants are in "How the fi
 | RBUS-5 | minor | A drive that trips U9 (auto-retry, FLT unconnected) is an unpowered load on the shared lines; /DKWE then reads as a write gate. | Spec §8: unpowered-drive detection and a write guard (write only on a /DKWE falling edge while selected with flux on /DKWD; /DKWE low while deselected or longer than a revolution is a bus fault). §6 notes U9's FLT. README item. No FLT pad (no free GPIO). | spec §6, §8 |
 | RBUS-6 | minor | The reset wire has no filter and §8 sets no minimum RST_ACT width. | Spec §8: RST_ACT counts only after reading high continuously for at least 10 ms. No hardware change. | spec §8 |
 | RBUS-7 | nit | J6.6, 12 and 14 are checked only at power-on; a stray path from /SEL1 to J6.12 passes. | Fixed (A4): `test_strap_pins_never_active` (every mode bit × SEL0, SEL1, MTR0). Coverage: fails on both strap-pin mutants. | `tests/test_swap.py` |
-| RBUS-8 | nit | The evaluator reads a floating input in front of an open-drain gate as "released". | Fixed (A5): a live gate with an input of no level gives its output no level at its own strength, so a downstream assert fails. `test_floating_gate_input_gives_no_level`: RED at 329c6e9 (the output read 1). No existing test failed under the stricter evaluator, so none hides a floating input. | `tests/logic.py`, `tests/test_logic_model.py` |
+| RBUS-8 | nit | The evaluator reads a floating input in front of an open-drain gate as "released". | Fixed (A5, in two steps). A live gate with an input of no level gives its output no level at its own strength (U18 and U19 drive their pin directly, so the pin reads None); `test_floating_gate_input_gives_no_level`: RED at 329c6e9 (the output read 1). The task review found that U20 and U23 reach /CHNG and /RDY through 33 Ω, where the evaluator dropped the no level and the bus still read 1 (released): in fix round 1 the no level goes on across a series resistor of at most 1 kΩ (across a larger one the near net keeps its own pull); `test_no_level_passes_across_a_series_resistor`: RED before that change (the bus read 1). On scratch copies of the netlist (R85 removed and U21 not fitted; R73 removed with CHNG_REQ undriven and /SEL0 asserted) /RDY and /CHNG read 1 before round 1 and None after. No existing test failed under the stricter evaluator, so none hides a floating input. | `tests/logic.py`, `tests/test_logic_model.py` |
 
 ### Power and EMC
 
@@ -181,14 +181,14 @@ the one named.
 | U17 with `in_bom=False` | `test_parts_left_out_of_the_bom` |
 
 GREEN, with every fix in the tree:
-- The whole suite: 333 passed, 48 skipped (325 at 329c6e9 plus the 8 new tests; the 48 skips are the illegal bypass
-  states, as before).
+- The whole suite: 334 passed, 48 skipped (325 at 329c6e9 plus the 9 new tests, the last one from fix round 1; the 48
+  skips are the illegal bypass states, as before).
 - ERC (Task 8 Step 7): `--severity-error --exit-code-violations` exits 0 with 0 violations; at `--severity-all` 27
   violations, all `footprint_filter` (as at 329c6e9). `FluxDrive_Schematic.pdf` is exported again (block G on the
   sheet, R85 on its last row, labels readable); the netlist is exported (206 components).
 - `build/revb/mutate.py` (the steering and mode tests against its six design mutants): the design passes (219 passed,
   48 skipped, one more than before for `test_partial_mode4_fit_keeps_the_real_drive_off`), and all six mutants are
-  still caught, with the failure counts of Task 8's record:
+  still caught, with the failure counts of Task 8's record (the same counts after fix round 1's evaluator change):
 
 | Mutant | Failed |
 |---|---|

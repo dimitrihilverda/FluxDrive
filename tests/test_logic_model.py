@@ -90,6 +90,18 @@ def test_floating_gate_input_gives_no_level():
     assert evaluate(nl, {})["Y"] is None                                  # push-pull: the pull-down is not its answer
 
 
+def test_no_level_passes_across_a_series_resistor():
+    """RBUS-8: U20 and U23 reach their bus through 33 ohm. A gate with a floating input gives its far side no level
+    either, so the bus does not read as released (its pull-up's value) while the gate may be pulling it low."""
+    nl = nl_of([("U1", "SN74LVC1G06", {"2": "IN", "4": "OUT", "3": "GND", "5": "+3V3"}, True),
+                ("R1", "33", {"1": "OUT", "2": "BUS"}, True),
+                ("R2", "4K7", {"1": "BUS", "2": "+5V_A"}, True)])
+    v = evaluate(nl, {})
+    assert v["OUT"] is None and v["BUS"] is None                          # input floats: the bus has no level
+    assert evaluate(nl, {"IN": (0, STRONG)})["BUS"] == 1                  # input low: released, the pull-up
+    assert evaluate(nl, {"IN": (1, STRONG)})["BUS"] == 0                  # input high: pulled low through the 33 ohm
+
+
 def test_divider_between_rails_is_no_logic_level():
     """AMIGA_PWR, EFUSE_EN and BUCK_FB are dividers between two rails: an analog level (None), not a Conflict."""
     nl = nl_of([("R1", "1K", {"1": "+5V_A", "2": "MID"}, True), ("R2", "1K5", {"1": "MID", "2": "GND"}, True)])

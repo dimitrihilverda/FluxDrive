@@ -14,8 +14,10 @@ what drives its far net apart from that resistor itself, so a net never holds it
 series resistor (a released open-drain output does not keep its bus low). Capacitors and diodes are open (the settled
 state). Parts marked DNP are left out unless their ref is in `fit`.
 A live gate with an input of no level may drive its output either way, so its output gets no level at the gate's own
-strength (STRONG, or OD for an open-drain gate): a floating input shows downstream as None instead of reading as a
-released output or as the output's pull (Task 9 review RBUS-8).
+strength (STRONG, or OD for an open-drain gate), also when only some of its inputs decide the output. That no level
+goes on across a resistor of at most 1 kOhm (U20 and U23 reach /CHNG and /RDY through 33 ohm), so the bus net reads None
+instead of the released value of its pull-up (Task 9 review RBUS-8). Across a resistor of more than 1 kOhm it does not:
+the near net keeps its own pull there.
 A Conflict is raised only if it is still there once the nets have settled: while the nets are settling, a net two
 drivers disagree on has no level for the gates and resistors it feeds, and the next round may resolve it.
 A name the netlist does not have (a source net, a bridged, fit or state ref) raises KeyError, so a misspelled name
@@ -145,7 +147,14 @@ def evaluate(nl, sources, state=None, bridged=None, fit=(), max_iter=80):
                     continue
                 # what drives y apart from this resistor: a net never pulls itself up by its own echo
                 vy, sy = settle([c for c in prev.get(y, []) if c[2] != i])
-                if vy is None or vy == "X":
+                if vy == "X":
+                    continue
+                if vy is None:
+                    # no level, but a driver at OD or stronger (a gate with a floating input): through a resistor of
+                    # at most 1 kOhm the near net has no level either (RBUS-8); a divider has strength 0 and passes
+                    # nothing, and above 1 kOhm the near net keeps its own pull
+                    if ohms <= 1000 and sy >= OD:
+                        drv[x].append((OD, None, i))
                     continue
                 if ohms <= 1000:
                     if min(sy, OD) >= PULL:
