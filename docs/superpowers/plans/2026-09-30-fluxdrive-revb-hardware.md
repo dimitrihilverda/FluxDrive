@@ -32,8 +32,10 @@ everything that spec says still holds unless the rev B spec changes it.
   stays (spec §4.3).
 - Pull-ups: /STEP, /DIR, /SIDE 4k7; /SEL0 1 kΩ; /SEL1 1 kΩ; /DKWD, /DKWE 4k7; J6.10 and J6.4/16 4k7 to +5V_A;
   J6.6/12/14 10 kΩ to +5V_A (spec §5).
-- The drive's +5 V comes from +5V_IN through its own TPS259531 with R_ILM = 1K37, a current limit of 1.50 A (spec §6;
-  open item R9 can still change the value before the layout freezes); +12 V passes J2.4 → J6pwr.4 (spec §6).
+- The drive's +5 V comes from +5V_IN through its own TPS259531 with R_ILM = 1K37, a current limit of 1.50 A typical and
+  1.37 A at the worst tolerances, for a +5 V-only drive's 1.25 A when a seek overlaps the spindle start (spec §2, §6;
+  open item R9 may lower R_ILM, never raise it: the worst-case minimum stays at or above 1.30 A); +12 V passes
+  J2.4 → J6pwr.4 (spec §6).
 - Board 60 mm wide and 72.1 mm long, the spec's maximum (Task 11 uses all of it: the strip under the module needs
   it), J1 at rev A's position over CN11, J6 17.78 mm north of J1 with the same orientation and pin 1 on the same side
   (spec §9).
@@ -78,8 +80,8 @@ everything that spec says still holds unless the rev B spec changes it.
 3. **No real drive on J6, or J6 plugged without J6pwr**: with nothing on J6, modes 1–3 must leave the bus as a
    stock A500 with FluxDrive as DF0 or no DF0; with an unpowered drive the lines read asserted — Task 6's test checks
    J6's pull-ups hold every J6-only line inactive with nothing plugged in; the README (Task 15) carries the J6pwr rule.
-4. **An ESP32 that never boots** (blank flash, crash loop): the A500 must boot from the real drive as stock, with
-   /CHNG, /RDY, _KBRESET and every J6 line inactive — Task 8's `test_esp32_reset_changes_nothing` leaves every control
+4. **An ESP32 that never boots** (blank flash, crash loop), until the firmware has applied a stored mode: the A500
+   must boot from the real drive as stock, with /CHNG, /RDY, _KBRESET and every J6 line inactive — Task 8's `test_esp32_reset_changes_nothing` leaves every control
    GPIO undriven and then with its internal pull-up, and `test_esp32_glitch_changes_nothing` drives GPIO1–17 low as
    the ESP32 does for 60 µs at every reset.
 5. **A board rebuilt from the committed scripts** must be the committed board: `tools/pcb_place.py --check` and the
@@ -134,7 +136,7 @@ Refs of R, C and TP are assigned in the order parts are added and are **not** st
 them by their nets. The refs below are fixed by name in `part()` calls.
 
 The layout (Tasks 11–13) depends on these nets and part groups, not on values: row A's 100 Ω / 33 Ω / 4k7 by the
-J1 pin net they touch; the drive eFuse's ILM resistor as the R on DRV_ILM–GND (its value may change with R9); the
+J1 pin net they touch; the drive eFuse's ILM resistor as the R on DRV_ILM–GND (its value may only go down with R9, spec §11); the
 buck's 22 µF as the 22 µF +3V3–GND capacitor nearest L1. A net renamed in Tasks 3–8 makes `ref_of()` stop with the
 nets it could not match.
 
@@ -196,9 +198,10 @@ DNP: 4k7 MTRX–+5V_A, 100 Ω MTRX–MTRX_B, 33 Ω ID_D–_RDY; fitted 100 kΩ M
 
 **The R_ILM part** (looked up on 2026-09-30): UNI-ROYAL 0402WGF1371TCE, 1.37 kΩ ±1 %, 0402 (the package `R()` gives
 every fitted resistor), LCSC **C423239**; 8,500 in stock at LCSC, 8,536 at JLC; a JLC **Extended** part, so one more
-extended type (about $3 per order) on top of the seven of spec §13. `RES_LCSC` gets `"1K37": "C423239"`. 1K5
-(C25867, JLC Basic, already in the BOM) would give 1.37 A; open item R9 (the drive's peak current, measured by Dimitri
-before the layout freezes) can still change the value, and the test (`1.4 <= ilim <= 1.6`) with it.
+extended type (about $3 per order); spec §13 counts it, eight in all. `RES_LCSC` gets `"1K37": "C423239"`. R_ILM
+stays 1K37 whatever R9 shows: the limit must cover a +5 V-only drive's 1.25 A (TEAC §9.2(2)), and 1K5 (C25867) would
+leave its worst case at 1.26 A. R9 (the drive's peak current, measured by Dimitri before the layout freezes) may only
+lower R_ILM, for a higher limit; the test (worst-case minimum at least 1.30 A, `ilim <= 1.6`) moves with it.
 
 ---
 
@@ -2180,11 +2183,11 @@ DRC-clean. It was not routed to completion in the review (Task 12 step 6). What 
       5 V/R10 + 1.06 mA above 16 mA (the SN74LVC2G06's VOL of 0.4 V at 16 mA and VCC 3 V; spec §4.4).
     - R7: the board revision, U36's type and the checks P1 to P13. Stop and ask on P1 open, P4 connected, P8 open, or a
       drive swapper on /SEL0 or /SEL1. On a Rev 8A board, the README gets the 74LS05 note (spec §5).
-    - R9: the highest +5 V level held for at least 0.25 ms (the TPS2595's current-limit response time). Up to about
-      1.05 A, DRV_ILM becomes 1K5 (C25867, Basic; 1.26 A worst case): change the Global Constraints, Names, Task 8's
-      `R("1K37", ...)` line and its `RES_LCSC` entry, Task 8's test bound (to `1.3 <= ilim <= 1.6`), Task 15's README
-      text and its test, and the extended-part count. From 1.05 to 1.15 A, keep 1K37 (1.37 A worst case). Above
-      1.15 A, stop and ask Dimitri. A multimeter-only result counts only at 0.4 A or less, together with a +12 V
+    - R9: the highest +5 V level held for at least 0.25 ms (the TPS2595's current-limit response time). R9 may raise
+      the limit (a lower R_ILM), never lower it: the worst-case minimum stays at or above 1.30 A, so R_ILM stays at most
+      1K37, whatever Dimitri's drive shows (a +5 V-only drive's spindle start plus seek is 1.25 A, TEAC §9.2(2); the
+      Chinon-class drive runs its spindle on +12 V and shows far less). Up to 1.15 A, keep 1K37 (1.37 A worst case).
+      Above 1.15 A, stop and ask Dimitri. A multimeter-only result counts only at 0.4 A or less, together with a +12 V
       reading that shows the motor runs on +12 V.
 
 - [ ] **Step 1: failing tests** — in `tests/test_pcb.py` delete `test_outline`, `test_connector_zone_free`,
@@ -4123,7 +4126,8 @@ def test_silk_on_the_board(board):
 - [ ] **Step 1:** `bash tools/jlc_production.sh`; `python -m pytest -q -p no:cacheprovider tests/test_pcb.py -k
   production` → PASS (U1 and the DNP parts out, every fitted SMD part in, at its place and rotation). Check the BOM
   for the new parts and their LCSC numbers and stock (spec §4.9, R10) and record the stock in the ledger; count the
-  new JLC extended part types (spec §13 says seven; C423239, the 1K37, makes eight) and record the fee.
+  new JLC extended part types (spec §13 says eight, the 1K37 C423239 among them; U4's C176925 is extended like the
+  C6049 it replaces) and record the fee.
 - [ ] **Step 2:** renders `kicad-cli pcb render --side top/bottom` and a 3D view to `docs/images/fluxdrive-v1b-*.png`.
 - [ ] **Step 3: failing test** — `tests/test_readme.py`, a checklist of what the README's rev B section must carry
   (spec §3–§6, §9, §12; review finding F24):
@@ -4170,13 +4174,14 @@ def test_readme_rev_b_build_notes():
   - external drives: with DF1 on, a drive with a DF2/DF3 switch or a select-shifting adapter; two external drives
     next to the real drive draw 17.7 mA on /STEP, /DIR and /SIDE, outside the 8520's guaranteed VOL, as a stock A500
     with two external drives (16.6 mA) already does (§5);
-  - the drive eFuse: R_ILM 1K37 for 1.50 A; if R9 (the drive's measured peak) says otherwise, the value to fit;
+  - the drive eFuse: R_ILM 1K37 for 1.50 A typical, 1.37 A at the worst tolerances (a +5 V-only drive's 1.25 A fits);
+    R9 may only lower it (a higher limit);
   - soldering the module through its ground-pad hole; the footprint also takes the WROOM-1U-N16R8 (C3013946), whose
     U.FL cable must leave the shield (§9);
   - the new test pads (the map of all 22) and the order settings (4 layers, rev B BOM/CPL);
   - the reversed-plug bench test of the v1 spec §11 runs with nothing on J6 or J6pwr (§6);
-  - the checks before ordering (spec §12): O5, O7, R1, R7, R9, the C601943 body length for J1 and J6, and the fit
-    dummy with J6, its plug and the drive power cable (the shield may need a cut-out).
+  - the checks before ordering (spec §12): O5, O7, R1, R7, R9, a second source for C601943 with its body length for J1
+    and J6, and the fit dummy with J6, its plug and the drive power cable (the shield may need a cut-out).
 
   Run `tests/test_readme.py` → PASS.
 - [ ] **Step 5:** the v1 spec gets v0.5 with every change of the rev B spec §13 (§1 scope, §2.1, §2.3, §3 block
@@ -4208,4 +4213,4 @@ whole-branch review".
   each with a failing test first. If the board changes: `tools/pcb_build.sh`, then Task 15 Step 1 again; re-run the
   suite, ERC and DRC.
 - [ ] **Step 3: commit** — "Rev B final review". Do not push; tell Dimitri the branch is ready and list what stays
-  open for him (spec §12: O5, O7, R1, R7, R9, the C601943 body length, the fit test).
+  open for him (spec §12: O5, O7, R1, R7, R9, the C601943 second source and its body length, the fit test).

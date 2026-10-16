@@ -1,10 +1,12 @@
 # FluxDrive v1 rev B — pass-through to the original drive, DF0/DF1 swap
 
-**Status:** v0.3, 2026-09-30, for Dimitri's review. v0.1 was reviewed by four agents (logic with an exhaustive
-simulation, Amiga facts, power/parts/board, completeness); v0.2 took in their findings and Dimitri's answers of the same
-day; v0.3 takes in a second check of v0.2 (a re-simulation of 2.16 million combinational cases and an exhaustive
-sequential search, 0 mismatches in every allowed steady state, and an audit of every finding). Nothing is built from it
-yet.
+**Status:** v0.4, 2026-10-14. v0.1 was reviewed by four agents (logic with an exhaustive simulation, Amiga facts,
+power/parts/board, completeness); v0.2 took in their findings and Dimitri's answers of the same day; v0.3 takes in a
+second check of v0.2 (a re-simulation of 2.16 million combinational cases and an exhaustive sequential search, 0
+mismatches in every allowed steady state, and an audit of every finding). v0.4: schematic review of 2026-10-14
+(`docs/reviews/2026-09-30-revb-schematic-review.md`): the drive eFuse sized for a seek during spindle start, the
+series-resistor exception, a pull-down on M4_SEL_Q, the mode-bit test pads on the latch side, U4's part number, firmware
+rules, a second source for J1's and J6's box header, and pass rules for R1 and R9. No other hardware changed.
 **Based on:** the v1 hardware spec `docs/superpowers/specs/2026-09-28-fluxdrive-v1-hardware-design.md` v0.4 ("the v1
 spec", which keeps describing rev A), its reviews in `docs/reviews/`, the research of 2026-09-30 into the Nano-Tek
 Rev 2.0 pass-through, the A500's floppy wiring and rev A's board, and Mez's audit of rev A (all scratch reports in
@@ -89,8 +91,11 @@ relative of the A500's FB-354), http://www.bitsavers.org/pdf/chinon/Chinon_F-354
   insertion (`trackdisk_device.c`:87-90, 426-430), which is what makes a swap with its per-unit head position safe.
 - **Resets:** the keyboard connector carries `_KBRESET` into Gary pin 5 (with RP501 10 kΩ); the 68000's RST and the
   general RESET are separate nets ([SCH] p2, p5, p7). A software reboot never shows on `_KBRESET`.
-- **Currents:** a drive peaks at about 1.0 A on +5 V while seeking or spinning up ([TEAC] Table 7.1-1); the Chinon
-  family also takes 100–340 mA from +12 V ([CHI] §3-2). FluxDrive's eFuse limits at about 0.95 A (v1 spec §5).
+- **Currents:** a drive peaks at about 1.0 A on +5 V while seeking or spinning up ([TEAC] Table 7.1-1), and at 1.25 A
+  when a seek overlaps the spindle start (0.70 A plus "0.55A, Max.", [TEAC] §9.2(2)), which Kickstart and trackloaders
+  do. The Chinon family runs its spindle on +12 V (100–340 mA) and takes little from +5 V ([CHI] §3-2), so a +5 V-only
+  drive like the TEAC is the case that sizes the drive's eFuse (§6). FluxDrive's eFuse limits at about 0.95 A (v1
+  spec §5).
 
 ## 3. Modes and control
 
@@ -175,10 +180,11 @@ DF0_FD and DF1_EN here are the flip-flops' Q outputs.
   10 kΩ pull-up = release; the six 10 kΩ pull-ups to +3V3 move to the X_N nets at the OR inputs (GPIO side), and the
   buffer inputs are driven by the OR outputs. SEL_FD_N drives the OR inputs from a push-pull output (a weak select net cannot drive
   several gate inputs, `docs/input/FluxDrive_v0.1_review_notes.md`:83-85).
-- **Two output buffers:** U4 (74LVC07A) keeps /DKRD, /TRK0, /WPROT and /RDY, at the east end near J1 pins 26–34; its two
-  spare inputs are tied to +3V3. A new SN74LVC2G07 (open-drain, Ioff) at the west end drives /CHNG (J1 pin 2) and
-  /INDEX (J1 pin 8). Every output keeps its 33 Ω series resistor. This removes rev A's 81 mm /CHNG_D and 43 mm
-  /INDEX_D, the cause of its long `_B` detours (layout review, "The rebuilt board").
+- **Two output buffers:** U4 (74LVC07A, now the Diodes 74LVC07AS14-13, SO-14, C176925: rev A's Nexperia C6049 has no
+  stock) keeps /DKRD, /TRK0, /WPROT and /RDY, at the east end near J1 pins 26–34; its two spare inputs are tied to +3V3.
+  A new SN74LVC2G07 (open-drain, Ioff) at the west end drives /CHNG (J1 pin 2) and /INDEX (J1 pin 8). Every output keeps
+  its 33 Ω series resistor, except those of §4.4. This removes rev A's 81 mm /CHNG_D and 43 mm /INDEX_D, the cause of
+  its long `_B` detours (layout review, "The rebuilt board").
 
 ### 4.4 The real drive's connector J6
 
@@ -210,6 +216,10 @@ J6 is a second 2×17 box header with CN11's pinout (odd pins GND, pin 3 NC):
   push-pull output to GND. Silkscreen "CUT 1-2, CHECK, BRIDGE 2-3"; the README says the same.
 - **Load:** J6.10 sinks the drive's 1 kΩ plus 4k7 (6.1 mA); J6.4/16 sinks two drive terminations plus 4k7 (11.1 mA),
   within the 2G06's rating.
+- **No series resistor** on the open-drain drivers that leave the board here and in §4.8 (J6.10, J6.4/16 and the reset
+  wire's `_KBRESET`), as the A500's own open-collector drivers (74LS38, 74LS05) have none: J6.4/16 sinks 11.1 mA, and
+  33 Ω would add 0.37 V to the 2G06's 0.4 V, past the drive's 0.40 V input-low maximum ([CHI] §5-1). This is the
+  exception to v1's "33 Ω in series at every output" (§13); its cost is some ringing on J6.10 on a long ribbon.
 
 ### 4.5 Virtual disk change
 
@@ -232,7 +242,8 @@ before trackdisk's next poll (§2); this rule makes sure AmigaDOS sees the chang
   jumper to flip-flop A's clear (delivered) or preset; J7's 100 nF sits on the pin side of its 1 kΩ. About 1 ms on the
   other pin against about 10 ms on the RC pin, so the default wins in both jumper positions. J7 and the "REAL" pair act
   on flip-flop A only, so they never touch DF1_EN.
-- DF0_STATE (Q_A) and DF1_STATE (Q_B) go back to GPIOs through 1 kΩ (§7).
+- DF0_STATE (Q_A) and DF1_STATE (Q_B) go back to GPIOs through 1 kΩ (§7). The test pads for the mode bits sit on the
+  latch side of those resistors, on DF0_FD and DF1_EN, so they show the latch and not the GPIO's reset glitch (§9).
 
 ### 4.7 Mode 4, prepared (unfitted pads)
 
@@ -243,7 +254,9 @@ Laid out and routed, but not assembled (DNP, no paste), in packages that can be 
 - a SN74LVC1G175 motor latch (D flip-flop with clear): D = motor on (the U3 gate's output), clocked by SEL1's rising
   edge (the /SEL1 falling edge), **clear = DF1_EN**, so it is cleared at power-on and held clear whenever DF1 is off
   (v0.1 let it run in mode 1, where an external DF1's motor would have spun the real drive). Its Q is M4_MTR;
-- `M4_SEL = DF0_FD AND SEL1_EN` (a 74LVC1G157 wired as an AND);
+- `M4_SEL = DF0_FD AND SEL1_EN` (a 74LVC1G157 wired as an AND), with a fitted 100 kΩ from its output to GND as on the
+  NOT M4_MTR gate's input below: with the jumper of §4.4 moved before this part is fitted, or with its output pin not
+  soldered, the real drive's select input still has a level and the real drive stays deselected;
 - the DD ID for the real drive as DF1: /RDY (J1.34, through 33 Ω) pulled low while `M4_SEL AND NOT M4_MTR` by a
   SN74LVC1G38, its "NOT M4_MTR" from U3's gate that rev A used for J1 pin 6 (§7), as the A2000's U203 does
   ([A2K] sheet 10). That gate's input gets a fitted 100 kΩ to GND.
@@ -284,11 +297,13 @@ Without the wire both stay idle, DF0 changes use the direct rule and DF1 changes
 | resistors, capacitors, Schottkys, jumpers | 0402/0603, SOD-323 | as rev A | ~40 fitted | pull-ups, isolation, RCs, filters, 33 Ω, decoupling (one 100 nF per IC) |
 | DNP: 74LVC1G157GW, SN74LVC1G175 (SOT-23-6), SN74LVC1G38DBVR, the MTRX resistors | | | | §4.7 |
 
-The SN74LVC3G06 of v0.1 is out: JLC had 3 in stock. Stock figures (JLC, 2026-09-30): C135822 7,815; C6087 25,503;
-C6100 5,454; C402162 10,258; C840103 5,490; C37708 152,596; C2867613 1,914; C601943 2,075; C210162 5,495;
-C2155674 (TPS259531, now two per board) 3,249. The plan checks each again and adds the SN74LVC1G175's number. From
-rev A's J1 pin 4, 6 and 14 input chains: R25, R28, R29, R31 and R32 go; R26 (100 Ω) and R27 (100 kΩ to +3V3) now serve
-the RST pad; R33 (100 kΩ to +3V3) stays on U3 pin 5 for MTRX; R30 becomes 100 kΩ to GND on U3 pin 13.
+The SN74LVC3G06 of v0.1 is out: JLC had 3 in stock. Stock figures (JLC, 2026-09-30): C135822 7,815; C6087 25,503; C6100
+5,454; C402162 10,258; C840103 5,490; C37708 152,596; C2867613 1,914; C601943 2,075; C210162 5,495; C2155674 (TPS259531,
+now two per board) 3,249. The plan checks each again and adds the SN74LVC1G175's number. On 2026-10-14 (the schematic
+review) C601943 had 0 in stock (§12), as had U4's rev A part C6049 (§4.3); every other number of the BOM was in stock.
+
+From rev A's J1 pin 4, 6 and 14 input chains: R25, R28, R29, R31 and R32 go; R26 (100 Ω) and R27 (100 kΩ to +3V3) now
+serve the RST pad; R33 (100 kΩ to +3V3) stays on U3 pin 5 for MTRX; R30 becomes 100 kΩ to GND on U3 pin 13.
 
 ## 5. Bus loading and pull-ups
 
@@ -313,8 +328,11 @@ guaranteed VOL — as a stock A500 with two external drives already does (16.6 m
   pins 2 and 3 = GND, pin 4 = **+12 V** (J2 pin 4, not connected in rev A, now carries +12 V to J6pwr pin 4 and nowhere
   else).
 - **+5V_DRIVE comes from +5V_IN through a second TPS259531** (the same part as U5, so no new part type), with its
-  current limit at about 1.5 A (R_ILM ≈ 1.37 kΩ, TI Eq. 4) and its own dV/dt capacitor; it shares U5's EN/UVLO divider.
-  The drive's current (about 1 A peak) never passes U5, which stays at about 0.95 A for FluxDrive's own ≈ 0.4 A.
+  current limit at about 1.5 A (R_ILM = 1.37 kΩ, TI Eq. 4: 1.50 A typical, 1.37 A at the worst tolerances) and its own
+  dV/dt capacitor; it shares U5's EN/UVLO divider. The limit must carry what a +5 V-only drive draws when a seek
+  overlaps the spindle start, 1.25 A (§2), so its worst-case minimum stays at or above 1.30 A: R_ILM is at most 1K37, and
+  R9 (§11) can only lower it. The drive's current never passes U5, which stays at about 0.95 A for FluxDrive's own
+  ≈ 0.4 A.
   Its 5.7 V clamp protects the drive against a reversed plug on **J2** (+12 V on +5V_IN), and with it the bus lines the
   drive's terminations would otherwise pull towards 12 V (above the 6.5 V maximum of U2, U3 and the open-drain drivers).
   A reversed plug on J6pwr itself (or a crossed drive cable) still puts +12 V on the drive's +5 V pin, destroys the
@@ -323,14 +341,20 @@ guaranteed VOL — as a stock A500 with two external drives already does (16.6 m
 - The drive eFuse gets U5's dV/dt capacitor value (22 nF, about 1.9 V/ms) and 22 µF (C45783) plus 100 nF on
   +5V_DRIVE at J6pwr. Its WSON pads (0.5 mm pitch) take at most 0.3 mm tracks, so those run at most 1 mm from the pads
   before they widen to the pour or 0.8 mm.
-- **J2's pin 1** now carries FluxDrive's and the drive's current: about 1.4 A at the drive's peak, against the
-  171825-4's 2 A rating (R9 measures the drive's peak).
+- **J2's pin 1** now carries FluxDrive's and the drive's current: 0.4 A plus the drive's 1.25 A overlap case is 1.65 A,
+  against the 171825-4's 2 A rating (TE's maximum contact rating is 3.5 A). Only a short on J8 can push it to 0.4 A
+  plus U9's worst-case maximum limit (1.63 A) = 2.03 A, until U9's thermal shutdown.
 - The J2 → J6pwr paths are a pour or at least 0.8 mm wide, with at least two vias per layer change; both GND pins of
-  each header get their own vias to In1. The motor's return current stays in the power strip, away from U2–U4.
+  each header get their own vias to In1. The drive's signal and power grounds are common, so part of its return current
+  (about three quarters, over the ribbon's 17 ground wires) comes back through J6 and J1 and the band between them; that
+  is expected and harmless (about 1 mV across the plane at 1.25 A), and the layout review does not chase it.
 - **Drive power cable** (hand-made, in the README's part list): 2 × TE 171822-4 housings with 170204-2 contacts, AWG
   20–22, pin 1 to pin 1, its length taken from the fit dummy. The README asks for a continuity check (+5 V on pin 1,
   +12 V on pin 4) before the drive is plugged in, and says never to plug J6 without J6pwr: an unpowered drive's
   terminations pull the shared lines to about 0.9 V, which reads as asserted.
+- U9's fault output (pin 6) is not connected. A drive that trips U9 (thermal shutdown, retry after about 93 ms) is an
+  unpowered load on the bus for as long as it lasts, with the same effect; §8 has the firmware's guards, and the README
+  says that such a drive disturbs the bus until it is unplugged.
 - The unfitted SMAJ13A on +5V_IN stays; it protects the eFuses' 20 V input maximum, not a 5 V drive.
 - The reversed-plug bench test of the v1 spec §11 runs with nothing on J6 or J6pwr.
 
@@ -368,25 +392,41 @@ reads but the A500 does not need:
 
 The firmware is a separate project; these are the requirements rev B puts on it.
 - **First thing in `app_main` and in the panic handler:** drive CHNG_REQ, RST_REQ and MODE_CLK_REQ low. Never enable
-  the internal pull-ups on GPIO4, 8, 10, 12, 13, 14, 47 or 48 (v1 §9's rule that gave J5 internal pull-ups is void).
-- **Start-up:** read DF0_STATE and DF1_STATE and adopt them as the current mode. A RESET press, or EN pulled through
-  J4, also reports `ESP_RST_POWERON` (CHIP_PU low powers the chip down) while the Amiga keeps running. So apply the
-  stored mode by the power-on rule (every change allowed) only if the reason is `ESP_RST_POWERON` **and** both bits
-  read the board's power-on default (the "power-on default" setting for DF0, DF1 off); otherwise keep the latch, and
-  keep a pending change pending. An Amiga power-on while the ESP32 stays up on USB shows as AMIGA_PWR rising, and the
-  same rule applies then. The stored mode must be in the latch, and as DF1 the /RDY answer and
-  /TRK0 tracking must be live, **before Kickstart's disk.resource probe** after a cold boot (R4 measures when that is);
-  if the application starts too late, do it in a bootloader hook with the PSRAM memory test and boot-time image
-  validation off.
+  an internal pull-up on GPIO4, 8, 10, 12, 13, 14, 47 or 48 (v1 §9's rule that gave J5 internal pull-ups is void), and
+  no internal pull-up or pull-down at all on GPIO13 and GPIO48 while they are inputs (a 45 kΩ pull on a D input beats
+  the 100 kΩ hold from Q, §4.1). Never call `gpio_reset_pin()` on GPIO10, 13, 14, 47 or 48: it enables the pull-up.
+- **Start-up:** read DF0_STATE and DF1_STATE and adopt them as the current mode. A RESET press, or EN pulled through J4,
+  also reports `ESP_RST_POWERON` (CHIP_PU low powers the chip down) while the Amiga keeps running. So apply the stored
+  mode by the power-on rule (every change allowed) only if the reason is `ESP_RST_POWERON` **and** both bits read the
+  board's power-on default (the "power-on default" setting for DF0, DF1 off); otherwise keep the latch, and keep a
+  pending change pending. Apply a stored mode other than the board's power-on default only from an app image marked
+  valid (ESP-IDF rollback), and count panic and watchdog restarts in a row in NVS: after N of them (a setting, default
+  3) the firmware stops applying a stored mode at power-on, so a crash-looping firmware cannot hold the A500 off the
+  real drive across a power cycle (without J7 the only way back would be a reflash or an NVS wipe). An Amiga power-on
+  while the ESP32 stays up on USB shows as AMIGA_PWR rising, and the same rule applies then. The stored mode must be in
+  the latch, and as DF1 the /RDY answer and /TRK0 tracking must be live, **before Kickstart's disk.resource probe**
+  after a cold boot (R4 measures when that is); if the application starts too late, do it in a bootloader hook with the
+  PSRAM memory test and boot-time image validation off.
 - **Setting the mode:** set DF0_REQ and DF1_REQ from DF0_STATE and DF1_STATE, change only the bit that is meant to
   change, raise MODE_CLK_REQ and hold it until GPIO17 and GPIO9 have both read idle while it was high, then lower it
   and check the read-back. Only a request delivered this way that DF0_STATE does not follow means the switch (or the
   REAL pair) forces DF0: report "DF0 set by the switch" to the GTi, never retry on its own, and try again on the user's
   next DF0 request. Mode 1 → 3 is two steps: the direct DF0 change, verified, then DF1 on. The firmware never sets DF1
   on while DF0_STATE = 1 unless "mode 4 fitted" is set. No mode writes while AMIGA_PWR reads low (on USB alone /SEL0
-  reads asserted and blocks the clock anyway).
+  reads asserted and blocks the clock anyway), and none while the chip's VDD_SPI is 1.8 V (a -N16R16VA module: GPIO47
+  and GPIO48 then run at 1.8 V, under the 2.0 V input-high of U16 and U8): refuse, and say so on the GTi and the web
+  page. The board needs the N16R8 (§9).
 - **Change rules:** as §3 (DF0 direct only with DF1 off and both selects quiet; DF1 removal or replacement only in reset
-  or at power-on; RST_REQ pulse 250 ms if the reset wire is fitted).
+  or at power-on; RST_REQ pulse 250 ms if the reset wire is fitted). RST_ACT counts as a reset only after it has read
+  high continuously for at least 10 ms: the wire has no filter, and a spike picked up on it would otherwise apply a
+  pending DF1 change while AmigaDOS runs (a keyboard reset lasts as long as the keys are held, and the firmware's own
+  pulse is 250 ms).
+- **A real drive without power, and writes:** the drive loses its power when J6pwr is not plugged or when U9 trips (§6),
+  and its terminations then pull the shared lines to about 0.9 V, which reads as asserted. With AMIGA_PWR high, /STEP,
+  /DIR, /SIDE, /DKWD or /DKWE reading asserted while neither select has been active for about 100 ms means exactly that:
+  report "real drive: no power, check the drive power cable or the drive" on the GTi and the web page. A write counts
+  only on a /DKWE falling edge while FluxDrive is selected, with flux transitions on /DKWD; /DKWE held low while
+  FluxDrive is deselected, or for longer than one revolution, is a bus fault: stop writing and report it to the GTi.
 - **Outputs:** set every X_N from the drive's own state (ready or ID, /TRK0, /WPROT, /CHNG, the /INDEX and /DKRD
   stream) continuously, whether or not the drive is selected, and never switch an output on a select edge; the gates of
   §4.3 do all the select timing (the firmware still reads the select for /STEP and disk-change handling). This replaces the v1 §9 rule "outputs are gated by /SEL0 only … while deselected all six are
@@ -401,10 +441,14 @@ The firmware is a separate project; these are the requirements rev B puts on it.
 - **Virtual disk change:** the hold rule of §4.5.
 - **GTi:** DRIVE_GET, DRIVE_SET (DF0 = FluxDrive or real drive, DF1 on/off, reboot) and DRIVE_CFG (swap policy,
   settings), as proposed for the Nano-Tek ([NT]:258-260), over the FluxDrive's ESP-NOW link; the opcodes are fixed in
-  the shared contract with the GTi. A drive page on the web interface shows DF0 and DF1 and the switch state.
+  the shared contract with the GTi. A drive page on the web interface shows DF0 and DF1, and whether the switch or the
+  REAL pair forced DF0, "as last seen by a request": no GPIO reads J7, so the firmware sees a throw only as a change of
+  DF0_STATE, and neither a return to the centre nor a throw that agrees with the present DF0.
 - **Settings:** "reset wire fitted", "mode 4 fitted" (both default no), "swap policy" (§3), "power-on default" (for the
   display and the start-up rule), "DD ID on DF0" (default no).
-- **Storing the mode:** the chosen mode, and a pending one, are written to flash when they are chosen, in a moment when
+- **Storing the mode:** the chosen mode is written to flash once it has been applied, and a pending DF1 change when it
+  is chosen (it stays pending until a reset or power-on, §3); a DF0 change is never written before it has been applied,
+  or a RESET press would replay it by the power-on rule and skip §3's quiet-bus wait. The write happens in a moment when
   /SEL0 and /SEL1 have been quiet for 500 ms, even with a disk mounted: one small NVS entry while no track is being
   read. This is the one exception to v1 §9's rule "no flash writes while a disk is mounted" (otherwise a pending change
   never reaches flash in mode 3, where FluxDrive's disk stays mounted). The firmware plan confirms it against the flux
@@ -447,7 +491,8 @@ The firmware is a separate project; these are the requirements rev B puts on it.
   pads; its U.FL sits at the pin-40 corner, and its cable must leave the shield).
 - **Hand routes** (`tools/pcb_prefan.py`) are redone for the new placement; `/DKRD_D` stays short and on one layer.
 - **Test pads:** rev A's sixteen, the connector-side ones moved into the J1–J6 band, plus SEL_FD, REAL_SEL, REAL_MTR,
-  DF0_STATE, DF1_STATE and MODE_CLK.
+  DF0_FD, DF1_EN and MODE_CLK (twenty-two, `TestPoint_Pad_D1.0mm`). The mode bits are probed on the latch side of their
+  1 kΩ, not on DF0_STATE and DF1_STATE, which show the GPIO's 60 µs reset glitch.
 - **Silkscreen:** J6 "TO DRIVE", J1 "TO CN11", J6pwr "DRIVE POWER – plug before J6", J7 "DF0: FD / GND / REAL", J5's pin
   names, the bypass jumpers with "CUT 1-2, CHECK, BRIDGE 2-3" and "REAL (both)", the power-on jumper "DF0 at
   power-on", and the mode-4 pads marked "mode 4, see README".
@@ -480,9 +525,10 @@ The firmware is a separate project; these are the requirements rev B puts on it.
    - an external drive on DF2 (named: a drive with a DF2 switch or a select-shifting adapter) works next to mode 3;
    - a DF0 swap from the GTi and one with the switch are both seen by AmigaDOS; with the reset wire, a DF1 change at a
      keyboard reset works;
-   - a RESET press, an OTA update and a USB flash in mode 3 leave DF0 and DF1 unchanged, with no pulse on J6.10,
-     J6.4/16 or `_KBRESET` (scoped);
-   - the bypass (cut and bridged, jumper REAL) boots the real drive with FluxDrive unpowered.
+   - a RESET press, an OTA update and a USB flash in mode 3 leave DF0 and DF1 unchanged (scoped on the DF0_FD and
+     DF1_EN pads), with no pulse on J6.10, J6.4/16 or `_KBRESET` (scoped);
+   - the bypass (cut and bridged, jumper REAL) boots the real drive with FluxDrive's logic unpowered (+3V3 absent, for
+     example with the buck's L1 removed, and J2 powered: the drive's +5 V comes from J2 through U9).
 
 ## 11. Open items
 
@@ -491,24 +537,25 @@ The firmware is a separate project; these are the requirements rev B puts on it.
 | O5 | Range test with the antenna in its placed position (18–20 mm further forward), the drive's ribbon lying as in use; record what bounds the 20 mm (metal or not: the antenna ends about 2 mm from it, and v1 §6 asks 15 mm from metal) | Dimitri | WROOM-1 dev board in the closed A500 | before ordering rev B |
 | O7 | Mounting of the plug-on variant, now with J6 and J6pwr plugged | Dimitri | printed dummy | before ordering |
 | O15 | TE 171825-4 outline, for J2 and J6pwr; the J6pwr plug clears J6's body | plan | TE drawing | before the layout freezes |
-| — | C601943 body at most 52 mm, now for J1 and J6 | Dimitri | part drawing | before ordering |
-| R1 | The drive's termination on pins 4, 6, 10, 12, 14, 16 and 20 | Dimitri | ohmmeter to its +5 V, drive unplugged | before the layout freezes |
+| — | C601943 (J1 and J6) has 0 in stock (2026-10-14): a second source, with its body at most 52 mm and its width checked against the J1–J6 band; candidate C20920 (BOOMELE 2×17 straight IDC header, no ejector; length not checked yet) | Dimitri | part drawing | before ordering |
+| R1 | The drive's termination on pins 4, 6, 10, 12, 14, 16 and 20. Pass: pins 4 and 16 each at least 680 Ω and pin 10 at least 335 Ω (5 V/R4 + 5 V/R16 + 1.06 mA and 5 V/R10 + 1.06 mA both within the 2G06's 16 mA, §4.4); otherwise use the bypass or a different drive | Dimitri | ohmmeter to its +5 V, drive unplugged | before the layout freezes |
 | R3 | Does a reset clear Gary's MTR0 latch (v1 O13) | bring-up | scope /MTR0 across Ctrl-Amiga-Amiga | bring-up |
 | R4 | When Kickstart's disk.resource probe runs after a cold boot and a reset (KS 1.3 and 3.x), against the ESP32's start-up time | Dimitri / firmware | logic analyser on CN11 | before the firmware's start-up code is fixed |
 | R5 | Mode 4's latch timing: does Kickstart keep the HRM's 1.4 µs, or change MTR and SEL1 in one CIA write ([UAE] disk.cpp:3637-3645) | bring-up | logic analyser on CIA-B pins 14 and 17 | only for mode 4 |
 | R6 | A direct DF0 swap with trackdisk's per-unit head position ([NT]:345) | bring-up | test | bring-up |
 | R7 | Dimitri's motherboard revision (Rev 5/6/8A) and its CN11 and /MTR0 wiring | Dimitri | look at the board | before the layout freezes |
 | R8 | trackdisk's disk-change poll period on KS 1.3 and 3.x | Dimitri / firmware | logic analyser, with R4 | before the firmware's swap code is fixed |
-| R9 | The drive's peak current on +5 V (spin-up, seek) | Dimitri | shunt in the CN12 cable | before the layout freezes |
-| R10 | Stock of the new parts at order time (§4.9), including two TPS259531 per board | order | JLC BOM tool | at ordering |
+| R9 | The drive's peak current on +5 V (spin-up, seek, and a seek during spin-up). U9's limit is sized for a +5 V-only drive's 1.25 A (§2, §6), not for this drive: R9 may raise the limit (a lower R_ILM), never lower it, so R_ILM stays at most 1K37 (worst-case minimum at least 1.30 A). Above 1.15 A measured, the plan stops and asks Dimitri before the layout freezes | Dimitri | shunt in the CN12 cable | before the layout freezes |
+| R10 | Stock of every LCSC number in the BOM (§4.9; U4's rev A part had none), including two TPS259531 per board | order | JLC BOM tool | at ordering |
 
 Closed by rev B: v1's O14 (outputs gated by select in logic). v0.1's R2 (drive strapping) is settled: the drive works on
 CN11 today, so it answers DS0 on pin 10.
 
 ## 12. Before ordering (Dimitri)
 
-The README's "Before ordering" for rev A, plus O5, O7, R1, R7 and R9 above, the C601943 body length for J1 and J6,
-and the fit dummy with J6, its plug and the drive power cable (the shield may need a cut-out).
+The README's "Before ordering" for rev A, plus O5, O7, R1, R7 and R9 above, a second source for the C601943 box header
+of J1 and J6 (0 in stock on 2026-10-14) with its body length checked against the 52 mm limit, and the fit dummy with J6,
+its plug and the drive power cable (the shield may need a cut-out).
 
 ## 13. Changes to the v1 spec
 
@@ -523,7 +570,8 @@ When rev B is accepted, the v1 spec gets a v0.5 that points here for rev B and t
   used" goes (J5 uses it).
 - §4.2: /STEP, /DIR, /SIDE 4k7 and /SEL1 1 kΩ in rev B; "the two NC pins (6, 14) get 10 kΩ" goes.
 - §4.3: outputs gated by select in logic, and split over U4 and the west-end buffer (rev B §4.3); the 10 kΩ pull-ups
-  sit on the OR inputs, not on the buffer inputs; O14 closed.
+  sit on the OR inputs, not on the buffer inputs; O14 closed; "33 Ω in series on every output" (also §11 item 1) gets
+  the exception of rev B §4.4: the open-drain drivers on J6.10, J6.4/16 and `_KBRESET` have none, as the A500's own.
 - §4.4: J6 and the connector count.
 - §5: J2 pin 4 carries +12 V to J6pwr; the drive behind its own eFuse; the reversed-plug text of rev B §6.
 - §6: the GPIO table of rev B §7; J5 becomes a 1×4 header (IO18, IO3); "windowpane paste" is gone since U1 is
@@ -534,8 +582,10 @@ When rev B is accepted, the v1 spec gets a v0.5 that points here for rev B and t
   one exception.
 - §9: the firmware requirements of rev B §8 (outputs set from state, not from select edges; DD ID on DF0 a setting;
   "running" as DF1; the J5 pull-up rule void; the one flash-write exception for the mode).
-- §10: seven new extended part types (about $21 per order in JLC's extended-part fees) and about $2 more parts per
-  board at 50 pieces; the under-€10 target is re-checked against the BOM.
+- §10: eight new extended part types, the seven ICs and the 1K37 resistor (about $24 per order in JLC's extended-part
+  fees), and about $2 more parts per board at 50 pieces; the under-€10 target is re-checked against the BOM. The
+  open-drain buffer row becomes the Diodes 74LVC07AS14-13, SO-14, C176925 (still extended; C6049 has no stock), and
+  the box header C601943 gets a second source (§12).
 - §11: rev B's verification and done criteria (rev B §10); item 1's "every output GPIO in {21, 38–42}" becomes "every
   output GPIO in {21, 38–42} or active-high with a 10 kΩ pull-down"; item 6's "firmware halted: DF0 looks like a drive
   holding an unreadable disk" becomes "firmware halted: the A500 boots from the real drive".
